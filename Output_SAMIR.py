@@ -51,3 +51,7 @@ if __name__ == '__main__':
         
         gdf[lc].plot(column='ET',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
         plt.title(lc + '   : Evapotranspiration')
+        
+# =============================================================================
+        # crée plot for 
+# =============================================================================
