@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec  9 10:30:30 2019
+
+@author: pageot
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 29 15:09:22 2019
+
+@author: pageot
+"""
+
+import os
+import sqlite3
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib import cm
+import seaborn as sns
+import csv
+from scipy import stats
+import otbApplication
+from ResultsUtils import *
+
+
+
+def mergeVectors(outname, opath, files, ext="shp", out_Tbl_name=None):
+    """
+    Merge a list of vector files in one
+    """
+    done = []
+
+    outType = ''
+    if ext == 'sqlite':
+        outType = ' -f SQLite '
+    file1 = files[0]
+    nbfiles = len(files)
+    filefusion = opath + "/" + outname + "." + ext
+    if os.path.exists(filefusion):
+        os.remove(filefusion)
+
+    table_name = outname
+    if out_Tbl_name:
+        table_name = out_Tbl_name
+    fusion = 'ogr2ogr '+filefusion+' '+file1+' '+outType+' -nln '+table_name
+    os.system(fusion)
+
+    done.append(file1)
+    for f in range(1, nbfiles):
+        fusion = 'ogr2ogr -update -append '+filefusion+' '+files[f]+' -nln '+table_name+' '+outType
+        os.system(fusion)
+        done.append(files[f])
+
+    return filefusion
+
+
+if __name__ == "__main__":
+    
+    years ="2018"
+    method="SHARK"# or "OPEN_CV" or "SEASON_TIME" or "SHARK"
+    bv="ADOUR" # or TARN
+    d={}
+    file=d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
+    d["output_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/"+years+"/"
+    ram=8096
+    tuiles=["T31TCJ","T31TDJ","T30TYP","T30TYN"]
+    grain=range(0,5)
+    Raster_classif=[]
+        
+    for classif in os.listdir('/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method):
+        if "ASC" in classif and "SAISON" in classif:
+            print ("=============")
+            print (r" RUN : %s " %classif)
+            print ("=============")
+            for Rast in os.listdir('/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+"/"+classif+"/final/"):
+                if "Classif_"+bv+"" and "regularized.tif" in Rast :
+                    print (Rast)
+                    Raster_classif.append(Rast)
+                    Fusion_class = otbApplication.Registry.CreateApplication("FusionOfClassifications")
+                    Fusion_class.SetParameterStringList("il", Raster_classif)
+                    Fusion_class.SetParameterString("method","majorityvoting")
+#                    Fusion_class.SetParameterString("method.dempstershafer.mob","precision")
+                    Fusion_class.SetParameterInt("nodatalabel", 0)
+#                    Fusion_class.SetParameterInt("undecidedlabel", 10)
+                    Fusion_class.SetParameterString("out", "{}_{}.tif".format(classif,bv))
+                    Fusion_class.ExecuteAndWriteOutput()
+
+# Matrix de confusion 
+#                    ComputeConfusionMatrix = otbApplication.Registry.CreateApplication("ComputeConfusionMatrix")
+#                    ComputeConfusionMatrix.SetParameterString("in", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_'+BV[10:-4]+"_"+seed[13:14]+"_regularized.tif")          
+#                    ComputeConfusionMatrix.SetParameterString("out", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/ConfusionMatrix_regularized_%s_%s.csv'% (BV[10:-4],seed[13:14]))       
+#                    ComputeConfusionMatrix.SetParameterString("ref","vector")      
+#                    ComputeConfusionMatrix.SetParameterString("ref.vector.in", d["output_file"]+classif+'/Fusion_all/%s_seed_%s.shp'% (BV[10:-4],seed[13:14])) #d["output_file"]+classif+'/Fusion_all/merge%s.shp'%(seed[13:14])
+#                    ComputeConfusionMatrix.UpdateParameters()
+#                    ComputeConfusionMatrix.SetParameterString("ref.vector.field", "labcroirr")
+#                    ComputeConfusionMatrix.SetParameterString('nodatalabel', str(0))
+#                    ComputeConfusionMatrix.SetParameterString('ram',str(ram))
+#                    ComputeConfusionMatrix.ExecuteAndWriteOutput()
+                
+
+
+## =============================================================================
+##     Matric confusion_build
+## =============================================================================
+#            for b in [bv] :
+#                print(b)
+#                nom=get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+#                pathNom="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt"
+#                pathRes="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"+years+"/RUN_fixe_seed/"+method+"/"+classif+"/final/"
+#                all_k = []
+#                all_oa = []
+#                all_p = []
+#                all_r = []
+#                all_f = []
+#                all_matrix = []
+#                a=[]
+#                if b == "NESTE":
+#                    from collections import OrderedDict
+#                    dico_sans_22 = OrderedDict()
+#                    for j in os.listdir(pathRes):
+#                        if ".csv" in j and "regularized" in j:
+#                            if b in j:
+#                                print(j)
+#                                conf_mat_dic = parse_csv(pathRes+j)
+#                                for k, v in conf_mat_dic.items():
+#                                    dico_sans_22_tmp = OrderedDict()
+#                                    if k == 11 or k ==22 or  k== 44:
+#                                        print (k)
+#                                        continue
+#                                    for class_name, class_count in v.items():
+#                                        if class_name == 11 or class_name == 22 or class_name ==44:
+#                                            print( class_name)
+#                                            continue
+#                                        dico_sans_22_tmp[class_name] = class_count
+#                                    dico_sans_22[k]=dico_sans_22_tmp
+#    #                            print (dico_sans_22)
+#                                conf_mat_dic = dico_sans_22
+#                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+#                                all_matrix.append(conf_mat_dic)
+#                                all_k.append(kappa)
+#                                all_oa.append(oacc)
+#                                all_p.append(p_dic)
+#                                all_r.append(r_dic)
+#                                all_f.append(f_dic)
+#                    conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+#                    nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+#                    size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+#                    p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+#                    r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+#                    f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+#            
+#               
+#                    fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage", grid_conf=True)
+#                    
+#                else:
+#                     for j in os.listdir(pathRes):
+#                        if ".csv" in j and "regularized" in j:
+#                            if b in j:
+#                                print(j)
+#                                conf_mat_dic = parse_csv(pathRes+j)
+#                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+#                                all_matrix.append(conf_mat_dic)
+#                                all_k.append(kappa)
+#                                all_oa.append(oacc)
+#                                all_p.append(p_dic)
+#                                all_r.append(r_dic)
+#                                all_f.append(f_dic)
+#                     conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+#                     nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+#                     size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+#                     p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+#                     r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+#                     f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+#            
+#                     fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage")
