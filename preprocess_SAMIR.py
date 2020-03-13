@@ -26,6 +26,8 @@ import descartes
 if __name__ == "__main__":
     """ mise en place df pour SAMIR """
     
+    # Parameter Years et variable
+    
     # A adpater en focntion du test
     # RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT.shp")
     
@@ -96,18 +98,6 @@ if __name__ == "__main__":
 # =============================================================================
 #     Build METEO spatialieser 
 # =============================================================================
-    # meteo=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/tmp/test_SAMIR_2018/meteo_2018_ADOUR.csv")
-    # meteo=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN2018_ALL.csv")
-    # meteo.drop(columns=['X', 'Y', 'field_1', 'LAMBX', 'LAMBY', 'DATE', 'PRENEI_Q', 'PRELIQ_Q',
-    #    'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'ETP_Q',
-    #    'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE_Q', 'RESR_NEIGE6_Q',
-    #    'HTEURNEIGE_Q', 'HTEURNEIGE6_Q', 'HTEURNEIGEX_Q', 'SNOW_FRAC_Q',
-    #    'ECOULEMENT_Q', 'WG_RACINE_Q', 'WGI_RACINE_Q', 'TINF_H_Q', 'TSUP_H_Q',
-    #    'lambX_1', 'lambY_1'],inplace=True)
-    # meteo["DATE"]=pd.to_datetime(meteo.DATE,format="%Y%m%d")
-    # meteo["Irrig"]=0.0
-    # meteo.columns=["date","Prec",'ET0','Irrig']
-    # meteo.to_pickle("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/tmp/test_SAMIR_2018/Inputdata/meteo.df")
     Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
     # meteo=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_2018_EMPRISE_L93.shp")
     meteo=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
