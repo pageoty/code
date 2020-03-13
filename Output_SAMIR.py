@@ -28,8 +28,8 @@ import pickle
 
 if __name__ == '__main__':
     
-    df=pickle.load(open('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/test_SAMIR_labo/Inputdata/outputtest_SAMIR_labo_2018.df','rb'))
-   
+    df=pickle.load(open('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/test_SAMIR_labo/outputtest_SAMIR_ZRmax100.df','rb'))
+    
     ETsum = (df.groupby(['LC', 'id'])['ET'].sum()).reset_index()
     LCclasses = df.LC.cat.categories
     
@@ -52,3 +52,24 @@ if __name__ == '__main__':
         gdf[lc].plot(column='ET',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True) # Création map evapotransipartion 
         plt.title(lc + '   : Evapotranspiration')
         
+    lam=df.loc[df.id==1]
+    variables=['FCov', 'fewi', 'fewp', 'Zr', 'Zd', 'TEW', 'TAW', 'TDW', 'RAW', 'RUE',
+       'Dei', 'Dep', 'Dr', 'Dd', 'Ir_auto', 'ET', 'SWC1', 'SWC2', 'SWC3',
+       'SWCvol1', 'SWCvol2', 'SWCvol3']
+    for v in variables:
+        print(v)
+        plt.figure(figsize=(5,5))
+        plt.title(v)
+        plt.plot(lam.date,lam[v])
+    
+    
+# =============================================================================
+#   Calcul le cumul d'irrigation 
+# =============================================================================
+    lam.Ir_auto.where(lam["Ir_auto"] != 0.0).dropna().sum() # resultat  980.0 et ref = 944 soit 44 mm surplus
+
+# =============================================================================
+#   Vérification des Flux ETR
+# =============================================================================
+    lam[["ET","date"]]
+    
