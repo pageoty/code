@@ -49,5 +49,6 @@ if __name__ == '__main__':
         gdf[lc] = geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/test_SAMIR_labo/Inputdata/shapefiles/PARCELLE_LABO_ref.shp")
         gdf[lc] = gdf[lc].merge(ET[lc], on='id') # attention ID en minicuel dans le shape
         
-        gdf[lc].plot(column='ET',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
+        gdf[lc].plot(column='ET',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True) # Création map evapotransipartion 
         plt.title(lc + '   : Evapotranspiration')
+        
