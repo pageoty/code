@@ -22,7 +22,7 @@ import TEST_ANALYSE_SIGNATURE
 import shapely.geometry as geom
 import descartes
 import pickle
-
+from datetime import datetime, date, time, timezone
 
 
 
@@ -31,21 +31,39 @@ if __name__ == '__main__':
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
-    runs=["R1",'R2']
+    runs=["R4",'R5']
     for r in runs:
-        d["path_PC"]='D:/THESE_TMP/RUNS_SAMIR/'+str(r)+'/Inputdata/'
+        d["path_PC"]='D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/'+str(r)+'/Inputdata/'
         for s in os.listdir(d["path_PC"][:-10]):
             if "output" in s:
                 df=pickle.load(open(d["path_PC"][:-10]+str(s),'rb'))
-                lam=df.loc[df.id==0]
-                print(r'n° du runs : %s '% r)
-                print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
-                print(r' nb irrigation : %s' %lam.Ir_auto.where(lam["Ir_auto"] != 0.0).dropna().count())
-        
-        
-        
-        
-#        
+                for id in list(set(df.id)):
+                    lam=df.loc[df.id==id]
+                    print(r'n° du runs : %s '% r)
+                    print(r' n° parcelle : %s' %id)
+                    print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+                    print(r' nb irrigation : %s' %lam.Ir_auto.where(df["Ir_auto"] != 0.0).dropna().count())
+                    plt.figure(figsize=(5,5))
+                    plt.title(r'run :%s : n° parcelle :%s '%(r,id))
+                    plt.plot(lam.date,lam.Ir_auto)
+                    plt.ylabel("quantité d'eau")
+                    plt.savefig(d["path_PC"][:-10]+"plt_quantity_irri_%s.png"%id)
+                
+# =============================================================================
+# Validation modelisation ETR     
+# =============================================================================
+##    Prépartion des datas Eddy-co au format journalière
+#    ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/ECPP_2017_2018_level3_lec.csv",encoding = 'utf-8',delimiter=";")
+#    ETR_lam["Date/Time"]=ETR_lam["Date/Time"].apply(lambda x:x[0:10])
+#    ETR_lam["Date/Time"]=pd.to_datetime(ETR_lam["Date/Time"],format="%d/%m/%Y")
+#    ETR_lam_day=ETR_lam.groupby("Date/Time")["ETpot"].mean()
+#    
+#    ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
+#    ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
+#    ETR_lam_day=ETR_lam.groupby("date")["ET"].mean()
+#    ## Récuparation date végétation sur ETR 
+
+
 #    ETsum = (df.groupby(['LC', 'id'])['ET'].sum()).reset_index()
 #    LCclasses = df.LC.cat.categories
 #    
