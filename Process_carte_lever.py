@@ -21,7 +21,7 @@ import STAT_ZONAL_SPECRTE
 import TEST_ANALYSE_SIGNATURE
 import datetime
 from sklearn.metrics import *
-from sklearn.linear_model import LinearRegression*
+from sklearn.linear_model import LinearRegression
 
 def predict(x):
   return slope * x + intercept
