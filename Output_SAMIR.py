@@ -84,11 +84,11 @@ if __name__ == '__main__':
 #    ETR_lam["Date/Time"]=ETR_lam["Date/Time"].apply(lambda x:x[0:10])
 #    ETR_lam["Date/Time"]=pd.to_datetime(ETR_lam["Date/Time"],format="%d/%m/%Y")
 #    ETR_lam_day=ETR_lam.groupby("Date/Time")["ETpot"].mean()
-#    
+##    
 #    ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
 #    ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
 #    ETR_lam_day=ETR_lam.groupby("date")["ET"].mean()
-#    ## Récuparation date végétation sur ETR 
+##    ## Récuparation date végétation sur ETR 
 
 
 # =============================================================================
