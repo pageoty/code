@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT.shp")
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/R12/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/TARN_CACG/R11/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
 
 
