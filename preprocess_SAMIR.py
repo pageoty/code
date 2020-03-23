@@ -31,53 +31,97 @@ if __name__ == "__main__":
     # RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT.shp")
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/R5/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/R12/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
 
 
     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
     list_col_drop=['originfid',   'ogc_fid', ' n° sonde',' x',' y'] ;
     list_col_drop_cacg=[ '54787', 'originfid','ogc_fid']
+    list_col_drop_tarn=['originfid','ogc_fid', 'num']
+    list_col_drop_fus=['originfid', 'ogc_fid', 'num']
 
     dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None) 
     
 #    RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT_only_maize.shp")
     LABO=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-
-    NDVI=pd.DataFrame()
-    dfNDVI_interTYN=pd.DataFrame()
-    dfNDVI_interTYP=pd.DataFrame()
-    dfNDVI_interTCJ=pd.DataFrame()
-    for n in os.listdir(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/CACG"):
-        if "SampleExtractionNDVI" in n and "2017" in n: 
-            df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/CACG/"+str(n))
-            tuile=n[-16:-13]
-            #  gestion des colonnes du tableau
-            df.columns=list(df.columns[0:4])+list(dfnames[0])
-            df.set_index("id",inplace=True)
-            dataN=df.drop(columns=list_col_drop_cacg)
-            dataN.columns=pd.to_datetime(dataN.T.index,format="%Y%m%d")
-            globals()["dfNDVI_inter%s"%tuile]=dataN.where(dataN!=0.0)
-            globals()["dfNDVI_inter%s"%tuile].dropna(inplace=True)
-
-    test=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
-    non=dfNDVI_interTCJ.loc[test]
-    all_NDVI=pd.concat([dfNDVI_interTYP,non])
-    tatar=all_NDVI.T.resample("D").asfreq().interpolate()
-    tar=tatar.T.sort_index(ascending=True)
-
-    for i in list(tar.index):
-        print(i)
-        t=tar[tar.T.columns==[i]]/1000
-        NDVI=NDVI.append(t.T.values.tolist(),ignore_index=True)
-    identity=list(np.repeat(tar.index,tar.shape[1]))
-    date=list(tar.columns)*len(tar.index)
+    for bv in ["Fusion"]:
+        NDVI=pd.DataFrame()
+        if bv =="CACG":
+            dfNDVI_interTYP=pd.DataFrame()
+            dfNDVI_interTCJ=pd.DataFrame()
+        elif bv == "TARN":
+            dfNDVI_interTCJ=pd.DataFrame()
+            dfNDVI_interTDJ=pd.DataFrame()
+        else:
+#        dfNDVI_interTYN=pd.DataFrame()
+            dfNDVI_interTYP=pd.DataFrame()
+            dfNDVI_interTCJ=pd.DataFrame()
+            dfNDVI_interTDJ=pd.DataFrame()
+        for n in os.listdir(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)):
+            if "SampleExtractionNDVI" in n and "2017" in n: 
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)+"/"+str(n))
+                tuile=n[-16:-13]
+                #  gestion des colonnes du tableau
+                if bv == "CACG":
+                    df.columns=list(df.columns[0:4])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_cacg)
+                elif bv == "TARN":
+                    df.columns=list(df.columns[0:4])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_tarn)
+                elif bv=='Fusion':
+                    df.columns=list(df.columns[0:4])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_fus)
+                dataN.columns=pd.to_datetime(dataN.T.index,format="%Y%m%d")
+                globals()["dfNDVI_inter%s"%tuile]=dataN.where(dataN!=0.0)
+                globals()["dfNDVI_inter%s"%tuile].dropna(inplace=True)
                 
-    NDVI["id"]=identity
-    NDVI["date"]=date
-    NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
-    NDVI.columns=["NDVI","id","date"]
-   
+                
+        if bv == "CACG":
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTYP,non_traiter])
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        elif bv == "TARN" :
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index) # non traiter par la tuile TDJ
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter])
+            all_NDVI.drop([5,7,11],inplace=True)
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+            
+        elif bv == "Fusion" :
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)-set(dfNDVI_interTYP.index)
+#            in_nn_trai_2=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter,dfNDVI_interTYP])
+            all_NDVI.drop([5,7,11,26,27],inplace=True)
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        else:
+            test=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
+            non=dfNDVI_interTCJ.loc[test]
+            all_NDVI=pd.concat([dfNDVI_interTYP,non])
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+    
+        for i in list(tar.index):
+            print(i)
+            t=tar[tar.T.columns==[i]]/1000
+            NDVI=NDVI.append(t.T.values.tolist(),ignore_index=True)
+        identity=list(np.repeat(tar.index,tar.shape[1]))
+        date=list(tar.columns)*len(tar.index)
+                    
+        NDVI["id"]=identity
+        NDVI["date"]=date
+        NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
+        NDVI.columns=["NDVI","id","date"]
+#        globals()["NDVI%s"%bv]=NDVI
+#        NDVI_glob=pd.concat([NDVICACG,NDVITARN])
 
     #  Select only maize
     
@@ -91,9 +135,9 @@ if __name__ == "__main__":
 # =============================================================================
 #    Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
 #    Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-    Parcellaire=geo.read_file(d["PC_disk"]+"DONNEES_CACG_PARCELLE_REF/Donnees_ITK/S_parcelle_reference_L93.shp")
+    Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_2017.shp")
     for i in ["WP",'FC']:
-        soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_cacg.shp')
+        soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
 #        soil.drop(columns=['NOM_PARCEL', 'LABO', 'WP_0_30cm', 'WP_40_50m', 'FC_0_30cm',
 #       'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5', 'RU_0_30', 'RU_40_50',
 #       'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'count', 'min_0', 'max_0','geometry'],inplace=True)
@@ -102,8 +146,8 @@ if __name__ == "__main__":
 #       'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'WP_SG_60',
 #       'sdWP_SG_60', 'FC_SG_60', 'sdFC_SG_60', 'count',
 #       'min_0', 'max_0', 'geometry'],inplace=True)
-        soil.drop(columns=['Dugers', '54787_1', 'Parcelle d', '54787', 'count',
-        'min_0', 'max_0', 'geometry'],inplace=True)
+        soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'count',
+       'min_0', 'max_0', 'geometry'],inplace=True)
         soil.columns=["id",str(i),str(i+'std')]
         soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
         
@@ -158,7 +202,7 @@ if __name__ == "__main__":
 #       'sdRU_SG0_3', 'geometry'],inplace=True)
     
 #     Drop CACG
-    Meteo_par.drop(columns=['Dugers', '54787_1', 'Parcelle d', '54787', 'geometry'],inplace=True)
+    Meteo_par.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'geometry'],inplace=True)
     # Meteo_par["DATE"]=pd.to_datetime(Meteo_par.DATE,format="%Y%m%d")
     Meteo_par["Irrig"]=0.0
     Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']

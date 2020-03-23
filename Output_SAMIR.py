@@ -37,9 +37,9 @@ def predict(x):
 if __name__ == '__main__':
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R12/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
-    runs=["R4",'R5','R6','R7','R8','R9',"R10",'R11']
+    runs=["R12"]
     all_quantity=[]
     all_number=[]
     all_id=[]
@@ -94,7 +94,7 @@ if __name__ == '__main__':
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
-    vali_cacg=pd.read_csv(d["PC_disk"]+"DONNEES_CACG_PARCELLE_REF/donnees_ITK/ITK_2017_2018.csv")
+    vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/merge_parcelle_2017.csv")
     vali_cacg.dropna(subset=['id'],inplace=True)
     vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%y')
     vali_cacg["Quantity(mm)"].astype(float)
@@ -114,8 +114,8 @@ if __name__ == '__main__':
         plt.plot()
         plt.xlabel("cumul_irr OBS")
         plt.ylabel("cumul irr model")
-        plt.xlim(0,250)
-        plt.ylim(0,250)
+        plt.xlim(0,300)
+        plt.ylim(0,300)
         rms = sqrt(mean_squared_error(sum_irr_cacg_val,all_resu.loc[all_resu.runs==r]["cumul_irr"]))
         plt.text(10,min(all_resu.loc[all_resu.runs==r]["cumul_irr"])+40,"RMSE = "+str(round(rms,2)))
         plt.text(10,min(all_resu.loc[all_resu.runs==r]["cumul_irr"])+30,"R² = "+str(round(r_value,2)))
@@ -137,8 +137,8 @@ if __name__ == '__main__':
         plt.plot()
         plt.xlabel("nb_irr OBS")
         plt.ylabel("nb irr model")
-        plt.xlim(0,15)
-        plt.ylim(0,15)
+        plt.xlim(0,20)
+        plt.ylim(0,20)
         rms = sqrt(mean_squared_error(nb_irr,all_resu.loc[all_resu.runs==r]["nb_irr"]))
         plt.text(10,min(all_resu.loc[all_resu.runs==r]["nb_irr"])+1.5,"RMSE = "+str(round(rms,2)))
         plt.text(10,min(all_resu.loc[all_resu.runs==r]["nb_irr"])+1,"R² = "+str(round(r_value,2)))

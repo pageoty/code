@@ -73,9 +73,10 @@ if __name__ == '__main__':
     ax34=plt.subplot(414)
     plt.plot(ET0_Saf.date,ET0_Saf.ET0)
     plt.ylabel("ET0 Safran")
-    plt.savefig(d["PC_disk"]+"RESULT/plt_dyna_relat.png")
+#    plt.savefig(d["PC_disk"]+"RESULT/plt_dyna_relat.png")
     
 
 
     
+#    ETR 2019 ce fichier eddypro_FR-Lam_biomet_2020-01-28T012345_adv
     
