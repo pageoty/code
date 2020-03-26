@@ -46,6 +46,8 @@ if __name__ == '__main__':
     d['path_features']="/datalocal/vboxshare/THESE/BESOIN_EAU/DONNES_SOIL/SOIL_GRID/"
     d["SAVE"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/PLOT/GEOSTAT_SOIL_GRID/"
     all_features={d['path_features']+'CLAY/', d['path_features']+'limon/',d['path_features']+'sand/',d["path_features"]+'Depth/'}
+    d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
+    d["SAVE_disk"]="G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/PLOT/GEOSTAT_SOIL_GRID/"
     # all_features={'/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/SOIL_GRID/PFCC/RU_data_L93/'}
 # =============================================================================
 #     Zonal stats OTB
@@ -61,7 +63,7 @@ if __name__ == '__main__':
 # =============================================================================
 # Plot
 # =============================================================================
-    params=["texture","depth",'class',"RU"]
+    params=["RU"]
     for bv in ["ADOUR","TARN",'NESTE']:
         print(bv)
         for param in params:
@@ -174,13 +176,13 @@ if __name__ == '__main__':
                         plt.savefig(d["SAVE"]+str(bv)+'RU_{}cm_classe_FAO.png'.format(i[11:15]))
                         
 
-    RUM_RRP_Gers=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/INTER_RPG2018_SOL_GERS.shp')
+    RUM_RRP_Gers=geo.read_file(d["PC_disk"]+'/TRAITEMENT/tmp/INTER_RPG2018_SOL_GERS.shp')
     for element in ["without_coarse","with_coarse"]:
         all=pd.DataFrame()
-        for i in os.listdir('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/{}/'.format(element)):
+        for i in os.listdir(d["PC_disk"]+'/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/{}/'.format(element)):
             if".shp" in i :
                 print (i)
-                Hori=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/{}/{}.shp'.format(element,i[:-4]))
+                Hori=geo.read_file(d["PC_disk"]+'/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/{}/{}.shp'.format(element,i[:-4]))
                 inter=geo.overlay(Hori,RUM_RRP_Gers,how='intersection')
                 x2=inter[["RUM","mean_0",'ProfRacPot']]
                 RU=x2.loc[x2.ProfRacPot==float(i[13:15])]
@@ -190,13 +192,14 @@ if __name__ == '__main__':
         sns.set_context('paper')
         sns.boxplot(all.RUM,all.mean_0,fliersize=0.5,linewidth=1,hue_order=all.ProfRacPot,palette='RdBu')
         plt.xlabel("RUM RRP Gers")
+        plt.ylim(0,146)
         plt.ylabel("RUM SG")
         plt.xticks(rotation=90)
         plt.title("{}".format(element))
         y_pos=range(len(sorted(list(set(all.RUM)))))
         for pro,j in zip(sorted(list(set(all.RUM))),range(len(sorted(list(set(all.RUM)))))):
             plt.text(x=y_pos[j]-0.5,y=all.mean_0.loc[all.RUM==pro].mean()+5,s=list(set(all.ProfRacPot.loc[all.RUM==pro])))
-        plt.savefig(d["SAVE"]+'boxplot_RU_{}_REF_SG_Gers_MAIZE2018.png'.format(element))
+        plt.savefig(d["SAVE_disk"]+'boxplot_RU_{}_REF_SG_Gers_MAIZE2018.png'.format(element))
                 # if len(RU.index) < 1:
                 #     print ("Pas de comparaison")
                 # else:
