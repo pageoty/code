@@ -82,15 +82,15 @@ if __name__ == "__main__":
         step = []
         stock_res=[]
         stock_res_std=[]    
-        for classif in os.listdir(d["disk_PC"]+'/FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'):
-#            print (classif)# FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
-            if "_" in classif or '_' in classif: 
+        for classif in os.listdir(d["disk_PC"]+'/FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
+            # if "&" in classif or 'Not' in classif or 'Climate' in classif: 
+            if "_" in classif: 
                 print ("=============")
                 print (r" RUN : %s " %classif)
                 print ("=============")
                 nom=get_nomenclature(d["disk_PC"]+"/nomenclature_T31TDJ.txt") # Nomenclature utlisé dans Iota²
-                pathNom=d["disk_PC"]+"nomenclature_T31TDJ.txt"
-                pathRes=d["disk_PC"]+"FILE_TXT_RESULAT/FIxe_seed/SHARK/"+years+"/"+classif+"/" # FIxe_seed/SHARK/"+years+"/"+classif+"/" ¬ path où sont stocker les fichiers les matrices de confusion
+                pathNom=d["disk_PC"]+"/nomenclature_T31TDJ.txt"
+                pathRes=d["disk_PC"]+"/FILE_TXT_RESULAT/FIxe_seed/SHARK/"+years+"/"+classif+"/" # FIxe_seed/SHARK/"+years+"/"+classif+"/" ¬ path où sont stocker les fichiers les matrices de confusion
                 all_k = []
                 all_oa = []
                 all_p = []
@@ -115,49 +115,101 @@ if __name__ == "__main__":
                 p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
                 r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
                 f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
-                    
+                p_std = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="std")
+                r_std = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="std")
+                f_std = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="std")
+                
+                
                 globals()["val_conf_%s"%classif]=fig_conf_mat_rec(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,"/datalocal/",conf_score="percentage")
-                globals()["val_conf_std%s"%classif]=fig_conf_mat_rec(conf_mat_dic_std,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,"/datalocal/",conf_score="percentage")
+                globals()["val_conf_std%s"%classif]=fig_conf_mat_rec(conf_mat_dic_std,nom,np.std(all_k),np.std(all_oa),p_std,r_std,f_std,"/datalocal/",conf_score="percentage")
                 stock_res.append(globals()["val_conf_%s"%classif])
                 stock_res_std.append( globals()["val_conf_std%s"%classif])
                 print(globals()["val_conf_std%s"%classif])
-    name_index=labels_prod*len(labels_prod)
-    Multi=list(np.repeat(labels_prod,6))
+    name_index=labels_prod*len(labels_prod) # génration variable pour crée l'index du tableau
+    if bv !="NESTE":
+        Multi=list(np.repeat(labels_prod,6)) # création du multi index car eépartion des variables
+    else:
+        Multi=list(np.repeat(labels_prod,4))
     test=[Multi,name_index]
     tuples=list(zip(*test))
     multi_index=pd.MultiIndex.from_tuples(tuples,names=["user","prod"])
     stock_res=pd.DataFrame(stock_res).T
     stock_res_std=pd.DataFrame(stock_res_std).T
-    df_multi=pd.DataFrame(stock_res.values,index=multi_index,columns=step)
+    df_multi=pd.DataFrame(stock_res.values,index=multi_index,columns=step) # tableau mutli_index crée
     df_multi_std=pd.DataFrame(stock_res_std.values,index=multi_index,columns=step)
+    if bv !="NESTE":
+        fig, ax = plt.subplots(figsize=(12, 10))
+        ax1=plt.subplot(221)
+        sns.set(style="darkgrid")
+        sns.set_context('paper')
+        plt.title("Maize irrigated")
+        # df_multi.xs("Maize irrigated").iloc[1:-2].plot(kind='bar',ax=ax1)
+        a=df_multi.xs("Maize irrigated").iloc[1:-2].T.sort_values(by="Maize rainfed")
+        a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'],ax=ax1)
+        plt.xticks(rotation=0)
+        plt.text(-0.25,60,"a",size="20")
+        ax1.xaxis.set_label_text("")
+        ax1.yaxis.set_label_text("percentage confusion")
+        plt.ylim(0,65)
+        ax2=plt.subplot(222)
+        plt.title(" Soybean irrigated")
+        # df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False,yerr=df_multi_std.xs("Soybean irrigated").iloc[[0,2,3]])
+        # df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False)
+        b=df_multi.xs("Soybean irrigated").iloc[[0,2,3]].T.sort_values(by="Soybean rainfed")
+        b.T.plot(kind="bar",color=["salmon","darkorange","royalblue",'red','deepskyblue','blue'],ax=ax2,legend=False)
+        plt.text(-0.25,60,"b",size="20")
+        plt.xticks(rotation=0)
+        ax2.xaxis.set_label_text("")
+        plt.ylim(0,65)
+        # plt.legend()
+        ax3=plt.subplot(223)
+        plt.title("Maize rainfed")
+        # df_multi.xs("Maize no irrigated").iloc[[0,1,3]].plot(kind='bar',ax=ax3,legend=False)
+        c=df_multi.xs("Maize rainfed").iloc[[0,1,3]].T.sort_values(by="Maize irrigated")
+        c.T.plot(kind="bar",color=["royalblue",'deepskyblue','blue',"salmon",'red',"darkorange"],ax=ax3,legend=False)
+        plt.text(-0.25,60,"c",size="20")
+        plt.xticks(rotation=0)
+        # plt.legend()
+        ax3.xaxis.set_label_text("")
+        ax3.yaxis.set_label_text("percentage confusion")
+        plt.ylim(0,65)
+        ax4=plt.subplot(224)
+        plt.title("Soybean rainfed")
+        # df_multi.xs("Soybean no irrigated").iloc[[0,1,2]].plot(kind='bar',ax=ax4,legend=False)
+        d=df_multi.xs("Soybean rainfed").iloc[[0,1,2]].T.sort_values(by="Soybean irrigated")
+        d.T.plot(kind="bar",color=['deepskyblue',"royalblue",'blue',"salmon","darkorange",'red'],ax=ax4,legend=False)
+        plt.text(-0.25,60,"d",size="20")
+        plt.xticks(rotation=0)
+        # plt.legend()
+        ax4.xaxis.set_label_text("")
+        plt.ylim(0,65)
+    else:
+        fig, ax = plt.subplots(figsize=(12, 10))
+        ax1=plt.subplot(221)
+        sns.set(style="darkgrid")
+        sns.set_context('paper')
+        plt.title("Maize irrigated")
+        df_multi.xs("Maize irrigated").iloc[1:].plot(kind='bar',ax=ax1)
+        plt.xticks(rotation=0)
+        ax1.xaxis.set_label_text("")
+        ax1.yaxis.set_label_text("percentage confusion")
+        plt.ylim(0,65)
+        ax2=plt.subplot(222)
+        plt.title(" Soybean irrigated")
+    #    df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False,yerr=df_multi_std.xs("Soybean irrigated").iloc[[0,2,3]])
+        df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False)
+        plt.xticks(rotation=0)
+        ax2.xaxis.set_label_text("")
+        plt.ylim(0,65)
+    plt.savefig("G:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
+#    ax4=plt.subplot(224)
+#    df_multi.xs("Sunflower ").iloc[0:-1].plot(kind='bar',ax=ax4,legend=True)
+#    plt.xticks(rotation=0)
     
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax1=plt.subplot(221)
-    sns.set(style="darkgrid")
-    sns.set_context('paper')
-    plt.title("Maize irrigated")
-    df_multi.xs("Maize irrigated").iloc[1:-2].plot(kind='bar',ax=ax1)
-    plt.xticks(rotation=0)
-    ax1.xaxis.set_label_text("")
-    ax1.yaxis.set_label_text("percentage confusion")
-    plt.ylim(0,65)
-    ax2=plt.subplot(222)
-    plt.title(" Soybean irrigated")
-    df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False)
-    plt.xticks(rotation=0)
-    ax2.xaxis.set_label_text("")
-    plt.ylim(0,65)
-    ax3=plt.subplot(223)
-    plt.title("Maize rainfed")
-    df_multi.xs("Maize rainfed").iloc[[0,1,3]].plot(kind='bar',ax=ax3,legend=False)
-    plt.xticks(rotation=0)
-    ax3.xaxis.set_label_text("")
-    ax3.yaxis.set_label_text("percentage confusion")
-    plt.ylim(0,65)
-    ax4=plt.subplot(224)
-    plt.title("Soybean rainfed")
-    df_multi.xs("Soybean rainfed").iloc[[0,1,2]].plot(kind='bar',ax=ax4,legend=False)
-    plt.xticks(rotation=0)
-    ax4.xaxis.set_label_text("")
-    plt.ylim(0,65)
-#    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/Confusion_"+bv+"_"+years+".png")
+    
+# =============================================================================
+#     test
+# =============================================================================
+    # a=df_multi.xs("Maize irrigated").iloc[1:-2].T.sort_values(by="Maize no irrigated")
+    # a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'])
+

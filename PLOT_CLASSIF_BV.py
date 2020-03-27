@@ -49,10 +49,28 @@ def get_interest_coeff(runs_coeff, nb_lab, f_interest="mean"):
                 coeff_out[label] = "{:.3f} +- {:.3f}".format(mean, b_sup - mean)
     return coeff_out
 
-
+def plt_classif_kappa(df,var1,var2):
+    plt.figure(figsize=(10,5))
+    y_pos=np.arange(df.shape[0])
+    sns.set(style="darkgrid")
+    sns.set_context('paper')
+    plt.grid(axis='x')
+    plt.bar(y_pos,df["mean_"+var1],yerr=df["std_"+var1],capsize=3,width = 1,label=var1)
+    plt.bar(y_pos+df.shape[0]+0.5,df["mean_"+var2],yerr=df["std_"+var2],capsize=3,width = 1,label=var2)
+    plt.ylabel("score")
+    plt.xlabel("step")
+    plt.xticks(y_pos, tuple(df.index),rotation=90,size=9)
+    y_pos3=y_pos+df.shape[0]+0.5
+    for j in np.arange(len(df.index)):
+        plt.text(x = y_pos3[j]-0.25 , y = -0.02, s = list(df.index)[j],size=11,rotation=90,va="top")
+    for j in np.arange(len(df.index)):
+        plt.text(x = y_pos[j]-0.3, y=df["mean_"+var1][j]+0.05,s = list(round(df["mean_"+var1],2))[j],size=9)
+    for j in np.arange(len(df.index)):
+        plt.text(x = y_pos3[j]-0.3, y=df["mean_"+var2][j]+0.04,s = list(round(df["mean_"+var2],2))[j],size=9)
+    plt.legend()
 
 if __name__ == "__main__":
-    years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='2017_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/" # path où seront save les graphiques finaux 
@@ -491,7 +509,7 @@ if __name__ == "__main__":
             plt.ylabel('value')
             plt.ylim(0,1)
             plt.title(str(i[0]))
-            if 'Maize no irrigated'in i:
+            if 'Maize rainfed'in i:
                plt.legend()
             plt.xticks(size='large')
             plt.yticks(size='large')

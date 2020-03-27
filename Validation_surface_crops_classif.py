@@ -35,7 +35,7 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 if __name__ == "__main__":
     names_crop=["Maize_Irr","Soybean_Irr","Maize_Nirr","Soybean_Nirr","Sorghum","Sunflower"]
 #    path_vector = "/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2017_ADOUR_AMONT.shp"
-    path_vector="F:/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_ADOUR_2017.shp"
+    path_vector="F:/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_ADOUR_2018_dec_ER10.shp"
 #    Data_Val=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/DATA_VALIDATION_PARTENAIRE/ADOUR/DONNEES_VALIDATION_SURFACE_IRRIG_ADOUR_2018_2019.csv",sep=",")
 #    Data_Val["label"]=[1,1,1,2,44]
 #    Data_Val_regroup=Data_Val.groupby("label").sum()
