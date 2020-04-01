@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr  1 09:37:01 2020
+
+@author: Yann Pageot
+"""
+
+
+import os
+import sqlite3
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import csv
+from scipy.optimize import minimize
+from sklearn.metrics import *
+from scipy.optimize import linprog
+from scipy import optimize
+import random
+import pickle
+
+# def nash (s):
+#     """The Nash function"""
+#    # 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
+#     nash=1 - sum((s-x)**2)/sum((x-np.mean(x))**2)
+#     return nash 
+    
+def RMSE(x,*args) :
+    x_data = args[0]
+    y_data = args[1]
+    rmse= mean_squared_error(x_data,y_data,squared=False)
+    return rmse
+    
+    
+
+if __name__ == "__main__":
+    
+    d={}
+    d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/"
+    d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/"
+    d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
+    d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
+# =============================================================================
+#     Données de validation 
+# =============================================================================
+    vali_cacg=pd.read_csv(d["PC_disk_unix"]+"merge_parcelle_2017.csv")
+#   vali_cacg.dropna(subset=['id'],inplace=True)
+    vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%y')
+    vali_cacg["Quantity(mm)"].astype(float)
+    sum_irr_cacg_val=vali_cacg.groupby("id")["Quantity(mm)"].sum()
+    # nb_irr=vali_cacg.groupby("id")["Date_irrigation"].count()
+
+# =============================================================================
+#   Lancer SAMIR avec Paramétrage initaux 
+# =============================================================================
+    REW = "-22 "
+    Zr_max="800" 
+    A_kcb = "1" 
+    # parampc=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
+    param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
+    param.loc[6,13]=A_kcb # ligne 6 , colonne 13
+    param.loc[6,20]=REW
+    param.loc[6,23]=Zr_max
+    
+    param.to_csv(d["SAMIR_run"]+"/Inputdata/param_otpi_T1.csv",header=False,sep= ',',index=False,na_rep="")
+    # param_op=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_otpi_T1.csv",delimiter=";",header=None)
+
+    #  Lancement du code
+    os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
+    os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi -dd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
+    
+    #  Récupération des output de la simulation 
+    output_sim=pickle.load(open(d["SAMIR_run"]+"/output_T1.df","rb"))
+    all_quantity=[]
+    all_number=[]
+    all_id=[]
+    for id in list(set(output_sim.id)):
+        lam=output_sim.loc[output_sim.id==id]
+        # print(r' n° parcelle : %s' %id)
+        # print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+        # print(r' nb irrigation : %s' %lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
+        all_id.append(id)
+        all_quantity.append(lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+        all_number.append(lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
+    all_resu=pd.DataFrame([all_id,all_quantity,all_number]).T
+    all_resu.columns=['id','cumul_irr',"nb_irr"]
+    
+    x_data=sum_irr_cacg_val
+    y_data=all_resu.cumul_irr
+
+    x0=[REW,Zr_max,A_kcb]
+    
+    Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
+    print(Evaluation.fun)
+# =============================================================================
+#  Optimisation des paramètres
+# =============================================================================
+    while Evaluation.fun > 50 :
+        print("continued")
+        # Paramètre initaux
+        
+        REW = -22 *random.uniform(-10,10)
+        Zr_max=1500 *random.uniform(0.1,1.5) #Mais add contition car ne peut pas être < 150
+        A_kcb = 1 *random.uniform(1,2)
+        
+        param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
+        param.loc[6,13]=A_kcb # ligne 6 , colonne 13
+        param.loc[6,20]=REW
+        param.loc[6,23]=Zr_max
+        
+        param.to_csv(d["SAMIR_run"]+"/Inputdata/param_otpi_T1.csv",header=False,sep= ',',index=False,na_rep="")
+        # param_op=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_otpi_T1.csv",delimiter=";",header=None)
+    
+        #  Lancement du code
+        os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
+        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi -dd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
+        
+        #  Récupération des output de la simulation 
+        output_sim=pickle.load(open(d["SAMIR_run"]+"/output_T1.df","rb"))
+        all_quantity=[]
+        all_number=[]
+        all_id=[]
+        for id in list(set(output_sim.id)):
+            lam=output_sim.loc[output_sim.id==id]
+            all_id.append(id)
+            all_quantity.append(lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+            all_number.append(lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
+        all_resu=pd.DataFrame([all_id,all_quantity,all_number]).T
+        all_resu.columns=['id','cumul_irr',"nb_irr"]
+        
+        
+        # Evaluation du run  à partir des paramétres
+        x_data=sum_irr_cacg_val
+        y_data=all_resu.cumul_irr
+        x0=[REW,Zr_max,A_kcb]
+        print(r"========")
+        print(x0)
+        print(r"========")
+        Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
+        print(Evaluation.fun)
+        # x0=[REW,Zr_max,A_kcb]
+        
+        # test= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
+        # testfmin = fmin(RMSE, x0, args=(x_data, y_data), xtol=1e-8, disp=True,)

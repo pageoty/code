@@ -16,93 +16,103 @@ import seaborn as sns
 import csv
 from scipy.optimize import minimize
 from ResultsUtils import *
+from sklearn.metrics import *
+from scipy.optimize import linprog
+from scipy import optimize
+
 
 
 def rosen(x):
-     """The Rosenbrock function"""
+     """The Rosenbrock function
+     f(x,y)=(1-x)²+100(y-x²)²
+     """
      return sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
  
-def simplexe(A,b,c,permut):
-# m: nombre de variables dans la base
-# n: nombres d'inconnues du pb d'optimisation linÃ©aire
-    m,n = A.shape
-    if m>=n or c.shape[0] != n or b.shape[0] != m:
-        return 'dimensions incompatibles'
+ 
+# def nash (s):
+#     """The Nash function"""
+#    # 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
+#     nash=1 - sum((s-x)**2)/sum((x-np.mean(x))**2)
+#     return nash 
     
-    if min(b) < 0:
-        return 'le vecteur b doit Ãªtre >=0'
+def RMSE(x,**args) :
+    x_data = args[0]
+    y_data = args[1]
+    rmse= mean_squared_error(x_data,y_data,squared=False)
+    return rmse
     
-    while True :  # Ã©mulation du do-while en python...
-        # matrice des colonnes permutÃ©es
-        Ap=np.column_stack((A[:,permut[i]] for i in range(n)))
-        # coefficients du gain permutÃ©s
-        cp=np.array([c[permut[i]] for i in range(n)])
     
-        # vÃ©rification que le problÃ¨me n'est pas dÃ©gÃ©nÃ©rÃ©
-    	# en python ":m" dÃ©signe le range "0,1,...,m-1",
-    	# "m:" le range "m,m+1,...,n-1" et ":" le range "0,1,...,n-1"
-        if np.linalg.det(Ap[:,:m]) == 0:
-            return 'matrice non inversible'
-        
-        #expression des variables de base en
-        #fonctions des variables hors base
-        # x_b = Chb x_hb + bbase
-        invAp=np.linalg.inv(Ap[:,:m])
-        Chb=np.dot(invAp,Ap[:,m:])
-        bbase=np.dot(invAp,b)
-    
-        # coefficients du gain dans les variables hors base
-        cbase=-np.dot(cp[:m],Chb)+cp[m:]
-        cmax=max(cbase)
-        # si tout les coeffs sont  <0 on ne peut plus amÃ©liorer
-        if cmax<=0:
-            break    # sortie du do-while
-        # sinon choix de la variable optimale pour le gain
-        # cette variable rentrera dans la base
-        ihb=np.argmax(cbase)+m
-        # choix de la variable qui s'annule en premier
-        # quand la variable optimale augmente
-        # cette variable sortira de la base
-        xrmax=np.array([bbase[i]/Chb[i][ihb-m] for i in range(m)])
-        vmax=max(xrmax)
-        # on met les valeurs nÃ©gatives Ã  une valeur grande
-        for i in range(m):
-            if xrmax[i]<= 0:
-                xrmax[i]=vmax+1
-    
-        # recherche de l'indice de "premiÃ¨re sortie"
-        ib=np.argmin(xrmax)
-        print ('out=',permut[ib],'   in=',permut[ihb])
-    
-        # actualisation de la permutation
-        permut[ib],permut[ihb] = permut[ihb],permut[ib]  # swap en python
-        # fin du do while
-        
-    # fin de l'algorithme
-    # on complÃ¨te le vecteur des variables
-    # dans la base par des zÃ©ros
-    xp=np.hstack((bbase,np.zeros(n-m)))
-    # prise en compte de la permutation
-    x=np.empty(n)
-    for i in range(n):
-        x[permut[i]]=xp[i]
-    # renvoie la solution et le gain
-    return x,np.dot(c,x)
 
 if __name__ == "__main__":
     
-#    x0 = np.array([1.3, 0.7, 0.8, 1.9, 1.2])
-#    res = minimize(rosen, x0, method='nelder-mead',options={'xatol': 1e-8, 'disp': True})
+    
+    x0 = [1,10]# valeur des paramétres qui vont varier/ que l'on souhaite optimiser 
+    # résultat de l'optimisation des paramétes qui vont étre intérfegrd dzns SAMIR via csv
+    # Lancement de samir 
+    # résultats SAMIR 
+    res = minimize(rosen,x0, method='Nelder-Mead')# " module d'optimisation "
+    res.x
+    # Calcule d'un RMSE / nash => conservation ou poubelle 
+    
 
-# test du programme prÃ©cÃ©dent sur l'exemple du cours
-# matrice des contraintes Ax=b
-    A=np.array([[1,0,0,1,0,0,0],[0,1,0,0,1,0,0],[0,0,1,0,0,1,0],[3,6,2,0,0,0,1]])
-    # second membre des contraintes Ax=b
-    b=np.array([1000,500,1500,6750])
-    # coefficients de la fonction Ã  maximiser
-    c=np.array([4,12,3,0,0,0,0])
-    # base initiale
-    # permutation contenant les m variables dans la base (x>=0) puis
-    # les variables hors base (n-m variables nulles)
-    permut=np.array([6,5,4,3,2,1,0])
-    print( simplexe(A,b,c,permut))
+    
+#     x=np.array([5.0, 0.1, 2.0, 1.6, 1.9])
+#     x0 = np.array([1.3, 0.7, 0.8, 1.9, 1.2])# état initial
+#     # resrmse = minimize(RMSE,x0, method='nelder-mead',options={'xatol': 1e-8, 'disp': False})
+#     # resnash = minimize(nash,x0, method='nelder-mead',options={'xatol': 1e-8, 'disp': True})
+#     # print(resrmse)
+#     # print(resnash)
+# # options={'xatol': 1e-8, 'disp': True}
+
+#     # fun = lambda x,s: mean_squared_error(x,s,squared=False)
+#     fun = lambda x: (x[0] - 1)**2 + (x[1] - 2.5)**2
+#     cons = ({'type': 'ineq', 'fun': lambda x:  x[0] - 2 * x[1] + 2},
+#             {'type': 'ineq', 'fun': lambda x: -x[0] - 2 * x[1] + 6},
+#             {'type': 'ineq', 'fun': lambda x: -x[0] + 2 * x[1] + 2})
+
+#     bnds = ((0, None), (0, None))
+
+#     res = minimize(fun, (x0), method='SLSQP',
+#                constraints=cons)
+    
+# =============================================================================
+# Test pour comprendre
+# =============================================================================
+import random
+import numpy as np
+from scipy.optimize import fmin
+import matplotlib.pyplot as plt
+ 
+ 
+def linear_law(x, slope, scale):
+    return slope*x + scale
+ 
+def evaluate(x, *args):
+    """Function computing square error"""
+    x_data = args[0]
+    y_data = args[1]
+    # y_estimated = linear_law(x_data, x[0], x[1])# dans notre cas sortie du modèle
+    return mean_squared_error(y_data, y_data,squared=False)
+ 
+# Generate pseudo random data
+slope, scale = 2.0, 10.0
+x_data = np.arange(1, 100, 1)
+y_data = np.array([slope*i+scale+random.randrange(-10,10) for i in x_data])
+ 
+# x0 = [slope, scale]
+x0 = [10.0, 1]
+slope_estv= minimize(evaluate, x0, args=(x_data, y_data),method='nelder-mead')
+slope_est, scale_est = fmin(evaluate, x0, args=(x_data, y_data), xtol=1e-8, disp=True,)
+
+# print (slope_est, scale_est)
+# y_est = linear_law(x_data, slope_est, scale_est)
+ 
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# ax.scatter(x_data, y_data, color='red', label='Raw data')
+# ax.plot(x_data, y_est, color='blue', label='Fitted law')
+# ax.legend(loc='lower right')
+# plt.grid()
+# plt.show()
+
+

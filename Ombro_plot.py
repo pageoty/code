@@ -20,9 +20,59 @@ import STAT_ZONAL_SPECRTE as plot
 
 if __name__ == "__main__":
     
-    DF_OMBRO=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/DATA_OMBRO.csv")
-    DF_OMBRO.set_index("JJ",inplace=True)
+#    DF_OMBRO=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/DATA_OMBRO.csv")
+#    DF_OMBRO.set_index("JJ",inplace=True)
+#    DF_OMBRO.index=pd.to_datetime(DF_OMBRO.index,format="%Y%m%d")
+    
+    DF_OMBRO=pd.read_csv("F:/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/SAFRAN_ADOUR.csv")
+    DF_OMBRO.drop(columns=['X', 'Y', 'field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
+        'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q', 'ETP_Q',
+       'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE', 'RESR_NEI_1',
+       'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_', 'ECOULEMENT',
+       'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q', 'X.1', 'Y.1'],inplace=True)
+    DF_OMBRO.set_index("DATE",inplace=True)
     DF_OMBRO.index=pd.to_datetime(DF_OMBRO.index,format="%Y%m%d")
+    DF_OMBRO.sort_index(ascending =True,inplace=True)
+    OMBRO_mean=DF_OMBRO.groupby(DF_OMBRO.index).mean()
+    OMBRO_std=DF_OMBRO.groupby(DF_OMBRO.index).std()
+    ombro=OMBRO_mean.resample("M").agg({'T_Q': 'mean','PRELIQ_Q':'sum'})
+    ombro_std=OMBRO_std.resample("M").agg({'T_Q': 'mean','PRELIQ_Q':'sum'})
+    plt.figure(figsize=(10,10))
+    sns.set(style="darkgrid")
+    sns.set_context('paper')
+    plt.bar(ombro.index[:12]-1,ombro.PRELIQ_Q[:12]-1,color="blue",width=1,yerr=ombro_std.PRELIQ_Q[:12]-1)
+    plt.ylim(-10,200)
+    plt.ylabel("Rainfall in mm")
+    plt.xticks(size='large')
+    plt.yticks(size='large')
+    ax2 = plt.twinx()
+    ax2.grid(axis='y')
+    ax2.plot(ombro.index[:12]-1,ombro.T_Q[:12]-1,linewidth=5,color='r')
+    ax2.fill_between(ombro.index[:12]-1,ombro_std.T_Q[:12]-1+ombro.T_Q[:12]-1,ombro.T_Q[:12]-1-ombro_std.T_Q[:12]-1, facecolor='red', alpha=0.2)
+    plt.ylim(-5,100)
+    plt.ylabel("Temperature in °C")
+    plt.xticks(size='large')
+    plt.yticks(size='large')
+    plt.savefig("F:/THESE/REDACTION/figure_paper/ombro_2017.png")
+#    plt.title(i)
+    
+    plt.figure(figsize=(10,10))
+    sns.set(style="darkgrid")
+    sns.set_context('paper')
+    plt.bar(ombro.plui.index[12:]-1,ombro.plui[12:]-1,color="blue",width=20,yerr=ombro_std.plui[12:]-1)
+    plt.ylim(-10,200)
+    plt.ylabel("Rainfall in mm")
+    plt.xticks(size='large')
+    plt.yticks(size='large')
+    ax2 = plt.twinx()
+    ax2.grid(axis='y')
+    ax2.plot(ombro.index[12:]-1,ombro.T_Q[12:]-1,linewidth=5,color='r')
+    ax2.fill_between(ombro.index[12:]-1,ombro_std.T_Q[12:]-1+ombro.t.T_Q[12:]-1,ombro.T_Q[12:]-ombro_std.T_Q[12:]-1, facecolor='red', alpha=0.2)
+    plt.ylim(-5,100)
+    plt.ylabel("Temperature in °C")
+    plt.xticks(size='large')
+    plt.yticks(size='large')
+    plt.savefig("F:/THESE/REDACTION/figure_paper/ombro_2018.png")
     
     
     list_name=list(set(DF_OMBRO.Nom))
@@ -39,11 +89,11 @@ if __name__ == "__main__":
         ax2 = plt.twinx()
         ax2.plot(globals()["OMBRO%s"% (i)].index[12:24]-1,globals()["OMBRO%s"% (i)].t[12:24],linewidth=5,color='r')
         plt.ylim(-5,50)
-        plt.ylabel("Température en °C")
+        plt.ylabel("Temperature en °C")
         plt.xticks(size='large')
         plt.yticks(size='large')
         plt.title(i)
-        plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/DIAGRAMME_OMBRO_SO/DIAG_OMBRO%s_2018.png"%(i))
+#        plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/DIAGRAMME_OMBRO_SO/DIAG_OMBRO%s_2018.png"%(i))
 
 # =============================================================================
 # english version
