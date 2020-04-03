@@ -201,7 +201,7 @@ if __name__ == "__main__":
         plt.xticks(rotation=0)
         ax2.xaxis.set_label_text("")
         plt.ylim(0,65)
-    plt.savefig("G:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
+    # plt.savefig("G:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
 #    ax4=plt.subplot(224)
 #    df_multi.xs("Sunflower ").iloc[0:-1].plot(kind='bar',ax=ax4,legend=True)
 #    plt.xticks(rotation=0)

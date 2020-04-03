@@ -70,7 +70,7 @@ def plt_classif_kappa(df,var1,var2):
     plt.legend()
 
 if __name__ == "__main__":
-    years='2017_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/" # path où seront save les graphiques finaux 
