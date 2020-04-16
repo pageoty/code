@@ -83,25 +83,25 @@ if __name__ == '__main__':
 # =============================================================================
 #    Prépartion des datas Eddy-co au format journalière
     #  Pour 2017 et autre année
-    for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
-        years=y[5:9]
-        LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
-        LE_lam["TIMESTAMP"]=LE_lam["TIMESTAMP"].apply(lambda x:x[0:10])
-        LE_lam["TIMESTAMP"]=pd.to_datetime(LE_lam["TIMESTAMP"],format="%d/%m/%Y")
-        LE_lam_day=LE_lam.groupby("TIMESTAMP")["LE"].mean()
-        ETR_lam_day=LE_lam_day*0.0352
-        ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-        ETR_lam_day.plot()
-        ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(years)+".csv")
+#     for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
+#         years=y[5:9]
+#         LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
+#         LE_lam["TIMESTAMP"]=LE_lam["TIMESTAMP"].apply(lambda x:x[0:10])
+#         LE_lam["TIMESTAMP"]=pd.to_datetime(LE_lam["TIMESTAMP"],format="%d/%m/%Y")
+#         LE_lam_day=LE_lam.groupby("TIMESTAMP")["LE"].mean()
+#         ETR_lam_day=LE_lam_day*0.0352
+#         ETR_lam_day[ETR_lam_day < -1]=pd.NaT
+#         ETR_lam_day.plot()
+#         ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(years)+".csv")
     
-#    Pour 2019
-    ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
-    ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
-    ETR_lam_day=ETR_lam.groupby("date")["LE"].mean()
-    ETR_lam_day=ETR_lam_day*0.0352
-    ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-    ETR_lam_day.plot()
-    ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_2019_good.csv")
+# #    Pour 2019
+#     ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
+#     ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
+#     ETR_lam_day=ETR_lam.groupby("date")["LE"].mean()
+#     ETR_lam_day=ETR_lam_day*0.0352
+#     ETR_lam_day[ETR_lam_day < -1]=pd.NaT
+#     ETR_lam_day.plot()
+#     ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM2019.csv")
 #    ## Récuparation date végétation sur ETR 
 
 

@@ -28,10 +28,12 @@ if __name__ == "__main__":
     # Parameter Years et variable
     
     # A adpater en focntion du test
+    
+    bv = "PARCELLE_CESBIO" # Fusion
     # RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT.shp")
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_RELATION/TARN_CACG/R11/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1_labo_2019/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
 
 
@@ -41,11 +43,11 @@ if __name__ == "__main__":
     list_col_drop_tarn=['originfid','ogc_fid', 'num']
     list_col_drop_fus=['originfid', 'ogc_fid', 'num']
 
-    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None) 
+    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_31TCJ_interpolation_dates_2019.txt",sep=',', header=None) 
     
 #    RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT_only_maize.shp")
     LABO=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-    for bv in ["Fusion"]:
+    for bv in [bv]:
         NDVI=pd.DataFrame()
         if bv =="CACG":
             dfNDVI_interTYP=pd.DataFrame()
@@ -53,13 +55,15 @@ if __name__ == "__main__":
         elif bv == "TARN":
             dfNDVI_interTCJ=pd.DataFrame()
             dfNDVI_interTDJ=pd.DataFrame()
+        elif bv == "labo":
+            dfNDVI_interTCJ=pd.DataFrame()
         else:
 #        dfNDVI_interTYN=pd.DataFrame()
             dfNDVI_interTYP=pd.DataFrame()
             dfNDVI_interTCJ=pd.DataFrame()
             dfNDVI_interTDJ=pd.DataFrame()
         for n in os.listdir(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)):
-            if "SampleExtractionNDVI" in n and "2017" in n: 
+            if "SampleExtractionNDVI" in n and "2019" in n: 
                 df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)+"/"+str(n))
                 tuile=n[-16:-13]
                 #  gestion des colonnes du tableau
@@ -71,6 +75,10 @@ if __name__ == "__main__":
                     df.columns=list(df.columns[0:4])+list(dfnames[0])
                     df.set_index("id",inplace=True)
                     dataN=df.drop(columns=list_col_drop_tarn)
+                elif bv == "PARCELLE_CESBIO":
+                    df.columns=list(df.columns[0:7])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_bd_drop)
                 elif bv=='Fusion':
                     df.columns=list(df.columns[0:4])+list(dfnames[0])
                     df.set_index("id",inplace=True)
@@ -101,6 +109,9 @@ if __name__ == "__main__":
             all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter,dfNDVI_interTYP])
             all_NDVI.drop([5,7,11,26,27],inplace=True)
             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        elif bv == "PARCELLE_LABO":
+            tatar=dfNDVI_interTCJ.T.resample("D").asfreq().interpolate()
             tar=tatar.T.sort_index(ascending=True)
         else:
             test=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
@@ -133,23 +144,29 @@ if __name__ == "__main__":
 # =============================================================================
 #     Build df FC and WP
 # =============================================================================
-#    Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
-#    Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-    Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_2017.shp")
-    for i in ["WP",'FC']:
-        soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
-#        soil.drop(columns=['NOM_PARCEL', 'LABO', 'WP_0_30cm', 'WP_40_50m', 'FC_0_30cm',
-#       'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5', 'RU_0_30', 'RU_40_50',
-#       'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'count', 'min_0', 'max_0','geometry'],inplace=True)
-#        soil.drop(columns=['NOM_PARCEL', 'LABO', 'WP_0_30cm', 'WP_40_50m', 'FC_0_30cm',
-#       'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5', 'RU_0_30', 'RU_40_50',
-#       'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'WP_SG_60',
-#       'sdWP_SG_60', 'FC_SG_60', 'sdFC_SG_60', 'count',
-#       'min_0', 'max_0', 'geometry'],inplace=True)
-        soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'count',
+
+    if bv == "PARCELLE_CESBIO":
+        # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
+        Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
+        for i in ["WP",'FC']:
+            soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m.shp')
+            soil.drop(columns=['NOM_PARCEL', 'LABO', 'WP_0_30cm', 'WP_40_50m', 'FC_0_30cm',
+          'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5', 'RU_0_30', 'RU_40_50',
+          'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'WP_SG_60',
+          'sdWP_SG_60', 'FC_SG_60', 'sdFC_SG_60', 'count',
+          'min_0', 'max_0', 'geometry'],inplace=True)
+            soil.columns=["id",str(i),str(i+'std')]
+            soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
+            
+    elif bv =="Fusion":
+        Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_2017.shp")
+         
+        for i in ["WP",'FC']:
+            soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+            soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'count',
        'min_0', 'max_0', 'geometry'],inplace=True)
-        soil.columns=["id",str(i),str(i+'std')]
-        soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
+            soil.columns=["id",str(i),str(i+'std')]
+            soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
         
 # =============================================================================
 #  SOIL data Lamothe
@@ -167,9 +184,13 @@ if __name__ == "__main__":
 # =============================================================================
 #     Build METEO spatialieser 
 # =============================================================================
+
+            # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
+    # Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
+
 #    Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
     # meteo=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_2018_EMPRISE_L93.shp")
-    meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
+    meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_2019_L93.shp")#"DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
     meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
         'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
        'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
@@ -196,13 +217,13 @@ if __name__ == "__main__":
     
     Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection')
 #     Drop lam
-#    Meteo_par.drop(columns=["geometry",'NOM_PARCEL', 'LABO','WP_0_30cm',
-#       'WP_40_50m', 'FC_0_30cm', 'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5',
-#       'RU_0_30', 'RU_40_50', 'RU_SG_60cm', 'sdRU_SG_60', 'RU_SG_0_30',
-#       'sdRU_SG0_3', 'geometry'],inplace=True)
+    Meteo_par.drop(columns=["geometry",'NOM_PARCEL', 'LABO','WP_0_30cm','WP_40_50m', 'FC_0_30cm', 
+                            'FC_40_50cm', 'pt_sat0_30', 'pt_sat40_5','RU_0_30', 'RU_40_50', 'RU_SG_60cm',
+                            'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'WP_SG_60', 'sdWP_SG_60', 'FC_SG_60',
+       'sdFC_SG_60', 'geometry'],inplace=True)
     
 #     Drop CACG
-    Meteo_par.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'geometry'],inplace=True)
+    # Meteo_par.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES', 'NUM', 'geometry'],inplace=True)
     # Meteo_par["DATE"]=pd.to_datetime(Meteo_par.DATE,format="%Y%m%d")
     Meteo_par["Irrig"]=0.0
     Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']

@@ -36,6 +36,7 @@ def RMSE(x,*args) :
     
 
 if __name__ == "__main__":
+
     
     d={}
     d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/"
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     REW = "-22 "
     Zr_max="800" 
     A_kcb = "1" 
-    # parampc=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
+    # param=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
     param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
     param.loc[6,13]=A_kcb # ligne 6 , colonne 13
     param.loc[6,20]=REW
@@ -71,11 +72,15 @@ if __name__ == "__main__":
     os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
     os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi -dd /mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
     
+    # os.environ["PYTHONPATH"] = "C:/Users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
+    # os.system('python C:/Users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi -dd D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
+    
     #  Récupération des output de la simulation 
     output_sim=pickle.load(open(d["SAMIR_run"]+"/output_T1.df","rb"))
     all_quantity=[]
     all_number=[]
     all_id=[]
+    all_RMSE=[]
     for id in list(set(output_sim.id)):
         lam=output_sim.loc[output_sim.id==id]
         # print(r' n° parcelle : %s' %id)
@@ -92,19 +97,37 @@ if __name__ == "__main__":
 
     x0=[REW,Zr_max,A_kcb]
     
-    Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
+    Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead',options={'xatol': 1e-10, 'disp': True})
+    print(Evaluation)
     print(Evaluation.fun)
 # =============================================================================
 #  Optimisation des paramètres
 # =============================================================================
-    while Evaluation.fun > 50 :
+    while Evaluation.fun >= 70 :
         print("continued")
         # Paramètre initaux
+        # REW = random.uniform(-400,200) # stocker résultat du run précédnt pour converser 
+        # Zr_max=random.uniform(150,1500) 
+        # A_kcb =random.uniform(1,2)
         
-        REW = -22 *random.uniform(-10,10)
-        Zr_max=1500 *random.uniform(0.1,1.5) #Mais add contition car ne peut pas être < 150
-        A_kcb = 1 *random.uniform(1,2)
         
+        REW = Evaluation.x[0]+random.uniform(-10,10) # stocker résultat du run précédnt pour converser 
+        Zr_max=Evaluation.x[1]+random.uniform(-10,10) 
+        A_kcb =Evaluation.x[2]+random.uniform(0.1,2)
+        # REW = Evaluation.x[0] *random.uniform(-10,10)
+        # if REW <=-400 and  REW >= 200:
+        #     REW = Evaluation.x[0] *random.uniform(-400,200)
+        # Zr_max=Evaluation.x[1] *random.uniform(150,1500) #Mais add contition car ne peut pas être < 150
+        # if Zr_max >= 1500 :
+        #     Zr_max=Evaluation.x[1] *random.uniform(150,1500)
+        # A_kcb = Evaluation.x[2] *random.uniform(1,2)
+        # if A_kcb <=0.5 and A_kcb >= 2.5:
+        #     A_kcb = Evaluation.x[2] *random.uniform(1,2)
+        
+        x0=[REW,Zr_max,A_kcb]
+        print(r"========")
+        print(x0)
+        print(r"========")
         param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
         param.loc[6,13]=A_kcb # ligne 6 , colonne 13
         param.loc[6,20]=REW
@@ -138,9 +161,41 @@ if __name__ == "__main__":
         print(r"========")
         print(x0)
         print(r"========")
-        Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
+        Evaluation= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead',options={'xatol': 1, 'disp': True})
+        print(Evaluation)
         print(Evaluation.fun)
         # x0=[REW,Zr_max,A_kcb]
+        all_RMSE.append(Evaluation.fun)
         
+    OPTI=pd.DataFrame(all_RMSE)
+    OPTI.to_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/resu_opt_RMSE.csv")
+    a=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/resu_opt_RMSE.csv")
+    plt.plot(a["0"])
+    # a=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/resu_opt_RMSE.csv")
+    
+        # all_RMSE.to_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RMSE_opti_.csv")
         # test= minimize(RMSE, x0, args=(x_data, y_data),method='nelder-mead')
         # testfmin = fmin(RMSE, x0, args=(x_data, y_data), xtol=1e-8, disp=True,)
+
+
+# =============================================================================
+# Test compréhension
+# =============================================================================
+    
+ #    from scipy.optimize import minimize, rosen, rosen_der
+ #    y0=[1, 1, 1, 1,1,1,1,1,1,1,1,1]
+ #    x0 = [1.3, 0.7, 0.8, 1.9, 1.2,1,2,1.5,1.0669,1.7,1.45,0.78]
+ #    res = minimize(RMSE, x0,args=(x0,y0), method='Nelder-Mead', tol=1e-6)
+ #    res
+    
+ #    def fun(x, b):
+ #     ...:     return x**2 + b
+
+ #    optimize.minimize(fun, 10, args=(10),method="Nelder-Mead")
+ #    fun(0,4)
+
+ #    optimize.minimize(fun, 10, args=(1,1,1))
+ #    def fun(x, a,b,c):
+ # ...:     return (a*x**2 + b*x + c).sum()
+ #    t=optimize.minimize(fun, [10,10,10], args=(np.array([1,2,3]), 1, 1))
+ #    fun(np.array([10,10,10]), np.array([1,2,3]), 1, 1)
