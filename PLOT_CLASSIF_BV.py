@@ -89,8 +89,8 @@ if __name__ == "__main__":
         for classif in os.listdir(d["disk_PC"]+'FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
             print (classif)
 #            classif="DES_F_3ind_SAFRAN_2017"
-            nom=get_nomenclature(d["disk_PC"]+"nomenclature_T31TDJ.txt") # Nomenclature utlisé dans Iota²
-            pathNom=d["disk_PC"]+"/nomenclature_T31TDJ.txt"
+            nom=get_nomenclature(d["disk_PC"]+"nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
+            pathNom=d["disk_PC"]+"/nomenclature_paper.txt"
             pathRes=d["disk_PC"]+"/FILE_TXT_RESULAT/FIxe_seed/SHARK/"+years+"/"+classif+"/" # FIxe_seed/SHARK/"+years+"/"+classif+"/" ¬ path où sont stocker les fichiers les matrices de confusion
             all_k = []
             all_oa = []
@@ -157,7 +157,7 @@ if __name__ == "__main__":
                             all_f.append(f_dic)
             step.append(classif)
             conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-            nom_dict = get_nomenclature(d["disk_PC"]+"/nomenclature_T31TDJ.txt")
+            nom_dict = get_nomenclature(d["disk_PC"]+"/nomenclature_paper.txt")
             size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
             origin=pd.DataFrame({'step':classif},index=[0],dtype="category") # recuper les noms des différents configurations testées
             origindup=pd.DataFrame(np.repeat(origin.values,len(labels_ref)),dtype="category") 

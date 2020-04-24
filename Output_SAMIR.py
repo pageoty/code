@@ -36,8 +36,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-#    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R12/Inputdata/"
+    # d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R12/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
 #    runs=["R12"]
     all_quantity=[]
@@ -83,9 +83,9 @@ if __name__ == '__main__':
 # =============================================================================
 #    Prépartion des datas Eddy-co au format journalière
     #  Pour 2017 et autre année
-#     for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
-#         years=y[5:9]
-#         LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
+    for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
+        years=y[5:9]
+        LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
 #         LE_lam["TIMESTAMP"]=LE_lam["TIMESTAMP"].apply(lambda x:x[0:10])
 #         LE_lam["TIMESTAMP"]=pd.to_datetime(LE_lam["TIMESTAMP"],format="%d/%m/%Y")
 #         LE_lam_day=LE_lam.groupby("TIMESTAMP")["LE"].mean()
@@ -203,8 +203,14 @@ if __name__ == '__main__':
 #    # or
 #    lam.Ir_auto.where(lam["Ir_auto"] != 0.0).dropna().count() # resultat  980.0 et ref = 944 soit 44 mm surplus
 #
-## =============================================================================
-##   Vérification des Flux ETR
-## =============================================================================
-#    lam[["ET","date"]]
-    
+# =============================================================================
+#   Vérification des Flux ETR
+# =============================================================================
+    # lam[["ET","date"]]
+    # Données de références station flux 
+    for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/"):
+        years=y[-8:-4]
+        LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/"+y,encoding = 'utf-8',delimiter=",")
+        LE_lam.plot()
+        plt.title(years)
+        plt.savefig(d["PC_disk"]+"/RESULT/Dynamique_ETR_FLUX/plt_ETR_FLUX_LAM"+str(y)+".png")

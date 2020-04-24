@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT.shp")
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1_labo_2019/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1_labo_2017_SAMIR_opt_EXcel/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
 
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     list_col_drop_tarn=['originfid','ogc_fid', 'num']
     list_col_drop_fus=['originfid', 'ogc_fid', 'num']
 
-    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_31TCJ_interpolation_dates_2019.txt",sep=',', header=None) 
+    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None) 
     
 #    RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT_only_maize.shp")
     LABO=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             dfNDVI_interTCJ=pd.DataFrame()
             dfNDVI_interTDJ=pd.DataFrame()
         for n in os.listdir(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)):
-            if "SampleExtractionNDVI" in n and "2019" in n: 
+            if "SampleExtractionNDVI" in n and "2017" in n: 
                 df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/NDVI_parcelle/Parcelle_ref/"+str(bv)+"/"+str(n))
                 tuile=n[-16:-13]
                 #  gestion des colonnes du tableau
@@ -186,11 +186,10 @@ if __name__ == "__main__":
 # =============================================================================
 
             # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
-    # Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-
+    Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
+    
 #    Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
-    # meteo=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_2018_EMPRISE_L93.shp")
-    meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_2019_L93.shp")#"DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
+    meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_2019_L93.shp")#"SAFRAN_ZONE_2019_L93 DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
     meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
         'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
        'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
@@ -228,14 +227,75 @@ if __name__ == "__main__":
     Meteo_par["Irrig"]=0.0
     Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
     Meteo_par.info()
-    lam=Meteo_par.loc[np.where(Meteo_par.id==1)] # if 2018 .iloc[:-31]
+    lam=Meteo_par.loc[np.where(Meteo_par.id==0)] # if 2018 .iloc[:-31] # id 0 == lamothe
     lam.drop(columns="id",inplace=True)
     lam.to_pickle(d["path_PC"]+"/meteo.df")
+    # lam.to_csv(d["PC_disk"]+"/meteo_lam_2015.csv")
+
+
+    # Safran=pd.read_csv(d["PC_disk"]+"DONNES_METEO/SIM2_2010_201811.csv",delimiter=";")
+    # SAF2017=Safran.loc[(Safran.DATE > 20141231)& (Safran["DATE"] < 20160101)]
+    # SAF2017["X"]=SAF2017.LAMBX*100
+    # SAF2017["Y"]=SAF2017.LAMBY*100
+    # SAF2017.to_csv(d["PC_disk"]+"SAFRAN_csv_2015.csv")
+# =============================================================================
+# NDVI2014
+# =============================================================================
+#     NDVI2014=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2014_lAND_FORM.csv',decimal=",")
+#     NDVI2014_form=NDVI2014.iloc[2,1:13].astype(float)
+#     NDVI2014_form.index=pd.to_datetime(NDVI2014_form.index,format="%Y-%m-%d")
+#     NDVI2014_f=NDVI2014_form.resample("D").asfreq().interpolate()
+#     NDVI2014_land=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2014_lAND.csv',decimal=",")
+#     NDVI2014_land=NDVI2014_land.iloc[2,1:].astype(float)
+#     NDVI2014_land.index=pd.to_datetime(NDVI2014_land.index,format="%Y-%m-%d")
+#     NDVI2014_L=NDVI2014_land.resample("D").asfreq().interpolate()
     
+#     NDVI2014_f.iloc[:-3].plot(label="formosat")
+#     NDVI2014_L.iloc[-71:].plot(label='Landsat')
+#     NDVI2014=NDVI2014_f.iloc[:-3].append(NDVI2014_L.iloc[-71:])
+#     NDVI2014.to_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDVI2014_FORMO_LAND.csv")
+#     # plt.legend()
+#     # plt.savefig('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/PLOT_NDVI_2014_interpo.png')
 
+#     NDVI2015=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2015_SPOT.csv',decimal=",")
+#     NDVI2015_Spot=NDVI2015.T.astype(float)
+#     NDVI2015_Spot.index=pd.to_datetime(NDVI2015_Spot.index,format="%Y-%m-%d")
+#     NDVI2015_S=NDVI2015_Spot.resample("D").asfreq().interpolate()
+#     NDVI2015_land=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2015_lAND.csv',decimal=",")
+#     NDVI2015_land=NDVI2015_land.T.astype(float)
+#     NDVI2015_land.index=pd.to_datetime(NDVI2015_land.index,format="%Y-%m-%d")
+#     NDVI2015_L=NDVI2015_land.resample("D").asfreq().interpolate()
+    
+#     NDVI2015_L.to_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDVI2015_LAND.csv")
 
-#    Safran=pd.read_csv(d["PC_disk"]+"SIM2_2010_201811.csv",delimiter=";")
-#    SAF2017=Safran.loc[np.where(Safran.DATE > 20161231)]
-#    SAF2017["X"]=SAF2017.LAMBX*100
-#    SAF2017["Y"]=SAF2017.LAMBY*100
-#    SAF2017.to_csv(d["PC_disk"]+"SAFRAN_csv_2017_18.csv")
+# # =============================================================================
+# #  Préparation des Fcovers
+# # =============================================================================
+#     for f in os.listdir('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/FCOVER_parcelle/'):
+#         print(f)
+#         df=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/FCOVER_parcelle/'+f,decimal=",")
+#         df=df.T.astype(float)
+#         # df.set_index(['Unnamed: 0'],inplace=True)
+#         df.index=pd.to_datetime(df.index,format="%Y-%m-%d")
+#         df_inter=df.resample("D").asfreq().interpolate()
+#         df_inter.plot()
+#         plt.title(f[:10])
+#         df_inter.to_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/FCOVER_parcelle/interpol'+str(f[:-32]+'.csv'))
+        
+# =============================================================================
+#   Prépartion data filecsv 
+# =============================================================================
+    for y in os.listdir("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION/DONNEES_INPUT/"):
+        years=y[-8:-4]
+        df=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION/DONNEES_INPUT/INPUT_"+str(years)+".csv",decimal=",")
+        df.Date=pd.to_datetime(df.Date,format="%d/%m/%Y")
+        #  df NDVI
+        NDVI=df[["Date","NDVI"]]
+        NDVI.columns=["date",'NDVI']
+        NDVI["id"]=1
+        NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION/"+str(years)+"/Inputdata/maize/NDVI.df")
+        Meteo=df[["Date","ET0","Pluie","Ir_obs"]]
+        Meteo.columns=["date",'ET0',"Prec","Irrig"]
+        Meteo["id"]=1
+        # Meteo.set_index('date',inplace=True)
+        Meteo.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION/"+str(years)+"/Inputdata/meteo.df")

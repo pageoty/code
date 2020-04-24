@@ -28,7 +28,20 @@ from scipy import *
 from scipy import stats
 from pylab import *
 from sklearn.linear_model import LinearRegression
+# from ambhas.errlib import NS
 
+def NS(s,o):
+    """
+    Nash Sutcliffe efficiency coefficient
+    input:
+        s: simulated
+        o: observed
+    output:
+        ns: Nash Sutcliffe efficient coefficient
+    """
+    # s,o = filter_nan(s,o)
+    return 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
+ 
 
 
 # def nash (s):
@@ -43,29 +56,32 @@ def RMSE(x,*args) :
     rmse= mean_squared_error(x_data,y_data,squared=False)
     return rmse
     
-    
+def test(X):
+    objective = lambda b: np.sqrt(np.mean((X, b)**2))
+    return objective
 
 if __name__ == "__main__":
     
-    name_run="R1_labo_2019"
+    name_run="RUN_COMPAR_Version"
+    years=2006
     d={}
-    d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
+    d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+years+"/"
     d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
     d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
     d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
     
    
-    REW = "-22 "
-    Zr_max="800" 
-    A_kcb = "1" 
-    date_start="20190103"
-    date_end="20191229"
+    REW = "-8 "
+    Zr_max="2155" 
+    A_kcb = "1.63" 
+    # date_start="20190103"
+    # date_end="20191229"
     
     # parampc=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
-    param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
-    param.loc[6,13]=A_kcb # ligne 6 , colonne 13
-    param.loc[6,20]=REW
-    param.loc[6,23]=Zr_max
+    param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
+    # param.loc[6,13]=A_kcb # ligne 6 , colonne 13
+    # param.loc[6,20]=REW
+    # param.loc[6,23]=Zr_max
     param.loc[0,1]=date_start
     param.loc[0,3]=date_end
     
@@ -95,11 +111,13 @@ if __name__ == "__main__":
     all_resu=pd.DataFrame([all_id,all_quantity,all_number]).T
     all_resu.columns=['id','cumul_irr',"nb_irr"]
 # =============================================================================
-#     validation ETR 2019
+#     validation ETR 
 # =============================================================================
-    ETR_lam_2019=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/ETR_LAM2019.csv")
+# FONCTION WITH Years
+    # ETR_lam_2019=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/ETR_LAM2017.csv")
+    ETR_lam_2019=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/ETR_LAM2017.csv")
     # ETR_lam_2019=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/ETR_LAM2019.csv",decimal='.',na_filter=True)
-    ETR_lam_2019["date"]=pd.to_datetime( ETR_lam_2019["date"],format="%Y-%m-%d")
+    ETR_lam_2019["date"]=pd.to_datetime( ETR_lam_2019["TIMESTAMP"],format="%Y-%m-%d")
     # fusion mod et obs dans dataframe
     ETR_resu=pd.concat([ETR_lam_2019["LE"].iloc[2:-4],ETRmod.ET],axis=1)
     ETR_resu["date"]=ETRmod.date
@@ -120,9 +138,10 @@ if __name__ == "__main__":
     plt.ylabel("ETR model")
     # plt.xlim(0,300)
     # plt.ylim(0,300)
+    print(NS(ETR_resu_ss_nn['LE'],ETR_resu_ss_nn["ET"])) 
     plt.text(5,min(ETR_resu_ss_nn["ET"])+0.1,"RMSE = "+str(round(val,2)))
     plt.text(5,min(ETR_resu_ss_nn["ET"])+0.3,"R² = "+str(round(r_value,2)))
     plt.text(5,min(ETR_resu_ss_nn["ET"])+0.5,"Pente = "+str(round(slope,2)))
     plt.text(5,min(ETR_resu_ss_nn["ET"])+0.7,"Biais = "+str(round(bias,2)))
-    
-
+    plt.text(5,min(ETR_resu_ss_nn["ET"])+0.9,"Nash = "+str(round(NS(ETR_resu_ss_nn['LE'],ETR_resu_ss_nn["ET"]),2)))
+    plt.savefig(d["SAMIR_run"]+"/plot_ETRobs_ETR_mod.png")

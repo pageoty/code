@@ -125,6 +125,5 @@ if __name__ == '__main__':
             ETR_RU_75=ETR_RU_75.append(b)
             ET0_RU_75=ET0_RU_75.append(c)
             Kcb.append(k)
-        
-    
+
     
