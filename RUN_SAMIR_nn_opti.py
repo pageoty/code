@@ -71,11 +71,11 @@ if __name__ == "__main__":
     d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
     
    
-    REW = "-8 "
-    Zr_max="2155" 
-    A_kcb = "1.63" 
-    # date_start="20190103"
-    # date_end="20191229"
+    # REW = "-8 "
+    # Zr_max="2155" 
+    # A_kcb = "1.63" 
+    date_start="20190103"
+    date_end="20191229"
     
     # parampc=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
     param=pd.read_csv("/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
