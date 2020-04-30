@@ -90,7 +90,7 @@ if __name__ == '__main__':
     plt.plot(SWC2017_mean.index,np.repeat(0.363-RU75,len(SWC2017_mean.index)),c="b",linestyle='--',label='RU 75 %')
     plt.legend()
     plt.ylabel('SWC en profondeur')
-    ax34=plt.subplot(414)
+    ax3=plt.subplot(414)
     plt.plot(ET0_Saf.date,ET0_Saf.ET0,label="ET0 ")
     plt.plot(ETR_lam_day.index,ETR_lam_day,label='ETR obs')
     plt.ylabel("ET")
