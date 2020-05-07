@@ -95,53 +95,67 @@ if __name__ == '__main__':
 # =============================================================================
 #     BV Years 
 # =============================================================================
-    for i in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"):
-        if "TARN"in i:
-            bv='TARN'
-            if "2017" in i :
-                globals()["%s2017"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
-                globals()["%s2017"%bv].drop(columns=['ogc_fid', 'surf_parc', 'summer', 'id', 'gid', 'area', 'labelirr','labelcrirr', 'labcroirr'],inplace=True)
-                globals()["%s2017"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November"]
-                globals()["%s2017_cum"%bv]=globals()["%s2017"%bv].T.cumsum()
-            else:
-                globals()["%s2018"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
-                globals()["%s2018"%bv].drop(columns=['ogc_fid', 'idparcelle', 'millesime', 'labcroirr', 'surfha', 'class','num_ilot', 'num_parcel', 'surf_adm'],inplace=True)
-                globals()["%s2018"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November","December"]
-                globals()["%s2018_cum"%bv]=globals()["%s2018"%bv].T.cumsum()
-        else:
-            bv="ADOUR"
-            if "2017" in i :
-                globals()["%s2017"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
-                globals()["%s2017"%bv].drop(columns=['ogc_fid', 'surf_parc', 'summer', 'id', 'gid', 'area', 'labelirr','labelcrirr', 'labcroirr'],inplace=True)
-                globals()["%s2017"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November"]
-                globals()["%s2017_cum"%bv]=globals()["%s2017"%bv].T.cumsum()
-            else:
-                globals()["%s2018"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
-                globals()["%s2018"%bv].drop(columns=['ogc_fid', 'idparcelle', 'millesime', 'labcroirr', 'surfha', 'class','num_ilot', 'num_parcel', 'surf_adm'],inplace=True)
-                globals()["%s2018"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November","December"]
-                globals()["%s2018_cum"%bv]=globals()["%s2018"%bv].T.cumsum()
+    # for i in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"):
+    #     if "TARN"in i:
+    #         bv='TARN'
+    #         if "2017" in i :
+    #             globals()["%s2017"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
+    #             globals()["%s2017"%bv].drop(columns=['ogc_fid', 'surf_parc', 'summer', 'id', 'gid', 'area', 'labelirr','labelcrirr', 'labcroirr'],inplace=True)
+    #             globals()["%s2017"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November"]
+    #             globals()["%s2017_cum"%bv]=globals()["%s2017"%bv].T.cumsum()
+    #         else:
+    #             globals()["%s2018"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
+    #             globals()["%s2018"%bv].drop(columns=['ogc_fid', 'idparcelle', 'millesime', 'labcroirr', 'surfha', 'class','num_ilot', 'num_parcel', 'surf_adm'],inplace=True)
+    #             globals()["%s2018"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    #             globals()["%s2018_cum"%bv]=globals()["%s2018"%bv].T.cumsum()
+    #     else:
+    #         bv="ADOUR"
+    #         if "2017" in i :
+    #             globals()["%s2017"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
+    #             globals()["%s2017"%bv].drop(columns=['ogc_fid', 'surf_parc', 'summer', 'id', 'gid', 'area', 'labelirr','labelcrirr', 'labcroirr'],inplace=True)
+    #             globals()["%s2017"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November"]
+    #             globals()["%s2017_cum"%bv]=globals()["%s2017"%bv].T.cumsum()
+    #         else:
+    #             globals()["%s2018"%bv]=sqlite_df("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/STAT_POLY/STAT_METEO_MONTH/CUMUL_BV_YEARS/"+str(i),"dfz")
+    #             globals()["%s2018"%bv].drop(columns=['ogc_fid', 'idparcelle', 'millesime', 'labcroirr', 'surfha', 'class','num_ilot', 'num_parcel', 'surf_adm'],inplace=True)
+    #             globals()["%s2018"%bv].columns = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    #             globals()["%s2018_cum"%bv]=globals()["%s2018"%bv].T.cumsum()
+
+    meteo2017=pd.read_csv("F:/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/SAFRAN_ADOUR_ZONE_CENTRALE_NORD_17_18.csv")
+    meteo2017["DATE"]=pd.to_datetime(meteo2017["DATE"],format="%Y%m%d")
+
+    meteo2017.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q',
+       'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q', 'ETP_Q', 'PE_Q',
+       'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE', 'RESR_NEI_1', 'HTEURNEIGE',
+       'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_', 'ECOULEMENT', 'WG_RACINE_',
+       'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q', 'X', 'Y'],inplace=True)
+    ADOUR2018=meteo2017.loc[(meteo2017["DATE"] >= "2018-05-01") & (meteo2017["DATE"] <= "2018-09-30")]
+    ADOUR2017=meteo2017.loc[(meteo2017["DATE"] >= "2017-05-01") & (meteo2017["DATE"] <= "2017-09-30")]
+    AD17=ADOUR2017.groupby("DATE").mean()
+    AD18=ADOUR2018.groupby("DATE").mean()
+    
+    ADOUR17 = pd.DataFrame()
+    ADOUR17['Prec_2017'] = AD17.PRELIQ_Q.resample('W').sum()
+    ADOUR17["cum_2017"]=ADOUR17.Prec_2017.cumsum()
+    ADOUR18=pd.DataFrame()
+    ADOUR18['Prec_2018'] = AD18.PRELIQ_Q.resample('W').sum()
+    ADOUR18["cum_2018"]=ADOUR18.Prec_2018.cumsum()
+
+
+    x=ADOUR18.index.strftime('%m-%d')
+    # x_day=AD18.index.strftime("%m-%d")
 
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax1=plt.subplot(121)
-    sns.set(style="darkgrid")
-    sns.set_context('paper')
-    plt.title("Watershed : TARN")
-    plt.plot(TARN2017_cum.T.mean(),color='blue',label='2017')
-    plt.plot(TARN2018_cum.T.mean(),color="red",label='2018')
-    plt.xticks(size='large',rotation=45)
+    plt.title("Watershed : Adour central area")
+    plt.plot(x,ADOUR17["cum_2017"],color='red',label='2017')
+    plt.plot(x,ADOUR18["cum_2018"],color="blue",label='2018')
+    plt.xticks(size='large',rotation=90)
     plt.yticks(size='large')
-    plt.legend()
-    plt.ylim(0,1200)
-    ax1=plt.subplot(111)
-    plt.title("Watershed : Adour")
-    plt.plot(ADOUR2017_cum.T.mean().iloc[3:],color='red',label='2017')
-    plt.plot(ADOUR2018_cum.T.mean().iloc[3:-1],color="blue",label='2018')
-    plt.xticks(size='large',rotation=45)
-    plt.yticks(size='large')
-    plt.ylim(0,1200)
+    plt.ylim(0,600)
+    plt.xlabel("month and day")
     plt.ylabel('Cumul mean rainfall')
     plt.legend()
-    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/Culum_plui_2017_2018_BV_ADOUR.png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+    plt.savefig("F:/THESE/CLASSIFICATION/RESULT/PLOT/Culum_plui_2017_2018_BV_ADOUR_Centrale_Nord_may_sept.png",dpi=500,bbox_inches='tight', pad_inches=0.5)
 
 
 

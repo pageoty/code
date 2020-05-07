@@ -505,15 +505,15 @@ if __name__ == "__main__":
             r2 = [x + barWidth for x in r1]
             plt.bar(r1, bars1.mean_fscore, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
             plt.bar(r2, bars2.mean_fscore, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
-            plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90) # fixer problème du nom de l'axe"
+            plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90,size =9) # fixer problème du nom de l'axe"
             plt.ylabel('value')
             plt.ylim(0,1)
             plt.title(str(i[0]))
-            if 'Maize rainfed'in i:
+            if 'Rainfed Maize'in i:
                plt.legend()
             plt.xticks(size='large')
             plt.yticks(size='large')
             for j in np.arange(len(set(M7.step))):
-                plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(bars1.mean_fscore)[j] +0.05,s = list(bars1.mean_fscore)[j],size=9)
-                plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(bars2.mean_fscore)[j]+0.05,s = list(bars2.mean_fscore)[j],size=9)
+                plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=10)
+                plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=10)
             plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+".png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
