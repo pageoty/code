@@ -64,9 +64,9 @@ def plt_classif_kappa(df,var1,var2):
     for j in np.arange(len(df.index)):
         plt.text(x = y_pos3[j]-0.25 , y = -0.02, s = list(df.index)[j],size=11,rotation=90,va="top")
     for j in np.arange(len(df.index)):
-        plt.text(x = y_pos[j]-0.3, y=df["mean_"+var1][j]+0.05,s = list(round(df["mean_"+var1],2))[j],size=9)
+        plt.text(x = y_pos[j]-0.3, y=list(df["mean_"+var1]+df["std_"+var1])[j]+0.01,s = list(round(df["mean_"+var1],2))[j],size=9)
     for j in np.arange(len(df.index)):
-        plt.text(x = y_pos3[j]-0.3, y=df["mean_"+var2][j]+0.04,s = list(round(df["mean_"+var2],2))[j],size=9)
+        plt.text(x = y_pos3[j]-0.3, y=list(df["mean_"+var2]+df["std_"+var2])[j]+0.01,s = list(round(df["mean_"+var2],2))[j],size=9)
     plt.legend()
 
 if __name__ == "__main__":

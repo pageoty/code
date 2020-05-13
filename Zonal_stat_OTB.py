@@ -24,16 +24,15 @@ if __name__ == "__main__":
     parser.add_argument('-lab',dest='label',nargs='+',help='Name of field',required = True)
     parser.add_argument('-ram',dest='ram',nargs='+',help='Name of field',required = True)
     parser.add_argument('-pixel',dest='pixel', action='store_true') 
-    parser.add_argument('-nbfile',dest="filenumber", action='store_true') 
+    parser.add_argument('-fewfile',dest="fewimage", action='store_true') 
     args = parser.parse_args()
     print (args.vector)
     print (args.image)
     print(args.pixel)
-    print( args.filenumber)
+    print( args.fewimage)
 
     Alldata=pd.DataFrame()   
-# Ajoute une fonction if si tu veux les statistiques au polygones
-    if args.filenumber == True :
+    if args.fewimage == True :
         for i in os.listdir("{}".format(str(args.image).strip("['']"))):
             print (i)
             os.system("otbcli_PolygonClassStatistics -in %s%s -vec %s -field %s -out stat.xml -ram %s"%(str(args.image).strip("['']"),i,str(args.vector).strip("['']"),str(args.label).strip("['']"),str(args.ram).strip("['']")))

@@ -202,3 +202,32 @@ if __name__ == "__main__":
         plt.title("Cumul sol nu")
         plt.text(x =x.iloc[-1] , y=ETR_bare.LE.iloc[-1,i],s = y,size=9)
     plt.savefig("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_ETR_cumul_bare_soil_LAM_mais.png")
+
+
+# =============================================================================
+# test SM 
+# =============================================================================
+    for y in ["2017","2019"]:
+        SM_lam=pd.DataFrame()
+        date_sm=[]
+        for f in os.listdir("F:/THESE/CLASSIFICATION/IMG_SAT/SM/outstat_"+y+"/"):
+            if ".csv" in f:
+                print (f)
+                date=f[-23:-15]
+                df=pd.read_csv("F:/THESE/CLASSIFICATION/IMG_SAT/SM/outstat_"+y+"/"+f)
+                df.drop(columns=['originfid', 'ogc_fid', 'wp_0_30cm', 'wp_40_50m', 'fc_0_30cm',
+                   'fc_40_50cm', 'pt_sat0_30', 'pt_sat40_5', 'ru_0_30', 'ru_40_50',
+                   'ru_sg_60cm', 'sdru_sg_60', 'ru_sg_0_30', 'sdru_sg0_3', 'wp_sg_60',
+                   'sdwp_sg_60', 'fc_sg_60', 'sdfc_sg_60'],inplace=True)
+                lam=df.loc[df.id==0.0]
+                date_sm.append(date)
+                SM_lam=SM_lam.append(lam)
+        SM_lam["date"]=date_sm
+        SM_lam.date=pd.to_datetime(SM_lam.date,format="%Y%m%d")
+        SM_lam.sort_values(by="date",ascending=True,inplace=True)
+        plt.figure(figsize=(10,7))
+        sns.set(style="darkgrid")
+        sns.set_context('paper')
+        plt.plot(SM_lam.date,SM_lam.value_0/5)
+        plt.title(y)
+        
