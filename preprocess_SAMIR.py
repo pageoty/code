@@ -262,10 +262,10 @@ if __name__ == "__main__":
     # NDVI2015_Spot.index=pd.to_datetime(NDVI2015_Spot.index,format="%Y-%m-%d")
     # NDVI2015_S=NDVI2015_Spot.resample("D").asfreq().interpolate()
     # NDVI2015_S.plot()
-    # # NDVI2015_land=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2015_lAND.csv',decimal=",")
-    # # NDVI2015_land=NDVI2015_land.T.astype(float)
-    # # NDVI2015_land.index=pd.to_datetime(NDVI2015_land.index,format="%Y-%m-%d")
-    # # NDVI2015_L=NDVI2015_land.resample("D").asfreq().interpolate()
+    # NDVI2015_land=pd.read_csv('G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDV_2015_lAND.csv',decimal=",")
+    # NDVI2015_land=NDVI2015_land.T.astype(float)
+    # NDVI2015_land.index=pd.to_datetime(NDVI2015_land.index,format="%Y-%m-%d")
+    # NDVI2015_L=NDVI2015_land.resample("D").asfreq().interpolate()
     
     # NDVI2015_S.to_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/NDVI2012.csv")
 
@@ -294,17 +294,17 @@ if __name__ == "__main__":
         NDVI=df
         # NDVI=df[["Date","NDVI"]]
         # NDVI.columns=["date",'NDVI']
-        # NDVI["id"]=1
-        NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION_new_data/"+str(years)+"/Inputdata/maize/NDVI.df")
+        NDVI["id"]=1
+        NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_SENSI_SOL/"+str(years)+"/Inputdata/maize/NDVI.df")
     for y in os.listdir("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/"):
         years=y[-8:-4]
         df=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/Meteo_lam_"+str(years)+".csv",decimal=".")
         Meteo=df[["date","ET0","Prec","Irrig"]]
         Meteo.date=pd.to_datetime(Meteo.date,format="%Y-%m-%d")
         # Meteo.columns=["date",'ET0',"Prec","Irrig"]
-        # Meteo["id"]=1
+        Meteo["id"]=1
         # Meteo.set_index('date',inplace=True)
-        Meteo.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION_new_data/"+str(years)+"/Inputdata/meteo.df")
+        Meteo.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_SENSI_SOL/"+str(years)+"/Inputdata/meteo.df")
 # =============================================================================
 # Data irrigation 2019
 # =============================================================================

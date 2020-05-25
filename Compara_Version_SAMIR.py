@@ -64,7 +64,7 @@ def predict(x):
 
 if __name__ == "__main__":
     for y in ["2006","2008","2010","2012","2019"]:
-        name_run="RUN_COMPAR_Version"
+        name_run="RUN_COMPAR_VERSION_new_data"
         # years=2012
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
         
         #  Récupération des output de la simulation 
-        output_sim=pickle.load(open(d["SAMIR_run"]+"/output_T1.df","rb"))
+        output_sim=pickle.load(open(d["SAMIR_run"]+"output_T1.df","rb"))
         all_quantity=[]
         all_number=[]
         all_id=[]

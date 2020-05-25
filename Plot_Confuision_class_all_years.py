@@ -140,8 +140,9 @@ if __name__ == "__main__":
     if bv !="NESTE":
         fig, ax = plt.subplots(figsize=(12, 10))
         ax1=plt.subplot(221)
-        sns.set(style="darkgrid")
-        # sns.set_context('paper')
+        ax1.grid(axis='x')
+        sns.set(style="whitegrid")
+        sns.set_context('paper')
         plt.title("Irrigated Maize")
         # df_multi.xs("Maize irrigated").iloc[1:-2].plot(kind='bar',ax=ax1)
         a=df_multi.xs("Irrigated Maize").iloc[1:-2].T.sort_values(by="Rainfed Maize")

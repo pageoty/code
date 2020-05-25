@@ -52,7 +52,8 @@ def get_interest_coeff(runs_coeff, nb_lab, f_interest="mean"):
 def plt_classif_kappa(df,var1,var2):
     plt.figure(figsize=(10,5))
     y_pos=np.arange(df.shape[0])
-    sns.set(style="darkgrid")
+    # sns.set(style="darkgrid")
+    sns.set(style="whitegrid")
     sns.set_context('paper')
     plt.grid(axis='x')
     plt.bar(y_pos,df["mean_"+var1],yerr=df["std_"+var1],capsize=3,width = 1,label=var1)
@@ -349,6 +350,7 @@ if __name__ == "__main__":
                 for i in set(zip(maize2017.step,maize2018.step)):
                     print(i)
                     plt.figure(figsize=(12,5)) 
+                    plt.grid(axis='x')
                     x1=plt.subplot(121)
                     barWidth = 0.3
                     bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
@@ -372,6 +374,7 @@ if __name__ == "__main__":
                 for i in set(zip(M7.step,M8.step)):
                     print(i)
                     plt.figure(figsize=(12,5)) 
+                    plt.grid(axis='x')
                     x1=plt.subplot(121)
                     barWidth = 0.3
                     bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
@@ -397,6 +400,7 @@ if __name__ == "__main__":
             for i,j in zip(stepvs.keys(),stepvs.values()):
                 if "2017" in i:
                     plt.figure(figsize=(10,10)) 
+                    plt.grid(axis='x')
                     # x1=plt.subplot(121)
                     barWidth = 0.3
                     bars1 = maize2017[maize2017.step==i]["mean_fscore"]
@@ -418,6 +422,7 @@ if __name__ == "__main__":
                 else:
                 
                     plt.figure(figsize=(10,10)) 
+                    plt.grid(axis='x')
                     bars1 = maize2018[maize2018.step==i]["mean_fscore"]
                     bars2 = maize2018[maize2018.step==j]["mean_fscore"]
                     yer1 = maize2018[maize2018.step==i]['std_fscore']
@@ -491,6 +496,7 @@ if __name__ == "__main__":
         for i in set(zip(M7.index,M8.index)):
             print(i)
             plt.figure(figsize=(5,5)) 
+            plt.grid(axis='x')
             x1=plt.subplot(111)
             barWidth = 0.3
             bars1 = maize2017[maize2017.index==i[0]][["mean_fscore","step"]]
@@ -508,7 +514,7 @@ if __name__ == "__main__":
             plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90,size =9) # fixer problème du nom de l'axe"
             plt.ylabel('value')
             plt.ylim(0,1)
-            plt.title(str(i[0]))
+            # plt.title(str(i[0]))
             if 'Rainfed Maize'in i:
                plt.legend()
             plt.xticks(size='large')
@@ -516,4 +522,4 @@ if __name__ == "__main__":
             for j in np.arange(len(set(M7.step))):
                 plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=10)
                 plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=10)
-            plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+".png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+            plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)

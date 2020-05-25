@@ -61,7 +61,7 @@ if __name__ == '__main__':
     NDVI2017.columns=["date","valeur"]
     
 #    Rainfall lamothe
-    ET0=pd.read_csv(d["PC_disk"]+"Calibration_SAMIR/DONNEES_CALIBRATION/Meteo_lam_2017.csv")
+    ET0=pd.read_csv(d["PC_disk"]+"Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/Meteo_lam_2017.csv")
     ET0["date"]=pd.to_datetime(ET0["date"],format="%Y-%m-%d")
     ET0_Saf=ET0.sort_values(by="date",ascending=True)
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     sns.set(style="darkgrid")
     sns.set_context('paper')
     ax1 = plt.subplot(411)
-    plt.plot(NDVI2017[0],NDVI2017[1])
+    plt.plot(NDVI2017.date,NDVI2017.valeur)
     plt.ylabel("NDVI")
     ax2 = plt.subplot(412)
     plt.plot(SWC2017_mean.index,SWC2017_mean.SWC_0_moy/100)
