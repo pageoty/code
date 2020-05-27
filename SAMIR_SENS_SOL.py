@@ -62,8 +62,8 @@ def predict(x):
   return slope * x + intercept
 
 def params_update(path,output,date_start,date_end,FminNDVI=0.2,FmaxNDVI=0.9,FminFC=0,FmaxFC=1,Fslope=1.25,Foffset=-0.13,
-                  Plateau=70,KminNDVI=0.1,KmaxNDVI=0.9,KminKcb=0,A_kcb=1.31,KmaxKcb=0.98,Koffset=-0.13,Zsoil=1150,Ze=150,Init_RU=0.5,
-                  DiffE=5,DiffR=10,REW=6,minZr=150,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=30,minDays=20,Kcbmin_start=0.1,
+                  Plateau=70,KminNDVI=0.1,KmaxNDVI=0.9,KminKcb=0,A_kcb=1.49,KmaxKcb=0.98,Koffset=-0.27,Zsoil=1150,Ze=150,Init_RU=0.5,
+                  DiffE=5,DiffR=10,REW=6,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=30,minDays=20,Kcbmin_start=0.1,
                   Kcbmax_stop=0.85):
     
     param=pd.read_csv(path,delimiter=",",header=None)
@@ -100,50 +100,73 @@ def params_update(path,output,date_start,date_end,FminNDVI=0.2,FmaxNDVI=0.9,Fmin
     param.loc[0,3]=date_end
     param.to_csv(output,header=False,sep= ',',index=False,na_rep="")
        
+def select_color_date(x):
+    couleurs=[]
+    for i in range(len(x)):
+        if x.iloc[i].date.strftime('%m-%d')<= "04-01" : 
+            couleurs.append("r")
+        else : 
+            couleurs.append("b")
+    return couleurs
+
 
 if __name__ == "__main__":
-    for y in ["2006","2008","2010","2012","2014","2015","2017","2019"]:
-        name_run="RUN_SENSI_SOL"
-        d={}
-        d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
-        d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
-        d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
-        d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
+    result=[]
+    for rew in np.arange(-50,25):
+        # print(r'==============')
+        print(rew)
+        # print(r'==============')
+        for y in ["2006","2008","2010","2012","2014","2015","2017","2019"]:
+            print (y)
+            name_run="RUN_SENSI_SOL/SENSI_REW"
+            d={}
+            d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+            d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+            d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
+            d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
+            params_update( d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
+                          d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1031'),
+                          Ze=125,REW=rew,maxZr=1990,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
         
-        params_update( d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0301'),date_end=str(y)+str('1031'),)
-    
-        #  Lancement du code
-        os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
-        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
+            #  Lancement du code
+            os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
+            os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv ')
+            
+            
+              # Récupération des output de la simulation 
+            output_sim=pickle.load(open(d["SAMIR_run"]+"output_T1.df","rb"))
+            ETRmod=output_sim[["ET","date"]]
+            
+            #  Récuparation data_validation ETR
+            ETR=pd.read_csv("/mnt/g/Yann_THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(y)+".csv",decimal='.')
+            # localiser les nan dans ETR, les supprimer ainsi que les dates pour ensuite comparer 
+            dfETR=pd.concat([ETR,ETRmod],axis=1)
+            dfETR.columns=["date1",'LE','ET','date']
+            dfETR.dropna(inplace=True)
+            slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
+            bias=1/dfETR.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
+            fitLine = predict(dfETR.LE)
+            plt.figure(figsize=(7,7))
+            plt.title(zrm)
+            plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
+            plt.plot(dfETR.LE,fitLine,linestyle="-")
+            plt.scatter(dfETR.LE,dfETR.ET,c=select_color_date(dfETR),s=9)
+            plt.plot()
+            plt.xlabel("ETR OBS")
+            plt.ylabel("ETR model")
+            plt.xlim(0,10)
+            plt.ylim(0,10)
+            rms = mean_squared_error(dfETR.LE,dfETR.ET,squared=False)
+            plt.text(8,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
+            plt.text(8,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
+            plt.text(8,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
+            plt.text(8,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
+            plt.savefig(d["SAMIR_run"]+"plt_scatter_ETR_%s_%s.png"%(y,rew))
+            result.append([rew,rms,bias,r_value,y])
+            # print (result)
+        resultat=pd.DataFrame(result,columns=["REW","RMSE",'bias','R','years'])
+        resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE_REW.csv")
+       
         
-        
-          # Récupération des output de la simulation 
-        output_sim=pickle.load(open(d["SAMIR_run"]+"output_T1.df","rb"))
-        ETRmod=output_sim[["ET","date"]]
-        
-        #  Récuparation data_validation ETR
-        ETR=pd.read_csv("/mnt/g/Yann_THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(y)+".csv",decimal='.')
-        # localiser les nan dans ETR, les supprimer ainsi que les dates pour ensuite comparer 
-        dfETR=pd.concat([ETR,ETRmod],axis=1)
-        dfETR.dropna(inplace=True)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
-        bias=1/dfETR.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
-        fitLine = predict(dfETR.LE)
-        plt.figure(figsize=(7,7))
-        # plt.title(r)
-        plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
-        plt.plot(dfETR.LE,fitLine,linestyle="-")
-        plt.scatter(dfETR.LE,dfETR.ET)
-        plt.plot()
-        plt.xlabel("ETR OBS")
-        plt.ylabel("ETR model")
-        plt.xlim(0,10)
-        plt.ylim(0,10)
-        rms = mean_squared_error(dfETR.LE,dfETR.ET,squared=False)
-        plt.text(1,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
-        plt.text(1,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
-        plt.text(1,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
-        plt.text(1,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
-        plt.savefig(d["SAMIR_run"]+"plt_scatter_ETR_%s.png"%y)
 
+        
