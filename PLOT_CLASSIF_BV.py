@@ -58,17 +58,17 @@ def plt_classif_kappa(df,var1,var2):
     plt.grid(axis='x')
     plt.bar(y_pos,df["mean_"+var1],yerr=df["std_"+var1],capsize=3,width = 1,label=var1)
     plt.bar(y_pos+df.shape[0]+0.5,df["mean_"+var2],yerr=df["std_"+var2],capsize=3,width = 1,label=var2)
-    plt.ylabel("score")
-    plt.xlabel("step")
+    # plt.ylabel("score",fontsize=14)
+    # plt.xlabel("step")
     plt.xticks(y_pos, tuple(df.index),rotation=90,size=9)
     y_pos3=y_pos+df.shape[0]+0.5
     for j in np.arange(len(df.index)):
-        plt.text(x = y_pos3[j]-0.25 , y = -0.02, s = list(df.index)[j],size=11,rotation=90,va="top")
+        plt.text(x = y_pos3[j]-0.25 , y = -0.02, s = list(df.index)[j],size=14,rotation=90,va="top")
     for j in np.arange(len(df.index)):
-        plt.text(x = y_pos[j]-0.3, y=list(df["mean_"+var1]+df["std_"+var1])[j]+0.01,s = list(round(df["mean_"+var1],2))[j],size=9)
+        plt.text(x = y_pos[j]-0.3, y=list(df["mean_"+var1]+df["std_"+var1])[j]+0.01,s = list(round(df["mean_"+var1],2))[j],size=12)
     for j in np.arange(len(df.index)):
-        plt.text(x = y_pos3[j]-0.3, y=list(df["mean_"+var2]+df["std_"+var2])[j]+0.01,s = list(round(df["mean_"+var2],2))[j],size=9)
-    plt.legend()
+        plt.text(x = y_pos3[j]-0.3, y=list(df["mean_"+var2]+df["std_"+var2])[j]+0.01,s = list(round(df["mean_"+var2],2))[j],size=12)
+    plt.legend(fontsize=14)
 
 if __name__ == "__main__":
     years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
@@ -194,7 +194,8 @@ if __name__ == "__main__":
         dfindice_bvstep=dfindice_bv.sort_values(by=["mean_Kappa"])
         plt_classif_kappa(dfindice_bvstep,"Kappa","OA") # Production du graphique
         plt.title(years[:-4],size="large")
-        plt.xticks(size='large')
+        # plt.xticks(size='large')
+        plt.xticks(fontsize=14)
         plt.yticks(size='large')
         plt.savefig(d["SAVE_disk"]+"KAPPA_RUN_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
                 
@@ -362,12 +363,12 @@ if __name__ == "__main__":
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
                     plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
-                    plt.ylabel('value')
+                    # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(str(i[0][:-5]))
                     plt.legend()
-                    plt.xticks(size='large')
-                    plt.yticks(size='large')
+                    plt.xticks(fontsize=14)
+                    plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
         
             else: # A revoir probleme dans la conception du plot
@@ -386,12 +387,12 @@ if __name__ == "__main__":
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
                     plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
-                    plt.ylabel('value')
+                    # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(str(i[0][:-5]))
                     plt.legend()
-                    plt.xticks(size='large')
-                    plt.yticks(size='large')
+                    plt.xticks(fontsize=14)
+                    plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
                     
     # Comparer les runs cumil et non cumuls 
@@ -412,12 +413,12 @@ if __name__ == "__main__":
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='Cumul')
                     plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Not_cumul')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=45) # fixer problème du nom de l'axe"
-                    plt.ylabel('value')
+                    # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(r'{} vs {}'.format(str(i),str(j)))
                     plt.legend()
-                    plt.xticks(size='large')
-                    plt.yticks(size='large')
+                    plt.xticks(fontsize=14)
+                    plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
                 else:
                 
@@ -432,12 +433,12 @@ if __name__ == "__main__":
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='Cumul')
                     plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Not_cumul')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=45) # fixer problème du nom de l'axe"
-                    plt.ylabel('value')
+                    # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(r'{} vs {}'.format(str(i),str(j)))
                     plt.legend()
-                    plt.xticks(size='large')
-                    plt.yticks(size='large')
+                    plt.xticks(fontsize=14)
+                    plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
     # =============================================================================
 #     SEASON_TIME
@@ -512,14 +513,14 @@ if __name__ == "__main__":
             plt.bar(r1, bars1.mean_fscore, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
             plt.bar(r2, bars2.mean_fscore, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
             plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90,size =9) # fixer problème du nom de l'axe"
-            plt.ylabel('value')
+            # plt.ylabel('value')
             plt.ylim(0,1)
             # plt.title(str(i[0]))
             if 'Rainfed Maize'in i:
-               plt.legend()
-            plt.xticks(size='large')
-            plt.yticks(size='large')
+               plt.legend(fontsize=14)
+            plt.xticks(fontsize=14)
+            plt.yticks(fontsize=14)
             for j in np.arange(len(set(M7.step))):
-                plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=10)
-                plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=10)
+                plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
+                plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
             plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)

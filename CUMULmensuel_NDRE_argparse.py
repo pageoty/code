@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+d#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Mon May  6 17:27:33 2019
@@ -6,7 +6,7 @@ Created on Mon May  6 17:27:33 2019
 @author: dahingerv
 """
 
-#from osgeo import gdal
+# from osgeo import gdal
 import otbApplication
 import numpy as np
 import pandas as pd

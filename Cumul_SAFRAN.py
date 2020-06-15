@@ -129,8 +129,8 @@ if __name__ == '__main__':
        'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE', 'RESR_NEI_1', 'HTEURNEIGE',
        'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_', 'ECOULEMENT', 'WG_RACINE_',
        'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q', 'X', 'Y'],inplace=True)
-    ADOUR2018=meteo2017.loc[(meteo2017["DATE"] >= "2018-05-01") & (meteo2017["DATE"] <= "2018-09-30")]
-    ADOUR2017=meteo2017.loc[(meteo2017["DATE"] >= "2017-05-01") & (meteo2017["DATE"] <= "2017-09-30")]
+    ADOUR2018=meteo2017.loc[(meteo2017["DATE"] >= "2018-04-01") & (meteo2017["DATE"] <= "2018-10-31")]
+    ADOUR2017=meteo2017.loc[(meteo2017["DATE"] >= "2017-04-01") & (meteo2017["DATE"] <= "2017-10-31")]
     AD17=ADOUR2017.groupby("DATE").mean()
     AD18=ADOUR2018.groupby("DATE").mean()
     

@@ -32,9 +32,9 @@ if __name__ == "__main__":
     bv = "Fusion" # Fusion PARCELLE_CESBIO
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    # d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R1_labo_2017_SAMIR_opt_EXcel/Inputdata/"
+    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
-    years="2019"
+    years="2018"
 
 
     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
@@ -98,7 +98,7 @@ if __name__ == "__main__":
             id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index) # non traiter par la tuile TDJ
             non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
             all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter])
-            all_NDVI.drop([5,7,11],inplace=True)
+            # all_NDVI.drop([5,7,11],inplace=True)
             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
             tar=tatar.T.sort_index(ascending=True)
             
@@ -131,6 +131,7 @@ if __name__ == "__main__":
         NDVI["date"]=date
         NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
         NDVI.columns=["NDVI","id","date"]
+    # NDVI.to_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/Fusion/NDVI_ref_parcelle_"+str(years)+".csv")
 #        globals()["NDVI%s"%bv]=NDVI
 #        NDVI_glob=pd.concat([NDVICACG,NDVITARN])
 
@@ -165,8 +166,8 @@ if __name__ == "__main__":
             soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
        'min_0', 'max_0', 'geometry'],inplace=True)
             soil.columns=["id",str(i),str(i+'std')]
-            # soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
-        
+            soil.to_pickle(d["path_PC"]+str(i)+'.df')
+
 # =============================================================================
 #  SOIL data Lamothe
 # =============================================================================
@@ -212,6 +213,7 @@ if __name__ == "__main__":
     dfmeteo=meteo.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
     meteo.geometry=dfmeteo
     meteo.DATE=pd.to_datetime(meteo.DATE,format='%Y%m%d')   
+    Parcellaire["geomety"]=Parcellaire.centroid
     Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection')
     if bv == "PARCELLE_CESBIO":
 #     Drop lam
@@ -226,16 +228,17 @@ if __name__ == "__main__":
         lam.drop(columns="id",inplace=True)
     else:
 #     Drop fusion
-        Meteo_par.drop(columns=[ 'NOM', 'CULTURE', 'CULTURE', 'geometry'],inplace=True)
+        Meteo_par.drop(columns=['Unnamed_ 0','NOM', 'CULTURE', 'CULTURE', 'geometry'],inplace=True)
         Meteo_par["Irrig"]=0.0
         Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
         Meteo_par.info()
+        Meteo_par.to_pickle(d["path_PC"]+"/meteo.df")
     # lam.to_pickle(d["path_PC"]+"/meteo.df")
     # lam.to_csv(d["PC_disk"]+"/meteo_lam_2008.csv")
 
 
     # Safran=pd.read_csv(d["PC_disk"]+"DONNES_METEO/SAFRAN_csv_2017_18.csv")
-    # SAF2017=Safran.loc[(Safran.DATE > 20171231)& (Safran["DATE"] < 20180101)]
+    # SAF2017=Safran.loc[(Safran.DATE > 20171231)& (Safran["DATE"] < 20190101)]
     # SAF2017["X"]=SAF2017.LAMBX*100
     # SAF2017["Y"]=SAF2017.LAMBY*100
     # SAF2017.to_csv(d["PC_disk"]+"SAFRAN_csv_2018.csv")

@@ -46,7 +46,8 @@ if __name__ == '__main__':
     d['path_features']="/datalocal/vboxshare/THESE/BESOIN_EAU/DONNES_SOIL/SOIL_GRID/"
     d["SAVE"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/PLOT/GEOSTAT_SOIL_GRID/"
     all_features={d['path_features']+'CLAY/', d['path_features']+'limon/',d['path_features']+'sand/',d["path_features"]+'Depth/'}
-    d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
+    d["PC_LAB"]="/datalocal/vboxshare/THESE"
+    d["PC_disk"]="G:/Yann_THESE/"
     d["SAVE_disk"]="G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/PLOT/GEOSTAT_SOIL_GRID/"
     # all_features={'/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/SOIL_GRID/PFCC/RU_data_L93/'}
 # =============================================================================
@@ -63,8 +64,8 @@ if __name__ == '__main__':
 # =============================================================================
 # Plot
 # =============================================================================
-    params=["RU"]
-    for bv in ["ADOUR","TARN",'NESTE']:
+    params=["class"]
+    for bv in ['NESTE']:
         print(bv)
         for param in params:
             if param == 'texture' :
@@ -97,40 +98,40 @@ if __name__ == '__main__':
         # Create plt rotation scatter 3D and save in gif
         #             rot_animation = animation.FuncAnimation(fig, rotate, frames=np.arange(0,362,2),interval=100)
         #             rot_animation.save('/datalocal/vboxshare/THESE/'+str(bv)+str(z)+'.gif', dpi=100, writer='imagemagick')
-            elif param == "depth" :
-                if bv =="NESTE":
-                    Prof_NESTE_2017_Rigou=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/SOIL_RIGOU/Profo_rac_NESTE_MAIZE_2017.shp")
-                    plt.figure(figsize=(10,7))                    
-                    # plt.hist(Prof_NESTE_2017_Rigou.ProfRacPot)
-                    Prof_NESTE_2017_Rigou["Area"]=Prof_NESTE_2017_Rigou.area/10000
-                    g=Prof_NESTE_2017_Rigou.groupby("ProfRacPot").sum()
-                    plt.bar(g.index,g.Area,width=5)
-                    plt.xlabel("Profondeur racinaire mm ")
-                    plt.ylabel("Surface ha")
-                    plt.savefig(d["SAVE"]+str(bv)+'profondeur_racinaire_Rigou.png')
-                    depth_soilgrid=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/NESTE/BDTICM_M_250m_L93.shp')
-                    plt.figure(figsize=(10,7))
-                    sns.set(style="darkgrid")
-                    sns.set_context('paper')
-                    plt.hist(depth_soilgrid.mean_0,bins=100)
-                    plt.xlabel("Profondeur soil mm ")
-                    plt.ylabel("freq")
-                    plt.savefig(d["SAVE"]+str(bv)+'profondeur_soil_Bedrock.png')
-                else:
-                    depth_soilgrid=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/BDTICM_M_250m_L93.shp')
-                    plt.figure(figsize=(10,7))
-                    sns.set(style="darkgrid")
-                    sns.set_context('paper')
-                    plt.hist(depth_soilgrid.mean_0,bins=100)
-                    plt.xlabel("Profondeur soil mm ")
-                    plt.ylabel("freq")
-                    plt.savefig(d["SAVE"]+str(bv)+'profondeur_soil_Bedrock.png')
+            # elif param == "depth" :
+            #     if bv =="NESTE":
+            #         Prof_NESTE_2017_Rigou=geo.read_file( d["PC_disk"]+"/BESOIN_EAU/TRAITEMENT/SOIL_RIGOU/Profo_rac_NESTE_MAIZE_2017.shp")
+            #         plt.figure(figsize=(10,7))                    
+            #         # plt.hist(Prof_NESTE_2017_Rigou.ProfRacPot)
+            #         Prof_NESTE_2017_Rigou["Area"]=Prof_NESTE_2017_Rigou.area/10000
+            #         g=Prof_NESTE_2017_Rigou.groupby("ProfRacPot").sum()
+            #         plt.bar(g.index,g.Area,width=5)
+            #         plt.xlabel("Profondeur racinaire mm ")
+            #         plt.ylabel("Surface ha")
+            #         plt.savefig(d["SAVE"]+str(bv)+'profondeur_racinaire_Rigou.png')
+            #         depth_soilgrid=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/NESTE/BDTICM_M_250m_L93.shp')
+            #         plt.figure(figsize=(10,7))
+            #         sns.set(style="darkgrid")
+            #         sns.set_context('paper')
+            #         plt.hist(depth_soilgrid.mean_0,bins=100)
+            #         plt.xlabel("Profondeur soil mm ")
+            #         plt.ylabel("freq")
+            #         plt.savefig(d["SAVE"]+str(bv)+'profondeur_soil_Bedrock.png')
+            #     else:
+            #         depth_soilgrid=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/BDTICM_M_250m_L93.shp')
+            #         plt.figure(figsize=(10,7))
+            #         sns.set(style="darkgrid")
+            #         sns.set_context('paper')
+            #         plt.hist(depth_soilgrid.mean_0,bins=100)
+            #         plt.xlabel("Profondeur soil mm ")
+            #         plt.ylabel("freq")
+            #         plt.savefig(d["SAVE"]+str(bv)+'profondeur_soil_Bedrock.png')
                 
             elif param == 'class':
                 classe=[]
-                classenames=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNES_SOIL/SOIL_GRID/Classif/TAXNWRB_250m_ll.tif.csv")
+                classenames=pd.read_csv( d["PC_disk"]+"/BESOIN_EAU/DONNES_SOIL/SOIL_GRID/Classif/TAXNWRB_250m_ll.tif.csv")
                 classenames=classenames[["Number","Group"]]
-                classi=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/TAXNWRB_250_L93.shp')
+                classi=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/TAXNWRB_250_L93.shp')
                 classe=list(set(classi.majority.dropna()))
                 intcla=list(map(int,classe[:-1]))
                 classesoil=classenames.loc[classenames.Number.isin(intcla)]
@@ -146,8 +147,8 @@ if __name__ == '__main__':
                 plt.xticks(rotation=45)
                 plt.xlabel("classe FAO ")
                 plt.ylabel("Surface en ha")
-                plt.savefig(d["SAVE"]+str(bv)+'Repartion_class.png')
-                depth_soilgrid=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/BDTICM_M_250m_L93.shp')
+                # plt.savefig(d["SAVE"]+str(bv)+'Repartion_class.png')
+                depth_soilgrid=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/BDTICM_M_250m_L93.shp')
                 a=geo.overlay(classi,depth_soilgrid,how='intersection')
                 plt.figure(figsize=(10,10))
                 sns.set(style="darkgrid")
@@ -156,24 +157,26 @@ if __name__ == '__main__':
                 plt.xlabel("classe FAO ")
                 plt.xticks(range(len(classesoil.Group)), classesoil.Group,rotation=45)
                 plt.ylabel('Prof Soil')
-                plt.savefig(d["SAVE"]+str(bv)+'boxplot_classe_profosoil.png')
+                # plt.savefig(d["SAVE"]+str(bv)+'boxplot_classe_profosoil.png')
 
             elif param == 'RU':
-                classi=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/TAXNWRB_250_L93.shp')
+                classenames=pd.read_csv( d["PC_disk"]+"/BESOIN_EAU/DONNES_SOIL/SOIL_GRID/Classif/TAXNWRB_250m_ll.tif.csv")
+                classenames=classenames[["Number","Group"]]
+                classi=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/'+str(bv)+'/TAXNWRB_250_L93.shp')
                 classe=list(set(classi.majority.dropna()))
                 intcla=list(map(int,classe[:-1]))
                 classesoil=classenames.loc[classenames.Number.isin(intcla)]
-                for i in os.listdir('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse'):
+                for i in os.listdir( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse'):
                     if".shp" in i :
                         print(i)
-                        Hori=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/{}.shp'.format(i[:-4]))
+                        Hori=geo.read_file( d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/{}.shp'.format(i[:-4]))
                         RU_class=geo.overlay(classi,Hori,how='intersection')
                         plt.figure(figsize=(10,10))
                         sns.boxplot(RU_class.majority,RU_class.mean_0)
                         plt.xlabel("classe FAO ")
                         plt.xticks(range(len(classesoil.Group)), classesoil.Group,rotation=45)
                         plt.ylabel("RU_{} cm".format(i[13:15]))
-                        plt.savefig(d["SAVE"]+str(bv)+'RU_{}cm_classe_FAO.png'.format(i[11:15]))
+                        # plt.savefig(d["SAVE"]+str(bv)+'RU_{}cm_classe_FAO.png'.format(i[11:15]))
                         
 
     RUM_RRP_Gers=geo.read_file(d["PC_disk"]+'/TRAITEMENT/tmp/INTER_RPG2018_SOL_GERS.shp')
@@ -199,7 +202,7 @@ if __name__ == '__main__':
         y_pos=range(len(sorted(list(set(all.RUM)))))
         for pro,j in zip(sorted(list(set(all.RUM))),range(len(sorted(list(set(all.RUM)))))):
             plt.text(x=y_pos[j]-0.5,y=all.mean_0.loc[all.RUM==pro].mean()+5,s=list(set(all.ProfRacPot.loc[all.RUM==pro])))
-        plt.savefig(d["SAVE_disk"]+'boxplot_RU_{}_REF_SG_Gers_MAIZE2018.png'.format(element))
+        # plt.savefig(d["SAVE_disk"]+'boxplot_RU_{}_REF_SG_Gers_MAIZE2018.png'.format(element))
                 # if len(RU.index) < 1:
                 #     print ("Pas de comparaison")
                 # else:
@@ -278,10 +281,10 @@ if __name__ == '__main__':
     # plt.figure(figsize=(10,10))
     # sns.boxplot(NESTE_class.majority,NESTE_class.RU150cm)
     
-    RUM_RRP_Gers=geo.read_file('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/INTER_RPG2018_SOL_GERS.shp')
-    RUM_0_70_SG=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_70cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
-    RUM_0_30_SG=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_40cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
-    RUM_0_50_SG=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_50cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
+    RUM_RRP_Gers=geo.read_file(d["PC_disk"]+'/BESOIN_EAU/TRAITEMENT/tmp/INTER_RPG2018_SOL_GERS.shp')
+    RUM_0_70_SG=geo.read_file(d["PC_disk"]+"/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_70cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
+    RUM_0_30_SG=geo.read_file(d["PC_disk"]+"/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_40cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
+    RUM_0_50_SG=geo.read_file(d["PC_disk"]+"/BESOIN_EAU/TRAITEMENT/GEOSTAT_SOIL_GRID/ALL_MAIZE_2018/without_coarse/RU_Horizon_0_50cm_without_coarse_b_sup_SOIL_GRID_ss_nn_L93ZTotb_2018_ss_0.shp")
 
     
     RUM_RRP=RUM_RRP_Gers[["ID","classe","ProfRacPot","RUM"]]
@@ -320,3 +323,13 @@ if __name__ == '__main__':
     plt.figure(figsize=(10,10))
 
     sns.boxplot(test.RUM,test.mean_0,linewidth=0.5,color="white")
+# intersection SOILGRID classe/RIGOU classe
+    Rigou=geo.read_file("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/SOIL_RIGOU/Soil_gers_unique_polygone.shp")
+    Intercla=geo.overlay(Rigou,classi,how='intersection')
+    inter=Intercla[["Name","majority"]]
+    print(classesoil)
+    for i in classesoil.Number:
+        print (i)
+        classe=inter.loc[inter.majority==i]
+        a=classe.groupby('Name').count()
+        print(a)
