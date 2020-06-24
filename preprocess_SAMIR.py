@@ -25,9 +25,6 @@ import descartes
 if __name__ == "__main__":
     """ mise en place df pour SAMIR """
     
-    # Parameter Years et variable
-    
-    # A adpater en focntion du test
     
     bv = "Fusion" # Fusion PARCELLE_CESBIO
     d={}
@@ -45,8 +42,6 @@ if __name__ == "__main__":
 
     dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
     
-#    RPG=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RPG/RPG_BV/RPG_SUMMER_2018_ADOUR_AMONT_only_maize.shp")
-    # LABO=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
     for bv in [bv]:
         NDVI=pd.DataFrame()
         if bv =="CACG":
@@ -132,11 +127,9 @@ if __name__ == "__main__":
         NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
         NDVI.columns=["NDVI","id","date"]
     # NDVI.to_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/Fusion/NDVI_ref_parcelle_"+str(years)+".csv")
-#        globals()["NDVI%s"%bv]=NDVI
-#        NDVI_glob=pd.concat([NDVICACG,NDVITARN])
+
 
     #  Select only maize
-    
     # maize=RPG.loc[RPG.CODE_CULTU.str.startswith("MI")]
     # NDVIMAIZE=NDVI.loc[NDVI['id'].isin(maize.ID)]
     
@@ -147,7 +140,6 @@ if __name__ == "__main__":
 # =============================================================================
 
     if bv == "PARCELLE_CESBIO":
-        # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
         Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
         for i in ["WP",'FC']:
             soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m.shp')
@@ -184,10 +176,7 @@ if __name__ == "__main__":
 # =============================================================================
 #     Build METEO spatialieser 
 # =============================================================================
-    
-    # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
-    # Parcellaire=geo.read_file(d["PC_disk"]+"PARCELLE_LABO/PARCELLE_LABO_ref.shp")
-    # if years == "2017":
+
     meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
     meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
     'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
@@ -195,26 +184,15 @@ if __name__ == "__main__":
     'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
     'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
     'X', 'Y'],inplace=True)
-    # else :
-    #     meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/DATA_SAFRAN_2017_EMPIRSE_ALL.shp")
-
-    #     meteo.drop(columns=['field_1', 'Unnamed_ 0', 'LAMBX', 'LAMBY', 'PRENEI_Q',
-    #                         'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
-    #                         'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
-    #                         'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
-    #                         'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
-    #                         'lambX_1', 'lambY_1'],inplace=True)
-    
-    # meteo.drop(columns=['X', 'Y', 'field_1_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
-    #     'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q','PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE', 'RESR_NEI_1',
-    #     'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_', 'ECOULEMENT',
-    #     'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q', 'lambX_1','EVAP_Q',
-    #     'lambY_1'],inplace=True)
+   
     dfmeteo=meteo.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
     meteo.geometry=dfmeteo
+    # meteo.iloc[100:1500].to_file(d['PC_disk']+"/meteo_test.shp")
     meteo.DATE=pd.to_datetime(meteo.DATE,format='%Y%m%d')   
-    Parcellaire["geomety"]=Parcellaire.centroid
-    Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection')
+    # Parcellaire.geometry=Parcellaire.centroid
+    # Parcellaire.to_file(d["PC_disk"]+'/parcellaire_test.shp')
+    Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection') # probleme ne prend pas la majoritaire, test avec centroide error (pb version geopandas)
+    # Meteo_par.to_file(d['PC_disk']+"/inter_meteo_par.shp")
     if bv == "PARCELLE_CESBIO":
 #     Drop lam
         Meteo_par.drop(columns=["geometry",'NOM_PARCEL', 'LABO','WP_0_30cm','WP_40_50m', 'FC_0_30cm', 
@@ -222,21 +200,21 @@ if __name__ == "__main__":
                                 'sdRU_SG_60', 'RU_SG_0_30', 'sdRU_SG0_3', 'WP_SG_60', 'sdWP_SG_60', 'FC_SG_60',
            'sdFC_SG_60', 'geometry'],inplace=True)
         Meteo_par["Irrig"]=0.0
-        Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
+        Meteo_par.columns=["date","Prec",'ET0',"id","Irrig"]
         Meteo_par.info()
         lam=Meteo_par.loc[np.where(Meteo_par.id==0)] # if 2018 .iloc[:-31] # id 0 == lamothe
         lam.drop(columns="id",inplace=True)
+        lam.to_pickle(d["path_PC"]+"/meteo.df")
     else:
 #     Drop fusion
-        Meteo_par.drop(columns=['Unnamed_ 0','NOM', 'CULTURE', 'CULTURE', 'geometry'],inplace=True)
+        Meteo_par.drop(columns=['Unnamed_ 0','NOM', 'CULTURE', 'CULTURE'],inplace=True)
         Meteo_par["Irrig"]=0.0
-        Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
+        # Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
         Meteo_par.info()
         Meteo_par.to_pickle(d["path_PC"]+"/meteo.df")
-    # lam.to_pickle(d["path_PC"]+"/meteo.df")
-    # lam.to_csv(d["PC_disk"]+"/meteo_lam_2008.csv")
 
 
+    # Select data SAFRAN data 
     # Safran=pd.read_csv(d["PC_disk"]+"DONNES_METEO/SAFRAN_csv_2017_18.csv")
     # SAF2017=Safran.loc[(Safran.DATE > 20171231)& (Safran["DATE"] < 20190101)]
     # SAF2017["X"]=SAF2017.LAMBX*100
@@ -290,7 +268,6 @@ if __name__ == "__main__":
 # =============================================================================
 #   Prépartion data filecsv 
 # =============================================================================
-    # # for y in os.listdir("D:/THESE_TMP/RUNS_SAMIR/RUN_COMPAR_VERSION/DONNEES_INPUT/"):
     # for y in os.listdir("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/"):
     #     years=y[-8:-4]
     #     df=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/LAMOTHE_NDVI_"+str(years)+".csv",decimal=".")

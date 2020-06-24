@@ -393,7 +393,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
                     
     # Comparer les runs cumil et non cumuls 
         if years =="CUMUL_VS_NOT":

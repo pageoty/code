@@ -30,6 +30,7 @@ from scipy import *
 from scipy import stats
 from pylab import *
 from sklearn.linear_model import LinearRegression
+from RUN_SAMIR_opti import params_update
 # from ambhas.errlib import NS
 
 def NS(s,o):
@@ -63,39 +64,27 @@ def predict(x):
   return slope * x + intercept
 
 if __name__ == "__main__":
-    for y in ["2006","2008","2010","2012","2019"]:
-        name_run="RUN_COMPAR_VERSION_new_data"
-        # years=2012
+    result=[]
+    for y in ["2006"]:
+        name_run="RUN_COMPAR_VERSION_new_data_v2"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
-        d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
-        
-       
-        # REW = "-8 "
-        # Zr_max="2155" 
-        # A_kcb = "1.63" 
-        # date_start="20120527"
-        # date_end="20120823"
-        
-        # parampc=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
-        # param=pd.read_csv(d["SAMIR_run"]+"Inputdata/param_SAMIR12_13.csv",delimiter=",",header=None)
-        # param.loc[6,13]=A_kcb # ligne 6 , colonne 13
-        # param.loc[6,20]=REW
-        # param.loc[6,23]=Zr_max
-        # param.loc[0,1]=date_start
-        # param.loc[0,3]=date_end
-        
-        # param.to_csv(d["SAMIR_run"]+"/Inputdata/param_otpi_T1.csv",header=False,sep= ',',index=False,na_rep="")
-        # param_op=pd.read_csv("D:/THESE_TMP/RUNS_SAMIR/RUN_TEST_opi/Inputdata/param_otpi_T1.csv",delimiter=";",header=None)
+        d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
+        params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('0831'),
+                      Ze=125,REW=-26,maxZr=1881,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,A_kcb=1.49,Lame_max=50,FmaxNDVI=1,Init_RU=1)
     
         #  Lancement du code
         os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
-        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_otpi_T1.csv')
+        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv --init 1')
         
         #  Récupération des output de la simulation 
-        output_sim=pickle.load(open(d["SAMIR_run"]+"output_T1.df","rb"))
+        a=open(d["SAMIR_run"]+"output_T1.df","rb")
+        output_sim=pickle.load(a)
+        a.close()
+        output_sim.dropna(inplace=True)
         all_quantity=[]
         all_number=[]
         all_id=[]
@@ -123,11 +112,12 @@ if __name__ == "__main__":
         dict_var={"fc":"FC","Kcb":"Kcb","ET":"ET","SWC1":"SWC1","Hvol1":"SWCvol1","Zr":"Zr","TAW":"TAW","Dr":"Dr","Dep":"Dep","Dd":"Dd"}
         for c,o in zip(dict_var.keys(),dict_var.values()):
             print(c,o)
+            print(output_sim[o].shape,df[c].shape)
     # Plot
             val=mean_squared_error(df[c],output_sim[o],squared=False)
-            # print(r'========')
-            # print(val)
-            # print(r'========')
+            print(r'========')
+            print(val)
+            print(r'========')
             slope, intercept, r_value, p_value, std_err = stats.linregress(df[c],output_sim[o])
             bias=1/df[c].shape[0]*sum(np.mean(df[c])-output_sim[o]) 
             fitLine = predict(df[c])
@@ -142,7 +132,7 @@ if __name__ == "__main__":
             plt.xlim(0,max(output_sim[o]))
             plt.ylim(0,max(output_sim[o]))
             # print(NS(df[c],output_sim[o])) 
-            plt.text(5,min(output_sim[o])+0.1,"RMSE = "+str(round(val,2)))
+            # plt.text(5,min(output_sim[o])+0.1,"RMSE = "+str(round(val,2)))
             # plt.text(5,min(output_sim[o])+0.3,"R² = "+str(round(r_value,2)))
             # plt.text(5,min(output_sim[o])+0.5,"Pente = "+str(round(slope,2)))
             # plt.text(5,min(output_sim[o])+0.7,"Biais = "+str(round(bias,2)))
