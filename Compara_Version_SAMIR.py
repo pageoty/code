@@ -109,7 +109,7 @@ if __name__ == "__main__":
         df["Date"]=pd.to_datetime(df["Date"],format="%d/%m/%Y")
         df.set_index("Date",inplace=True)
         output_sim.set_index("date",inplace=True)
-        dict_var={"fc":"FC","Kcb":"Kcb","ET":"ET","SWC1":"SWC1","Hvol1":"SWCvol1","Zr":"Zr","TAW":"TAW","Dr":"Dr","Dep":"Dep","Dd":"Dd"}
+        dict_var={"fc":"FCov","Kcb":"Kcb","ET":"ET","SWC1":"SWC1","Hvol1":"SWCvol1","Zr":"Zr","TAW":"TAW","Dr":"Dr","Dep":"Dep","Dd":"Dd"}
         for c,o in zip(dict_var.keys(),dict_var.values()):
             print(c,o)
             print(output_sim[o].shape,df[c].shape)

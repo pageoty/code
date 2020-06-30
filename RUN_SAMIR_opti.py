@@ -120,10 +120,10 @@ def select_color_date(x):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2006",'2010']:# "2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2006","2008","2010","2012","2014","2015"]:# 
         print (y)
-        name_run="RUNS_optim_LUT_LAM_ETR/Run_opti_param_v3"
-        optimis_val=["REW","maxZr"]
+        name_run="RUNS_optim_LUT_LAM_ETR/Zrmax_opti/Run_opti_param_ss_spin"
+        optimis_val=["Zrmax"]
         print(r'===============')
         print(optimis_val)
         print(r'===============')
@@ -141,7 +141,7 @@ if __name__ == "__main__":
             solnu=NDVI.loc[(NDVI.NDVI<0.25)&(NDVI.date<timestart)]
             lastdate=solnu.iloc[-1]["date"].strftime('%m-%d').replace("-", "")
             params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0301'),date_end=str(y)+str(lastdate),
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
                       Ze=125,REW='optim',maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
         else:
             timestart=str(y)+"-05-01"
@@ -149,7 +149,7 @@ if __name__ == "__main__":
             lastdate=vege.iloc[0]["date"].strftime('%m-%d').replace("-", "")
             params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                       d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                      Ze=125,REW='optim',maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
+                      Ze=125,REW=2,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
 
         #  Lancement du code
         if "Output" in os.listdir(d['SAMIR_run']):
@@ -173,7 +173,11 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/CSV"%d['SAMIR_run']) 
             
         os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
-        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET ')
+        if "Fcover" in name_run :
+            os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fcover maize/FCOVER.df -fc maize/FC.df -wp maize/WP.df  --fc_input  -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET')
+        else:
+            os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET')
+
         if len(optimis_val) < 2:
             param=pd.read_csv(d["SAMIR_run"]+"Output/output_test_maize_param.txt",header=None,skiprows=1,sep=";")
             param.set_index(0,inplace=True)
@@ -214,28 +218,28 @@ if __name__ == "__main__":
                     slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
                     bias=1/dfETR.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
                     fitLine = predict(dfETR.LE)
-                    plt.figure(figsize=(7,7))
-                    plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
-                    plt.plot(dfETR.LE,fitLine,linestyle="-")
-                    plt.scatter(dfETR.LE,dfETR.ET,c=select_color_date(dfETR),s=9)
-                    plt.legend(('bare_soil', 'Vege'))
-                    plt.xlabel("ETR OBS")
-                    plt.ylabel("ETR model")
-                    plt.xlim(0,10)
-                    plt.ylim(0,10)
+                    # plt.figure(figsize=(7,7))
+                    # plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
+                    # plt.plot(dfETR.LE,fitLine,linestyle="-")
+                    # plt.scatter(dfETR.LE,dfETR.ET,c=select_color_date(dfETR),s=9)
+                    # plt.legend(('bare_soil', 'Vege'))
+                    # plt.xlabel("ETR OBS")
+                    # plt.ylabel("ETR model")
+                    # plt.xlim(0,10)
+                    # plt.ylim(0,10)
                     rms = mean_squared_error(dfETR.LE,dfETR.ET,squared=False)
-                    plt.text(8,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
-                    plt.text(8,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
-                    plt.text(8,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
-                    plt.text(8,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
-                    plt.savefig(d["SAMIR_run"]+"Output/Plot/plt_scatter_ETR_%s.png"%(num_run))
-                    plt.figure(figsize=(7,7))
-                    plt.plot(dfETR.date,dfETR.LE,label='ETR_obs',color="black")
-                    plt.plot(dfETR.date,dfETR.ET,label='ETR_mod',color='red')
-                    plt.ylabel("ETR")
-                    plt.ylim(0,10)
-                    plt.legend()
-                    plt.savefig(d["SAMIR_run"]+"Output/Plot/Plot_dyna/plt_dynamique_ETR_%s.png"%(num_run))
+                    # plt.text(8,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
+                    # plt.text(8,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
+                    # plt.text(8,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
+                    # plt.text(8,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
+                    # plt.savefig(d["SAMIR_run"]+"Output/Plot/plt_scatter_ETR_%s.png"%(num_run))
+                    # plt.figure(figsize=(7,7))
+                    # plt.plot(dfETR.date,dfETR.LE,label='ETR_obs',color="black")
+                    # plt.plot(dfETR.date,dfETR.ET,label='ETR_mod',color='red')
+                    # plt.ylabel("ETR")
+                    # plt.ylim(0,10)
+                    # plt.legend()
+                    # plt.savefig(d["SAMIR_run"]+"Output/Plot/Plot_dyna/plt_dynamique_ETR_%s.png"%(num_run))
                     if len(optimis_val) < 2:
                         result.append([num_run,parametre1,rms,bias,r_value,y])
                     else: 

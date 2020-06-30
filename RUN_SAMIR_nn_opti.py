@@ -63,9 +63,9 @@ def test(X):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2010"]:# "2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2006","2008","2010","2012","2014","2015"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="RUN_COMPAR_VERSION_new_data_v2"
+        name_run="Compar_Fcover/Avec_Fcover_sat"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -73,13 +73,14 @@ if __name__ == "__main__":
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                       d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1031'),
-                      Ze=125,REW=-26,maxZr=1881,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,A_kcb=1.49)
+                      Ze=20,REW=2,maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
 
 
     #  Lancement du code
         os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
-        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
-        
+        # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
+        os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -fcover maize/FCOVER.df --fc_input -o output_T1.df -p param_modif.csv')
+
         #  Récupération des output de la simulation 
         output_sim=pickle.load(open(d["SAMIR_run"]+"/output_T1.df","rb"))
         all_quantity=[]
@@ -132,4 +133,4 @@ if __name__ == "__main__":
         plt.text(5,min(ETR_resu_ss_nn["ET"])+0.5,"Pente = "+str(round(slope,2)))
         plt.text(5,min(ETR_resu_ss_nn["ET"])+0.7,"Biais = "+str(round(bias,2)))
         plt.text(5,min(ETR_resu_ss_nn["ET"])+0.9,"Nash = "+str(round(NS(ETR_resu_ss_nn['LE'],ETR_resu_ss_nn["ET"]),2)))
-        plt.savefig(d["SAMIR_run"]+"/plot_ETRobs_ETR_mod.png")
+        # plt.savefig(d["SAMIR_run"]+"/plot_ETRobs_ETR_mod.png")
