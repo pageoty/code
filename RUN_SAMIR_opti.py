@@ -122,7 +122,7 @@ if __name__ == "__main__":
     result=[]
     for y in ["2006","2008","2010","2012","2014","2015"]:# 
         print (y)
-        name_run="RUNS_optim_LUT_LAM_ETR/Zrmax_opti/Run_opti_param_ss_spin"
+        name_run="Zrmax_opti/Run_opti_param_Init_RU_value_0"
         optimis_val=["Zrmax"]
         print(r'===============')
         print(optimis_val)
@@ -132,73 +132,76 @@ if __name__ == "__main__":
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
+        d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         # Définir période sol nu
-        b=open(d["SAMIR_run"]+"/Inputdata/maize/NDVI.df","rb")
+        b=open(d["PC_labo"]+"/Inputdata/maize/NDVI.df","rb")
         NDVI=pickle.load(b)
         b.close()
         if optimis_val ==["REW"]:
             timestart=str(y)+"-07-01"
             solnu=NDVI.loc[(NDVI.NDVI<0.25)&(NDVI.date<timestart)]
             lastdate=solnu.iloc[-1]["date"].strftime('%m-%d').replace("-", "")
-            params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                      Ze=125,REW='optim',maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
+            params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
+                      Ze=125,REW='optim',maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0)
         else:
             timestart=str(y)+"-05-01"
             vege=NDVI.loc[(NDVI.NDVI>0.25)&(NDVI.date>timestart)]
             lastdate=vege.iloc[0]["date"].strftime('%m-%d').replace("-", "")
-            params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                      Ze=125,REW=2,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
+            params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
+                      Ze=125,REW=10,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0)
 
         #  Lancement du code
-        if "Output" in os.listdir(d['SAMIR_run']):
+        if "Output" in os.listdir(d['PC_labo']):
             print ("existing file")
         else :
-            os.mkdir ("%s/Output"%d['SAMIR_run']) # allows create file via call system
+            os.mkdir ("%s/Output"%d['PC_labo']) # allows create file via call system
             
-        if "Plot" in os.listdir(d['SAMIR_run']+"/Output/"):
+        if "Plot" in os.listdir(d['PC_labo']+"/Output/"):
             print ("existing file")
         else :
-            os.mkdir ("%s/Output/Plot"%d['SAMIR_run']) 
+            os.mkdir ("%s/Output/Plot"%d['PC_labo']) 
             
-        if "Plot_dyna" in os.listdir(d['SAMIR_run']+"/Output/Plot/"):
+        if "Plot_dyna" in os.listdir(d['PC_labo']+"/Output/Plot/"):
             print ("existing file")
         else :
-            os.mkdir ("%s/Output/Plot/Plot_dyna"%d['SAMIR_run']) 
+            os.mkdir ("%s/Output/Plot/Plot_dyna"%d['PC_labo']) 
             
-        if "CSV" in os.listdir(d['SAMIR_run']+"/Output/"):
+        if "CSV" in os.listdir(d['PC_labo']+"/Output/"):
             print ("existing file")
         else :
-            os.mkdir ("%s/Output/CSV"%d['SAMIR_run']) 
+            os.mkdir ("%s/Output/CSV"%d['PC_labo']) 
             
-        os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
+        os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         if "Fcover" in name_run :
             os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fcover maize/FCOVER.df -fc maize/FC.df -wp maize/WP.df  --fc_input  -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET')
         else:
-            os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET')
+            os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output_test -p param_modif.csv  -optim param_SAMIR12_13_optim.csv --cal ET')
 
         if len(optimis_val) < 2:
-            param=pd.read_csv(d["SAMIR_run"]+"Output/output_test_maize_param.txt",header=None,skiprows=1,sep=";")
+            param=pd.read_csv(d["PC_labo"]+"Output/output_test_maize_param.txt",header=None,skiprows=1,sep=";")
             param.set_index(0,inplace=True)
+
         else:
-            param=pd.read_csv(d["SAMIR_run"]+"Output/output_test_maize_param.txt",header=None,skiprows=2,sep=";")
+            param=pd.read_csv(d["PC_labo"]+"Output/output_test_maize_param.txt",header=None,skiprows=2,sep=";")
             param.set_index(0,inplace=True)
         #  Récuparation data_validation ETR
-        ETR=pd.read_csv("/mnt/g/Yann_THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(y)+".csv",decimal='.')
+        ETR=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(y)+".csv",decimal='.')
 
           # Récupération des output de la simulation 
-        for run in os.listdir(d["SAMIR_run"]+"Output/"):
+        for run in os.listdir(d["PC_labo"]+"Output/"):
             print(run)
             if "maize" in run and "txt" not in run:
                 num_run=run[18:]
-                a=open(d["SAMIR_run"]+"Output/"+run,"rb")
+                a=open(d["PC_labo"]+"Output/"+run,"rb")
                 output_sim=pickle.load(a)
                 ETRmod=output_sim[["ET","date"]]
                 a.close()
                 #  Récuper le couple de paramètre que je vais varier
                 if len(optimis_val) < 2:
                     parametre=param.iloc[int(num_run)]
+                    print (parametre)
                     parametre1=parametre[1]
                     print (r'para %s;'%(parametre1)) 
                 else: 
@@ -209,7 +212,7 @@ if __name__ == "__main__":
                 # localiser les nan dans ETR, les supprimer ainsi que les dates pour ensuite comparer 
                 dfETR=pd.concat([ETR,ETRmod],axis=1)
                 dfETR.columns=["date1",'LE','ET','date']
-                dfETR.to_csv(d["SAMIR_run"]+"Output/CSV/ETR_%s.csv"%(num_run))
+                dfETR.to_csv(d["PC_labo"]+"Output/CSV/ETR_%s.csv"%(num_run))
                 dfETR.dropna(inplace=True)
                 if dfETR.shape[0]==0:
                     print("%s non utilisable " %y) # pas de date similaire entre modélisation et ETRobs
@@ -248,7 +251,7 @@ if __name__ == "__main__":
             resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years'])
         else:
             resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years'])
-        resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE.csv")
+        resultat.to_csv(d["PC_labo"][:-5]+"param_RMSE.csv")
 
     
 

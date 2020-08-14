@@ -39,14 +39,15 @@ from sklearn.linear_model import LinearRegression
 
 if __name__ == "__main__":
     
-    name_run="RUNS_optim_LUT_LAM_ETR/"
+    name_run="RUNS_optim_LUT_LAM_ETR/Zrmax_opti/Run_opti_param_Init_RU_value_0"
     d={}
     d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
     d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
+    d["SAMIR_run_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"
     
-    resultat=pd.read_csv(d["SAMIR_run_Wind"]+"param_RMSE.csv")    
+    resultat=pd.read_csv(d["SAMIR_run_labo"]+"param_RMSE.csv")    
     gp_resu=resultat.groupby(["years"])
     for y in list(set(resultat.years)):
         a=gp_resu.get_group(y)
         min_value=a.loc[a['RMSE'].idxmin()]
-        print(min_value)
+        print(min_value.Param1)

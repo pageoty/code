@@ -21,7 +21,7 @@ import TEST_ANALYSE_SIGNATURE
 import random
 import shapely.geometry as geom
 import descartes
-
+from shapely.geometry import Point, Polygon
 if __name__ == "__main__":
     """ mise en place df pour SAMIR """
     
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
+    d["PC_disk_labo"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/"
     years="2018"
 
 
@@ -215,11 +216,29 @@ if __name__ == "__main__":
 
 
     # Select data SAFRAN data 
-    # Safran=pd.read_csv(d["PC_disk"]+"DONNES_METEO/SAFRAN_csv_2017_18.csv")
-    # SAF2017=Safran.loc[(Safran.DATE > 20171231)& (Safran["DATE"] < 20190101)]
-    # SAF2017["X"]=SAF2017.LAMBX*100
-    # SAF2017["Y"]=SAF2017.LAMBY*100
-    # SAF2017.to_csv(d["PC_disk"]+"SAFRAN_csv_2018.csv")
+    Safran=pd.read_csv(d["PC_disk_labo"]+"/SIM2_2018_202002.csv",sep=";")
+    SAF2017=Safran.loc[(Safran.DATE >= 20180101)& (Safran["DATE"] < 20190101)]
+    SAF2017["X"]=SAF2017.LAMBX*100
+    SAF2017["Y"]=SAF2017.LAMBY*100
+    # geometry = SAF2017.apply(lambda row: Point(row.X, row.Y), axis=1)
+    # crs = {'init': 'SR-ORG:7528'} 
+    # geo_df = geo(SAF2017, crs=crs, geometry=geometry)
+    # geo_df.to_file(filename = '/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_test_2018_l2.shp', driver ='ESRI Shapefile')
+    SAF2017.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
+
+    
+    saf2018=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
+    saf2018["geometry"] = SAF2017.apply(lambda row: Point(row.X, row.Y), axis=1)
+    saf_2019=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_ZONE_2019_L2.shp")
+    saf_zone=saf_2019.loc[saf_2019.DATE==20190101.0]
+    
+    a=list(saf_zone.X.astype(int))
+    saf_zone_test_2018=saf2018.loc[a]
+    
+    
+    df1.sort_index().sort_index(axis=1) == df2.sort_index().sort_index(axis=1)
+    saf2018[saf2018["X"]==saf_zone["X"].astype(int)]
+
 # =============================================================================
 # NDVI2014
 # =============================================================================
