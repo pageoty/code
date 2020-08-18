@@ -114,7 +114,7 @@ if __name__ == "__main__":
         plt.ylim(-5,50)
         plt.ylabel("Temperature in °C")
         plt.xticks(size='large')
-        plt.yticks(size='large')
+        plt.yticks(size='large')s
 #        plt.title(i)
         plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/DIAGRAMME_OMBRO_SO/DIAG_EnglishV_OMBRO%s_2017.png"%(i))
 # =============================================================================
@@ -131,9 +131,14 @@ if __name__ == "__main__":
         df.index=pd.to_datetime(df.index,format="%Y%m%d")
         df.sort_index(ascending =True,inplace=True)
         df=df.groupby('DATE').mean()
+        print (i)
+        print(df.T_Q.max())
+        print(df.T_Q.mean()) # moyen all years
+        print(df.loc[(df.index >= str(i[7:11])+"-04-01") &(df.index <= str(i[7:11])+"-10-31")].mean())
         meteo=df.resample("M").agg({'T_Q': 'mean',"PRELIQ_Q" : 'sum'})
         meteo["date"]=meteo.index
         meteo["date_plot"]=meteo.date.dt.strftime('%Y-%m')
+        print (meteo)
         plt.figure(figsize=(10,10))
         sns.set(style="whitegrid")
         sns.set_context('paper')

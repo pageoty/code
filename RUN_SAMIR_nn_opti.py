@@ -73,7 +73,7 @@ if __name__ == "__main__":
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
         d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1031'),Ze=20,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=20,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
 
 
     #  Lancement du code
