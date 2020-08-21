@@ -33,7 +33,7 @@ if __name__ == "__main__":
     
     # recupérer les résultats 
     d={}
-    name_run="RUNS_optim_LUT_LAM_ETR/Run_with_optim_params_init_RU_0/"
+    name_run="RUNS_optim_LUT_LAM_ETR/Run_with_optim_params_init_RU_0_irr_man_Ze_125/"
     d['Output_model_PC_home']='D:/THESE_TMP/RUNS_SAMIR/'
     d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/'
     # for y in ["2006","2008","2010","2012"]:
@@ -74,12 +74,15 @@ if __name__ == "__main__":
     for y in ["2006","2008","2010","2012","2014","2015"]:
         print (y)
         res=pickle.load(open( d['Output_model_PC_labo']+name_run+str(y)+"/output_T1.df",'rb'))
-        res.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/simu_opti_%s_init_0.csv"%y)
-        res_vege=res.loc[(res.date >= str(y)+"-03-02") &(res.date <= str(y)+"-10-31")]
+        res.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/simu_opti_%s_init_0_ze_125.csv"%y)
+        res_vege=res.loc[(res.date >= str(y)+"-05-01") &(res.date <= str(y)+"-10-31")]
         meteo=pickle.load(open( d['Output_model_PC_labo']+name_run+str(y)+"/Inputdata/meteo.df",'rb'))
-        meteo_vege=meteo.loc[(meteo.date >= str(y)+"-03-02") &(meteo.date <= str(y)+"-10-31")]
+        meteo_vege=meteo.loc[(meteo.date >= str(y)+"-05-01") &(meteo.date <= str(y)+"-10-31")]
         stop_init=res_vege.TAW.iloc[0]+res_vege.Dr.iloc[0]+res_vege.TDW.iloc[0]-res_vege.Dd.iloc[0]
         stop_fin=res_vege.TAW.iloc[-1]-res_vege.Dr.iloc[-1]+res_vege.TDW.iloc[-1]-res_vege.Dd.iloc[-1]
-        bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)
+        if "irr_man" in name_run:
+            bilan=stop_init+sum(meteo_vege.Prec)+sum(meteo_vege.Irrig)-sum(res_vege.ET)
+        else:
+            bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)
         print('bilan hydrique: %s' %round(bilan,2))
         print("bilan fin de simu :%s" %round(stop_fin,2))

@@ -65,7 +65,7 @@ if __name__ == "__main__":
     result=[]
     for y in ["2006","2008","2010","2012","2014","2015"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="Run_with_optim_params_init_RU_0"
+        name_run="Run_with_optim_params_init_RU_0_irr_man_Ze_125"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
         d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=20,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=125,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0)
 
 
     #  Lancement du code

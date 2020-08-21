@@ -54,9 +54,10 @@ if __name__ == "__main__":
     
     years ="2017"
     method="SHARK"# or "OPEN_CV" or "SEASON_TIME" or "SHARK"
-    bv="ADOUR" # or TARN
+    bv="NESTE" # or TARN
     d={}
-    d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/RESULT/"
+    d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
+    d["data_tra"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
     d["output_file"]='/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
     ram=8096
     tuiles=["T31TCJ","T31TDJ","T30TYP","T30TYN"]
@@ -94,29 +95,29 @@ if __name__ == "__main__":
 #        os.system("rm /datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/2017/%s/Fusion_all/others_seed_*"% (jobs))
 
         
-    for classif in os.listdir(d["unix_data"]+'/'+years+'/RUN_fixe_seed/'+method):
-        if "ASC" in classif : 
+    for classif in os.listdir(d["data_file"]+'/'+years+'/RUN_fixe_seed/'+method):
+        if "ASC" in classif and "NESTE" not in classif and "DES" not in classif: 
             print ("=============")
             print (r" RUN : %s " %classif)
             print ("=============")
-            for seed in os.listdir(d["unix_data"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/'):
+            for seed in os.listdir(d["data_file"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/'):
                 if "ColorIndexed.tif" in seed:
                     print (r'seed : %s' %seed[13:14])
-                    for BV in os.listdir(d["unix_data"]+'/DONNES_SIG/EMPRISE/EMPISE_RASTER_BV/'):
+                    for BV in os.listdir(d["data_file"][:-7]+'/DONNES_SIG/EMPRISE/EMPISE_RASTER_BV/'):
                         print (r" watershed : %s" %BV[10:-4])
                         if BV[10:-4] == bv :
                             print (True)
                             ConcatenateImages_CROPS = otbApplication.Registry.CreateApplication("ConcatenateImages") # Create Otb Application 
-                            ConcatenateImages_CROPS.SetParameterStringList("il",[d["unix_data"]+'/RPG/MASk_'+years+'_RECAL.tif']) # or MASK_RPG_2018_Er10.tif & MASK_MT_RPG2017.tif
+                            ConcatenateImages_CROPS.SetParameterStringList("il",[d["data_tra"]+'/RPG/MASk_'+years+'_RECAL_NESTE.tif']) # or MASK_RPG_2018_Er10.tif & MASK_MT_RPG2017.tif
                             ConcatenateImages_CROPS.SetParameterString("out", "mask_crops.tif")
                             ConcatenateImages_CROPS.Execute()
                             ConcatenateImages_MASK = otbApplication.Registry.CreateApplication("ConcatenateImages") # Create Otb Application 
-                            ConcatenateImages_MASK.SetParameterStringList("il",[d["unix_data"]+'/DONNES_SIG/EMPRISE/EMPISE_RASTER_BV/'+BV])
+                            ConcatenateImages_MASK.SetParameterStringList("il",[d["data_file"][:-7]+'/DONNES_SIG/EMPRISE/EMPISE_RASTER_BV/'+BV])
                             ConcatenateImages_MASK.SetParameterString("out", "Mask_BV.tif")
                             ConcatenateImages_MASK.Execute()
         
                             ConcatenateImages_Class = otbApplication.Registry.CreateApplication("ConcatenateImages") # Create Otb Application 
-                            ConcatenateImages_Class.SetParameterStringList("il",[d["unix_data"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+"/final/"+seed])
+                            ConcatenateImages_Class.SetParameterStringList("il",[d["data_file"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+"/final/"+seed])
                             ConcatenateImages_Class.SetParameterString("out", "Classif.tif")
                             ConcatenateImages_Class.Execute()
                             
@@ -125,7 +126,7 @@ if __name__ == "__main__":
                             BandMath.AddImageToParameterInputImageList("il",ConcatenateImages_MASK.GetParameterOutputImage("out"))
                             BandMath.AddImageToParameterInputImageList("il",ConcatenateImages_CROPS.GetParameterOutputImage("out"))
                             BandMath.AddImageToParameterInputImageList("il",ConcatenateImages_Class.GetParameterOutputImage("out"))
-                            BandMath.SetParameterString("out",d["unix_data"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+".tif")
+                            BandMath.SetParameterString("out",d["data_file"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+".tif")
                             BandMath.SetParameterString("exp", "im1b1*im2b1*im3b1")
                             BandMath.SetParameterString("ram",str(ram))
                             BandMath.SetParameterOutputImagePixelType("out",otbApplication.ImagePixelType_uint8)
@@ -133,8 +134,8 @@ if __name__ == "__main__":
         
                             print ('Map Regularization processing') # Filtrage par régualtion en supprimant les pixles isolées selon une fenetre
                             ClassificationMapRegularization = otbApplication.Registry.CreateApplication("ClassificationMapRegularization")
-                            ClassificationMapRegularization.SetParameterString("io.in", d["unix_data"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+".tif")
-                            ClassificationMapRegularization.SetParameterString("io.out",d["unix_data"]+ '/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+"_regularized.tif")
+                            ClassificationMapRegularization.SetParameterString("io.in", d["data_file"]+'/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+".tif")
+                            ClassificationMapRegularization.SetParameterString("io.out",d["data_file"]+ '/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+"_regularized.tif")
                             ClassificationMapRegularization.SetParameterInt("ip.radius", 1)
                             ClassificationMapRegularization.SetParameterInt("ip.nodatalabel", 0)
                             ClassificationMapRegularization.SetParameterString("ip.onlyisolatedpixels",'True')
@@ -142,174 +143,174 @@ if __name__ == "__main__":
                             ClassificationMapRegularization.SetParameterString('ram',str(ram))
                             ClassificationMapRegularization.ExecuteAndWriteOutput()
                             
-                            # print ("Confusion_matrix processing") # génratino de la matrix de confusion
-                            # ComputeConfusionMatrix = otbApplication.Registry.CreateApplication("ComputeConfusionMatrix")
-                            # ComputeConfusionMatrix.SetParameterString("in", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_'+BV[10:-4]+"_"+seed[13:14]+"_regularized.tif")          
-                            # ComputeConfusionMatrix.SetParameterString("out", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/ConfusionMatrix_regularized_%s_%s.csv'% (BV[10:-4],seed[13:14]))       
-                            # ComputeConfusionMatrix.SetParameterString("ref","vector")      
-                            # ComputeConfusionMatrix.SetParameterString("ref.vector.in", d["output_file"]+classif+'/Fusion_all/%s_seed_%s.shp'% (BV[10:-4],seed[13:14])) #d["output_file"]+classif+'/Fusion_all/merge%s.shp'%(seed[13:14])
-                            # ComputeConfusionMatrix.UpdateParameters()
-                            # ComputeConfusionMatrix.SetParameterString("ref.vector.field", "labcroirr")
-                            # ComputeConfusionMatrix.SetParameterString('nodatalabel', str(0))
-                            # ComputeConfusionMatrix.SetParameterString('ram',str(ram))
-                            # ComputeConfusionMatrix.ExecuteAndWriteOutput()
+                            print ("Confusion_matrix processing") # génratino de la matrix de confusion
+                            ComputeConfusionMatrix = otbApplication.Registry.CreateApplication("ComputeConfusionMatrix")
+                            ComputeConfusionMatrix.SetParameterString("in", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/Classif_paper_'+BV[10:-4]+"_"+seed[13:14]+"_regularized.tif")          
+                            ComputeConfusionMatrix.SetParameterString("out", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+method+'/'+classif+'/final/ConfusionMatrix_regularized_%s_%s.csv'% (BV[10:-4],seed[13:14]))       
+                            ComputeConfusionMatrix.SetParameterString("ref","vector")      
+                            ComputeConfusionMatrix.SetParameterString("ref.vector.in", d["output_file"]+classif+'/Fusion_all/%s_seed_%s.shp'% (BV[10:-4],seed[13:14])) #d["output_file"]+classif+'/Fusion_all/merge%s.shp'%(seed[13:14])
+                            ComputeConfusionMatrix.UpdateParameters()
+                            ComputeConfusionMatrix.SetParameterString("ref.vector.field", "labcroirr")
+                            ComputeConfusionMatrix.SetParameterString('nodatalabel', str(0))
+                            ComputeConfusionMatrix.SetParameterString('ram',str(ram))
+                            ComputeConfusionMatrix.ExecuteAndWriteOutput()
                         
-#                        print ("Confusion_matrix processing")
-#                        ComputeConfusionMatrix = otbApplication.Registry.CreateApplication("ComputeConfusionMatrix")
-#                        ComputeConfusionMatrix.SetParameterString("in", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+classif+'/final/Classif_'+BV[10:-4]+"_"+seed[13:14]+".tif")          
-#                        ComputeConfusionMatrix.SetParameterString("out", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+classif+'/final/ConfusionMatrix_%s_%s.csv'% (BV[10:-4],seed[13:14]))       
-#                        ComputeConfusionMatrix.SetParameterString("ref","vector")      
-#                        ComputeConfusionMatrix.SetParameterString("ref.vector.in", d["output_file"]+classif+'/Fusion_all/%s_seed_%s.shp'% (BV[10:-4],seed[13:14])) #d["output_file"]+classif+'/Fusion_all/merge%s.shp'%(seed[13:14])
-#                        ComputeConfusionMatrix.UpdateParameters()
-#                        ComputeConfusionMatrix.SetParameterString("ref.vector.field", "labcroirr")
-#                        ComputeConfusionMatrix.SetParameterString('nodatalabel', str(0))
-#                        ComputeConfusionMatrix.SetParameterString('ram',str(ram))
-#                        ComputeConfusionMatrix.ExecuteAndWriteOutput()
-#                        
+                        # print ("Confusion_matrix processing")
+                        # ComputeConfusionMatrix = otbApplication.Registry.CreateApplication("ComputeConfusionMatrix")
+                        # ComputeConfusionMatrix.SetParameterString("in", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+classif+'/final/Classif_'+BV[10:-4]+"_"+seed[13:14]+".tif")          
+                        # ComputeConfusionMatrix.SetParameterString("out", '/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/'+years+'/RUN_fixe_seed/'+classif+'/final/ConfusionMatrix_%s_%s.csv'% (BV[10:-4],seed[13:14]))       
+                        # ComputeConfusionMatrix.SetParameterString("ref","vector")      
+                        # ComputeConfusionMatrix.SetParameterString("ref.vector.in", d["output_file"]+classif+'/Fusion_all/%s_seed_%s.shp'% (BV[10:-4],seed[13:14])) #d["output_file"]+classif+'/Fusion_all/merge%s.shp'%(seed[13:14])
+                        # ComputeConfusionMatrix.UpdateParameters()
+                        # ComputeConfusionMatrix.SetParameterString("ref.vector.field", "labcroirr")
+                        # ComputeConfusionMatrix.SetParameterString('nodatalabel', str(0))
+                        # ComputeConfusionMatrix.SetParameterString('ram',str(ram))
+                        # ComputeConfusionMatrix.ExecuteAndWriteOutput()
+                        
     
-#            for b in ["ADOUR","TARN",'NESTE'] :
-#                print(b)
-#                nom=get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-#                pathNom="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt"
-#                pathRes="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"+years+"/RUN_fixe_seed/"+classif+"/final/"
-#                all_k = []
-#                all_oa = []
-#                all_p = []
-#                all_r = []
-#                all_f = []
-#                all_matrix = []
-#                a=[]
-#                if b == "NESTE":
-#                    from collections import OrderedDict
-#                    dico_sans_22 = OrderedDict()
-#                    for j in os.listdir(pathRes):
-#                        if ".csv" in j and "regularized" not in j:
-#                            if b in j:
-#                                print(j)
-#                                conf_mat_dic = parse_csv(pathRes+j)
-#                                for k, v in conf_mat_dic.items():
-#                                    dico_sans_22_tmp = OrderedDict()
-#                                    if k == 11 or k ==22 or k ==44:
-#                                        print (k)
-#                                        continue
-#                                    for class_name, class_count in v.items():
-#                                        if class_name == 11 or class_name == 22 or class_name==44:
-#                                            print( class_name)
-#                                            continue
-#                                        dico_sans_22_tmp[class_name] = class_count
-#                                    dico_sans_22[k]=dico_sans_22_tmp
-#    #                            print (dico_sans_22)
-#                                conf_mat_dic = dico_sans_22
-#                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
-#                                all_matrix.append(conf_mat_dic)
-#                                all_k.append(kappa)
-#                                all_oa.append(oacc)
-#                                all_p.append(p_dic)
-#                                all_r.append(r_dic)
-#                                all_f.append(f_dic)
-#                    conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-#                    nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-#                    size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
-#                    p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
-#                    r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
-#                    f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
-#        
-#           
-#                    fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+".png",conf_score="percentage", grid_conf=True)
-#                
-#                else:
-#                     for j in os.listdir(pathRes):
-#                        if ".csv" in j and "regularized" not in j:
-#                            if b in j:
-#                                print(j)
-#                                conf_mat_dic = parse_csv(pathRes+j)
-#                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
-#                                all_matrix.append(conf_mat_dic)
-#                                all_k.append(kappa)
-#                                all_oa.append(oacc)
-#                                all_p.append(p_dic)
-#                                all_r.append(r_dic)
-#                                all_f.append(f_dic)
-#                     conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-#                     nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-#                     size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
-#                     p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
-#                     r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
-#                     f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
-#            
-#               
-#                     fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+".png",conf_score="percentage")
+    #         for b in ["ADOUR","TARN",'NESTE'] :
+    #             print(b)
+    #             nom=get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+    #             pathNom="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt"
+    #             pathRes="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"+years+"/RUN_fixe_seed/"+classif+"/final/"
+    #             all_k = []
+    #             all_oa = []
+    #             all_p = []
+    #             all_r = []
+    #             all_f = []
+    #             all_matrix = []
+    #             a=[]
+    #             if b == "NESTE":
+    #                 from collections import OrderedDict
+    #                 dico_sans_22 = OrderedDict()
+    #                 for j in os.listdir(pathRes):
+    #                     if ".csv" in j and "regularized" not in j:
+    #                         if b in j:
+    #                             print(j)
+    #                             conf_mat_dic = parse_csv(pathRes+j)
+    #                             for k, v in conf_mat_dic.items():
+    #                                 dico_sans_22_tmp = OrderedDict()
+    #                                 if k == 11 or k ==22 or k ==44:
+    #                                     print (k)
+    #                                     continue
+    #                                 for class_name, class_count in v.items():
+    #                                     if class_name == 11 or class_name == 22 or class_name==44:
+    #                                         print( class_name)
+    #                                         continue
+    #                                     dico_sans_22_tmp[class_name] = class_count
+    #                                 dico_sans_22[k]=dico_sans_22_tmp
+    # #                            print (dico_sans_22)
+    #                             conf_mat_dic = dico_sans_22
+    #                             kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+    #                             all_matrix.append(conf_mat_dic)
+    #                             all_k.append(kappa)
+    #                             all_oa.append(oacc)
+    #                             all_p.append(p_dic)
+    #                             all_r.append(r_dic)
+    #                             all_f.append(f_dic)
+    #                 conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+    #                 nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+    #                 size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+    #                 p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+    #                 r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+    #                 f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+        
+          
+    #                 fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+".png",conf_score="percentage", grid_conf=True)
+                
+    #             else:
+    #                 for j in os.listdir(pathRes):
+    #                     if ".csv" in j and "regularized" not in j:
+    #                         if b in j:
+    #                             print(j)
+    #                             conf_mat_dic = parse_csv(pathRes+j)
+    #                             kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+    #                             all_matrix.append(conf_mat_dic)
+    #                             all_k.append(kappa)
+    #                             all_oa.append(oacc)
+    #                             all_p.append(p_dic)
+    #                             all_r.append(r_dic)
+    #                             all_f.append(f_dic)
+    #                 conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+    #                 nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+    #                 size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+    #                 p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+    #                 r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+    #                 f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+            
+              
+    #                 fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+".png",conf_score="percentage")
 
                     
-        #     for b in [bv] : # génration de figurz matrix 
-        #         print(b)
-        #         nom=get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-        #         pathNom="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt"
-        #         pathRes="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"+years+"/RUN_fixe_seed/"+method+"/"+classif+"/final/"
-        #         all_k = []
-        #         all_oa = []
-        #         all_p = []
-        #         all_r = []
-        #         all_f = []
-        #         all_matrix = []
-        #         a=[]
-        #         if b == "NESTE":
-        #             from collections import OrderedDict
-        #             dico_sans_22 = OrderedDict()
-        #             for j in os.listdir(pathRes):
-        #                 if ".csv" in j and "regularized" in j:
-        #                     if b in j:
-        #                         print(j)
-        #                         conf_mat_dic = parse_csv(pathRes+j)
-        #                         if "2017" in classif :
-        #                             for k, v in conf_mat_dic.items():
-        #                                 dico_sans_22_tmp = OrderedDict()
-        #                                 if k == 11 or k ==22 :
-        #                                     print (k)
-        #                                     continue
-        #                                 for class_name, class_count in v.items():
-        #                                     if class_name == 11 or class_name == 22 :
-        #                                         print( class_name)
-        #                                         continue
-        #                                     dico_sans_22_tmp[class_name] = class_count
-        #                                 dico_sans_22[k]=dico_sans_22_tmp
-        # #                            print (dico_sans_22)
-        #                             conf_mat_dic = dico_sans_22
-        #                         kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
-        #                         all_matrix.append(conf_mat_dic)
-        #                         all_k.append(kappa)
-        #                         all_oa.append(oacc)
-        #                         all_p.append(p_dic)
-        #                         all_r.append(r_dic)
-        #                         all_f.append(f_dic)
-        #             conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-        #             nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-        #             size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
-        #             p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
-        #             r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
-        #             f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+            for b in [bv] : # génration de figurz matrix 
+                print(b)
+                nom=get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+                pathNom="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt"
+                pathRes="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"+years+"/RUN_fixe_seed/"+method+"/"+classif+"/final/"
+                all_k = []
+                all_oa = []
+                all_p = []
+                all_r = []
+                all_f = []
+                all_matrix = []
+                a=[]
+                if b == "NESTE":
+                    from collections import OrderedDict
+                    dico_sans_22 = OrderedDict()
+                    for j in os.listdir(pathRes):
+                        if ".csv" in j and "regularized" in j:
+                            if b in j:
+                                print(j)
+                                conf_mat_dic = parse_csv(pathRes+j)
+                                if "2017" in classif :
+                                    for k, v in conf_mat_dic.items():
+                                        dico_sans_22_tmp = OrderedDict()
+                                        if k == 11 or k ==22 :
+                                            print (k)
+                                            continue
+                                        for class_name, class_count in v.items():
+                                            if class_name == 11 or class_name == 22 :
+                                                print( class_name)
+                                                continue
+                                            dico_sans_22_tmp[class_name] = class_count
+                                        dico_sans_22[k]=dico_sans_22_tmp
+        #                            print (dico_sans_22)
+                                    conf_mat_dic = dico_sans_22
+                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+                                all_matrix.append(conf_mat_dic)
+                                all_k.append(kappa)
+                                all_oa.append(oacc)
+                                all_p.append(p_dic)
+                                all_r.append(r_dic)
+                                all_f.append(f_dic)
+                    conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+                    nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+                    size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+                    p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+                    r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+                    f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
             
                
-        #             fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage", grid_conf=True)
+                    fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage", grid_conf=True)
                     
-        #         else:
-        #              for j in os.listdir(pathRes):
-        #                 if ".csv" in j and "regularized" in j:
-        #                     if b in j:
-        #                         print(j)
-        #                         conf_mat_dic = parse_csv(pathRes+j)
-        #                         kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
-        #                         all_matrix.append(conf_mat_dic)
-        #                         all_k.append(kappa)
-        #                         all_oa.append(oacc)
-        #                         all_p.append(p_dic)
-        #                         all_r.append(r_dic)
-        #                         all_f.append(f_dic)
-        #              conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-        #              nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
-        #              size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
-        #              p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
-        #              r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
-        #              f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
+                else:
+                      for j in os.listdir(pathRes):
+                        if ".csv" in j and "regularized" in j:
+                            if b in j:
+                                print(j)
+                                conf_mat_dic = parse_csv(pathRes+j)
+                                kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+                                all_matrix.append(conf_mat_dic)
+                                all_k.append(kappa)
+                                all_oa.append(oacc)
+                                all_p.append(p_dic)
+                                all_r.append(r_dic)
+                                all_f.append(f_dic)
+                      conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
+                      nom_dict = get_nomenclature("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/nomenclature_T31TDJ.txt")
+                      size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+                      p_mean = get_interest_coeff(all_p, nb_lab=len(labels_ref), f_interest="mean")
+                      r_mean = get_interest_coeff(all_r, nb_lab=len(labels_ref), f_interest="mean")
+                      f_mean = get_interest_coeff(all_f, nb_lab=len(labels_ref), f_interest="mean")
             
-        #              fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage")
+                      fig_conf_mat(conf_mat_dic,nom,np.mean(all_k),np.mean(all_oa),p_mean,r_mean,f_mean,pathRes+"Matrix_fusion"+b+"_"+classif+"_regularized.png",conf_score="percentage")

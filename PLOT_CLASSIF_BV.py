@@ -72,9 +72,10 @@ def plt_classif_kappa(df,var1,var2):
 
 if __name__ == "__main__":
     years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
-    bv="ADOUR"
+    bv="TARN"
     d={}
-    d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/" # path où seront save les graphiques finaux 
+    d["PC_labo"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
+    d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/"+str(bv) # path où seront save les graphiques finaux 
     d["disk_PC"]="G:/Yann_THESE/RESULTAT_CLASSIFICATION/"
     d["SAVE_disk"]="G:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
     for b in [bv]: 
@@ -87,12 +88,12 @@ if __name__ == "__main__":
         Recall=pd.DataFrame()
         Prec=pd.DataFrame()
         Fscore=pd.DataFrame()
-        for classif in os.listdir(d["disk_PC"]+'FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
+        for classif in os.listdir(d["PC_labo"]+'FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
             print (classif)
 #            classif="DES_F_3ind_SAFRAN_2017"
-            nom=get_nomenclature(d["disk_PC"]+"nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
-            pathNom=d["disk_PC"]+"/nomenclature_paper.txt"
-            pathRes=d["disk_PC"]+"/FILE_TXT_RESULAT/FIxe_seed/SHARK/"+years+"/"+classif+"/" # FIxe_seed/SHARK/"+years+"/"+classif+"/" ¬ path où sont stocker les fichiers les matrices de confusion
+            nom=get_nomenclature(d["PC_labo"]+"nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
+            pathNom=d["PC_labo"]+"/nomenclature_paper.txt"
+            pathRes=d["PC_labo"]+"/FILE_TXT_RESULAT/FIxe_seed/SHARK/"+years+"/"+classif+"/" # FIxe_seed/SHARK/"+years+"/"+classif+"/" ¬ path où sont stocker les fichiers les matrices de confusion
             all_k = []
             all_oa = []
             all_p = []
@@ -158,7 +159,7 @@ if __name__ == "__main__":
                             all_f.append(f_dic)
             step.append(classif)
             conf_mat_dic = compute_interest_matrix(all_matrix, f_interest="mean")
-            nom_dict = get_nomenclature(d["disk_PC"]+"/nomenclature_paper.txt")
+            nom_dict = get_nomenclature(d["PC_labo"]+"/nomenclature_paper.txt")
             size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
             origin=pd.DataFrame({'step':classif},index=[0],dtype="category") # recuper les noms des différents configurations testées
             origindup=pd.DataFrame(np.repeat(origin.values,len(labels_ref)),dtype="category") 
@@ -197,7 +198,7 @@ if __name__ == "__main__":
         # plt.xticks(size='large')
         plt.xticks(fontsize=14)
         plt.yticks(size='large')
-        plt.savefig(d["SAVE_disk"]+"KAPPA_RUN_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+        plt.savefig(d["SAVE"]+"KAPPA_RUN_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
                 
         df_names=["step","mean_fscore","std_fscore","mean_Recall","std_Recall","mean_Precision","std_Precision"]
         dfmetric=pd.concat([jobs,Fscore,Recall,Prec],axis=1)
@@ -369,7 +370,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    plt.savefig(d["SAVE"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
         
             else: # A revoir probleme dans la conception du plot
                 for i in set(zip(M7.step,M8.step)):
@@ -393,7 +394,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    plt.savefig(d["SAVE"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
                     
     # Comparer les runs cumil et non cumuls 
         if years =="CUMUL_VS_NOT":
@@ -439,7 +440,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    plt.savefig(d["SAVE"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
     # =============================================================================
 #     SEASON_TIME
 # =============================================================================
@@ -523,4 +524,4 @@ if __name__ == "__main__":
             for j in np.arange(len(set(M7.step))):
                 plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
                 plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
-            plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+            plt.savefig(d["SAVE"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)

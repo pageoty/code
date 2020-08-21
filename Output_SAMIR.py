@@ -93,6 +93,20 @@ if __name__ == '__main__':
 #         ETR_lam_day[ETR_lam_day < -1]=pd.NaT
 #         ETR_lam_day.plot()
 #         ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(years)+".csv")
+
+#  Pour la station de Grignon gestion des LE en ETR
+    df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_GRIGNON/RAW_DATA/FLX_FR-Gri_FLUXNET2015_FULLSET_DD_2004-2014_1-4.csv")
+    df["TIMESTAMP"]=pd.to_datetime(df["TIMESTAMP"],format="%Y%m%d")
+    df_ETR=df[["TIMESTAMP","LE_F_MDS",'LE_CORR']]
+    df_ETR["ETR"]=df_ETR.eval("LE_F_MDS*0.0352")
+    df_ETR["ETR_ratio_bowen"]=df_ETR.eval("LE_CORR*0.0352")
+    df_ETR[df_ETR.ETR < -1]=pd.NaT
+    df_ETR[df_ETR.ETR_ratio_bowen < -1]=pd.NaT
+    for y in ["2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014"]:
+        df_ETR_years=df_ETR.loc[(df_ETR.TIMESTAMP >= str(y)+"-01-01") &(df_ETR.TIMESTAMP<= str(y)+"-12-31")]
+        plt.figure(figsize=(7,7))
+        plt.plot(df_ETR_years.TIMESTAMP,df_ETR_years.ETR)
+        df_ETR_years.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_GRIGNON/DATA_ETR_GRIGNON/ETR_GRI"+str(y)+".csv")
     
 # #    Pour 2019
 #     ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
