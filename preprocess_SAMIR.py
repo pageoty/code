@@ -287,15 +287,17 @@ if __name__ == "__main__":
 # =============================================================================
 #   Prépartion data filecsv 
 # =============================================================================
-#     for y in os.listdir("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/"):
-#         years=y[-8:-4]
-#         df=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/LAMOTHE_NDVI_"+str(years)+".csv",decimal=".")
-#         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-#         NDVI=df
-#         # NDVI=df[["Date","NDVI"]]
-#         # NDVI.columns=["date",'NDVI']
-#         NDVI["id"]=1
-#         NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_SENSI_SOL/"+str(years)+"/Inputdata/maize/NDVI.df")
+    for y in os.listdir("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/"):
+        years=y[-8:-4]
+        df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_NDVI/LAMOTHE_NDVI_"+str(years)+".csv",decimal=".")
+        df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+        NDVI=df
+        # NDVI=df[["Date","NDVI"]]
+        # NDVI.columns=["date",'NDVI']
+        NDVI["id"]=1
+        NDVI.NDVI=0 # test sans végétation 
+        NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/DATA_NDVI_SOIL_NU/NDVI%s.df"%(years))
+        # NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_SENSI_SOL/"+str(years)+"/Inputdata/maize/NDVI.df")
 #     for y in os.listdir("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/"):
 #         years=y[-8:-4]
 #         df=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/Meteo_lam_"+str(years)+".csv",decimal=".")

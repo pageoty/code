@@ -212,8 +212,8 @@ if __name__ == '__main__':
     list_bd_drop=["region","labcroirr","ogc_fid","alt_band_0"]
     list_drop=["labcroirr","ogc_fid"]
     list_drop_bv=["labcroirr","ogc_fid","alt_band_0"]
-    years= "2018" #or 2018
-    BV="TARN" # ADOUR
+    years= "2017" #or 2018
+    BV="ADOUR" # ADOUR
     
 # =============================================================================
 #     Ceate plot
@@ -261,11 +261,14 @@ if __name__ == '__main__':
                             globals()["%s%s"% (f,i) ] = globals()["dbdf%s%s"% (f,i)].rename(index=lambda x: x[-8:])
                             globals()["%s%s"%(f,i)].sort_index(inplace=True)
                             globals()["%s%s"%(f,i)].index=pd.to_datetime(globals()["%s%s"%(f,i)].index,format="%Y%m%d")
+                            globals()["%s%s"%(f,i)]=globals()["%s%s"%(f,i)].resample("D").asfreq().interpolate()
+
                         else:
                             globals()["%s%s"% (f,i) ] = globals()["df%s%s"% (f,i)].rename(index=lambda x: x[-8:])
                             globals()["%s%s"%(f,i)].sort_index(inplace=True)
                             globals()["%s%s"%(f,i)].index=pd.to_datetime(globals()["%s%s"%(f,i)].index,format="%Y%m%d")
-                            
+                            globals()["%s%s"%(f,i)]=globals()["%s%s"%(f,i)].resample("D").asfreq().interpolate()
+
     
                 confianceinf=[] # list pour introduire les intervalle de confiance 
                 confiancesup=[]
@@ -287,13 +290,16 @@ if __name__ == '__main__':
                             df=df[["DATE","PRELIQ_Q"]]
                             globals()["dfSAFR%s"% (tuile)]=df.set_index("DATE")
                             globals()["dfSAFR%s"% (tuile)].index=pd.to_datetime(globals()["dfSAFR%s"% (tuile)].index,format="%Y%m%d")
+                            globals()["dfSAFR%s"% (tuile)]["date"]=globals()["dfSAFR%s"% (tuile)].index
+                            globals()["dfSAFR%s"% (tuile)]["sort_date"]=globals()["dfSAFR%s"% (tuile)].date.dt.strftime("%m-%d")
                     else:
                         if m[4:9] == tuile and m[-8:-4]=="2018":
                             df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/%s" % m)
                             df=df[["DATE","PRELIQ_Q"]][0:365]
                             globals()["dfSAFR%s"% (tuile)]=df.set_index("DATE")
                             globals()["dfSAFR%s"% (tuile)].index=pd.to_datetime(globals()["dfSAFR%s"% (tuile)].index,format="%Y%m%d")
-                            
+                            globals()["dfSAFR%s"% (tuile)]["date"]=globals()["dfSAFR%s"% (tuile)].index
+                            globals()["dfSAFR%s"% (tuile)]["sort_date"]=globals()["dfSAFR%s"% (tuile)].date.dt.strftime("%m-%d")
 
 #        pltmutli(NDVI1.index,VV1.index,NDVI1,NDVI11,NDWI1,NDWI11,VV1,VV11,VH1,VH11,VH_VV1,VH_VV11,globals()["dfSAFR%s"% (tile)].index,globals()["dfSAFR%s"% (tile)].PRELIQ_Q)    
 #        plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/comparaison_IRR_NIRR_2017%s.png"% tile)
@@ -924,67 +930,110 @@ if __name__ == '__main__':
 # =============================================================================
 # Plot paper review illustre la phénologie 
 # =============================================================================
-    plt.figure(figsize=(10,8)) 
+    #  genrer les dates sans les années 
+    # for l in Label:
+    #     for i in features:
+    #         globals()["%s%s"%(i,l)]=globals()["%s%s"%(i,l)].resample("D").asfreq().interpolate()
+    #         # globals()["%s%s"%(i,l)]["date"]=globals()["%s%s"%(i,l)].index
+    #         # globals()["%s%s"%(i,l)]["sort_date"]=globals()["%s%s"%(i,l)].date.dt.strftime("%m-%d")
+    
+    
+#     confianceinf=[] # list pour introduire les intervalle de confiance 
+#     confiancesup=[]
+
+#     for i in features:
+#         for l in Label:
+#             print ("%s%s"%(i,l))
+# #                    a="%s%s"%(i,l)
+#             globals()["_%s%s"% (i,l)],globals()["b_sup%s%s"% (i,l)]=stats.t.interval(0.95,globals()["%s%s"%(i,l)].shape[1]-1,loc=globals()["%s%s"%(i,l)].T.mean(),scale=stats.sem(globals()["%s%s"%(i,l)].T)) # Calcule de l'intervalle de confiance 
+#             confianceinf.append(globals()["_%s%s"% (i,l)])
+#             confiancesup.append(globals()["b_sup%s%s"% (i,l)])
+            
+    for l in Label:
+        for i in features:
+            globals()["%s%s"%(i,l)]["date"]=globals()["%s%s"%(i,l)].index
+            globals()["%s%s"%(i,l)]["sort_date"]=globals()["%s%s"%(i,l)].date.dt.strftime("%m-%d")
+    
+    plt.figure(figsize=(13,5)) 
     sns.set(style="whitegrid")
     sns.set_context('paper')
-    ax1 = plt.subplot(221)
-    p1=plt.plot(NDVI1.index,NDVI1.T.mean()/1000,color='blue',linestyle="-")
-    plt.fill_between(NDVI1.index, confiancesup[0]/1000, confianceinf[0]/1000, facecolor='blue', alpha=0.1)
-    p3=plt.plot(NDVI11.index,NDVI11.T.mean()/1000,color='red',linestyle='-')
-    plt.fill_between(NDVI11.index, confiancesup[2]/1000, confianceinf[2]/1000, facecolor='red', alpha=0.1)
-    p2=plt.plot(NDVI2.index,NDVI2.T.mean()/1000,color='green',linestyle="--")
-    plt.fill_between(NDVI1.index, confiancesup[1]/1000, confianceinf[1]/1000, facecolor='green', alpha=0.1)
-    p4=plt.plot(NDVI22.index,NDVI22.T.mean()/1000,color='black',linestyle='--')
-    plt.fill_between(NDVI11.index, confiancesup[3]/1000, confianceinf[3]/1000, facecolor='black', alpha=0.1)
+    ax1 = plt.subplot(121)
+    p1=plt.plot(NDVI1.sort_date,NDVI1.T.iloc[:-2].mean()/1000,color='blue',linestyle="-")
+    plt.fill_between(NDVI1.sort_date, confiancesup[0]/1000, confianceinf[0]/1000, facecolor='blue', alpha=0.1)
+    p3=plt.plot(NDVI11.sort_date,NDVI11.T.iloc[:-2].mean()/1000,color='red',linestyle='-')
+    plt.fill_between(NDVI11.sort_date, confiancesup[2]/1000, confianceinf[2]/1000, facecolor='red', alpha=0.1)
+    p2=plt.plot(NDVI2.sort_date,NDVI2.T.iloc[:-2].mean()/1000,color='blue',linestyle="--")
+    plt.fill_between(NDVI1.sort_date, confiancesup[1]/1000, confianceinf[1]/1000, facecolor='blue', alpha=0.1)
+    p4=plt.plot(NDVI22.sort_date,NDVI22.T.iloc[:-2].mean()/1000,color='red',linestyle='--')
+    plt.fill_between(NDVI11.sort_date, confiancesup[3]/1000, confianceinf[3]/1000, facecolor='red', alpha=0.1)
+    p5=plt.plot(NDVI44.sort_date,NDVI44.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
+    plt.fill_between(NDVI44.sort_date, confiancesup[5]/1000, confianceinf[5]/1000, facecolor='black', alpha=0.1)
     plt.ylabel("NDVI")
-    plt.legend((p1[0],p2[0],p3[0],p4[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean"))
+    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
-    plt.xticks(size='large',rotation=45,visible=False)
+    plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
-    ax1 = plt.subplot(223)
-    p1=plt.plot(NDWI1.index,NDWI1.T.mean()/1000,color='blue',linestyle="-")
-    plt.fill_between(NDWI1.index, confiancesup[6]/1000, confianceinf[6]/1000, facecolor='blue', alpha=0.1)
-    p3=plt.plot(NDWI11.index,NDWI11.T.mean()/1000,color='red',linestyle='-')
-    plt.fill_between(NDWI11.index, confiancesup[8]/1000, confianceinf[8]/1000, facecolor='red', alpha=0.1)
-    p1=plt.plot(NDWI2.index,NDWI2.T.mean()/1000,color='green',linestyle="--")
-    plt.fill_between(NDWI1.index, confiancesup[7]/1000, confianceinf[7]/1000, facecolor='green', alpha=0.1)
-    p3=plt.plot(NDWI22.index,NDWI22.T.mean()/1000,color='black',linestyle='--')
-    plt.fill_between(NDWI11.index, confiancesup[9]/1000, confianceinf[9]/1000, facecolor='black', alpha=0.1)
+    ax1 = plt.subplot(122)
+    p1=plt.plot(NDWI1.sort_date,NDWI1.T.iloc[:-2].mean()/1000,color='blue',linestyle="-")
+    plt.fill_between(NDWI1.sort_date, confiancesup[6]/1000, confianceinf[6]/1000, facecolor='blue', alpha=0.1)
+    p3=plt.plot(NDWI11.sort_date,NDWI11.T.iloc[:-2].mean()/1000,color='red',linestyle='-')
+    plt.fill_between(NDWI11.sort_date, confiancesup[8]/1000, confianceinf[8]/1000, facecolor='red', alpha=0.1)
+    p1=plt.plot(NDWI2.sort_date,NDWI2.T.iloc[:-2].mean()/1000,color='green',linestyle="--")
+    plt.fill_between(NDWI1.sort_date, confiancesup[7]/1000, confianceinf[7]/1000, facecolor='blue', alpha=0.1)
+    p3=plt.plot(NDWI22.sort_date,NDWI22.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
+    plt.fill_between(NDWI11.sort_date, confiancesup[9]/1000, confianceinf[9]/1000, facecolor='red', alpha=0.1)
+    p5=plt.plot(NDWI44.sort_date,NDWI44.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
+    plt.fill_between(NDWI44.sort_date, confiancesup[11]/1000, confianceinf[11]/1000, facecolor='black', alpha=0.1)
     plt.ylabel("NDWI")
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
-    ax3=plt.subplot(222)
-    p1=plt.plot(asc_vv1.index,asc_vv1.T.mean(),color='blue',linestyle="-")
-    plt.fill_between(asc_vv1.index, confiancesup[30], confianceinf[30], facecolor='blue', alpha=0.1)
-    p3=plt.plot(asc_vv11.index,asc_vv11.T.mean(),color='red',linestyle='-')
-    plt.fill_between(asc_vv11.index, confiancesup[32], confianceinf[32], facecolor='red', alpha=0.1)
-    p1=plt.plot(asc_vv2.index,asc_vv2.T.mean(),color='green',linestyle="--")
-    plt.fill_between(asc_vv2.index, confiancesup[31], confianceinf[31], facecolor='green', alpha=0.1)
-    p3=plt.plot(asc_vv22.index,asc_vv22.T.mean(),color='black',linestyle='--')
-    plt.fill_between(asc_vv22.index, confiancesup[33], confianceinf[33], facecolor='black', alpha=0.1)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    plt.figure(figsize=(13,5))
+    ax3=plt.subplot(121)
+    p1=plt.plot(asc_vh1.sort_date,asc_vh1.T.iloc[:-2].mean(),color='blue',linestyle="-")
+    plt.fill_between(asc_vh1.sort_date, confiancesup[36], confianceinf[36], facecolor='blue', alpha=0.1)
+    p3=plt.plot(asc_vh11.sort_date,asc_vh11.T.iloc[:-2].mean(),color='red',linestyle='-')
+    plt.fill_between(asc_vh11.sort_date, confiancesup[38], confianceinf[38], facecolor='red', alpha=0.1)
+    p2=plt.plot(asc_vh2.sort_date,asc_vh2.T.iloc[:-2].mean(),color='blue',linestyle="--")
+    plt.fill_between(asc_vh2.sort_date, confiancesup[37], confianceinf[37], facecolor='blue', alpha=0.1)
+    p4=plt.plot(asc_vh22.sort_date,asc_vh22.T.iloc[:-2].mean(),color='red',linestyle='--')
+    plt.fill_between(asc_vh22.sort_date, confiancesup[39], confianceinf[39], facecolor='red', alpha=0.1)
+    p5=plt.plot(asc_vh44.sort_date,asc_vh44.T.iloc[:-2].mean(),color='black',linestyle='--')
+    plt.fill_between(asc_vh44.sort_date, confiancesup[41], confianceinf[41], facecolor='black', alpha=0.1)
+    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.ylabel("sigma0 VV")
-    plt.xticks(size='large',rotation=45,visible=False)
+    plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
-    ax4=plt.subplot(224)
-    p1=plt.plot(asc_vh1.index,asc_vh1.T.mean(),color='blue',linestyle="--")
-    plt.fill_between(asc_vh1.index, confiancesup[36], confianceinf[36], facecolor='blue', alpha=0.1)
-    p3=plt.plot(asc_vh11.index,asc_vh11.T.mean(),color='red',linestyle='--')
-    plt.fill_between(asc_vh11.index, confiancesup[38], confianceinf[38], facecolor='red', alpha=0.1)
-    p1=plt.plot(asc_vh2.index,asc_vh2.T.mean(),color='green',linestyle="--")
-    plt.fill_between(asc_vh2.index, confiancesup[37], confianceinf[37], facecolor='green', alpha=0.1)
-    p3=plt.plot(asc_vh22.index,asc_vh22.T.mean(),color='black',linestyle='--')
-    plt.fill_between(asc_vh22.index, confiancesup[39], confianceinf[39], facecolor='black', alpha=0.1)
+    ax42=plt.twinx()
+    ax42.yaxis.grid(False) 
+    ax42.bar(dfSAFRADOUR.sort_date,dfSAFRADOUR.PRELIQ_Q,linewidth=0.1,color='blue')
+    ax42.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+    ax42.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+    #plt.ylabel("Rainfall in mm")
+    plt.yticks(visible=False)
+    plt.ylim(0,100)
+    ax4=plt.subplot(122)
+    p1=plt.plot(asc_vv1.sort_date,asc_vv1.T.iloc[:-2].mean(),color='blue',linestyle="-")
+    plt.fill_between(asc_vv1.sort_date, confiancesup[30], confianceinf[30], facecolor='blue', alpha=0.1)
+    p3=plt.plot(asc_vv11.sort_date,asc_vv11.T.iloc[:-2].mean(),color='blue',linestyle='-')
+    plt.fill_between(asc_vv11.sort_date, confiancesup[32], confianceinf[32], facecolor='red', alpha=0.1)
+    p2=plt.plot(asc_vv2.sort_date,asc_vv2.T.iloc[:-2].mean(),color='blue',linestyle="--")
+    plt.fill_between(asc_vv2.sort_date, confiancesup[31], confianceinf[31], facecolor='blue', alpha=0.1)
+    p4=plt.plot(asc_vv22.sort_date,asc_vv22.T.iloc[:-2].mean(),color='blue',linestyle='--')
+    plt.fill_between(asc_vv22.sort_date, confiancesup[33], confianceinf[33], facecolor='blue', alpha=0.1)
+    p5=plt.plot(asc_vv44.sort_date,asc_vv44.T.iloc[:-2].mean(),color='black',linestyle='--')
+    plt.fill_between(asc_vv44.sort_date, confiancesup[35], confianceinf[35], facecolor='black', alpha=0.1)
     plt.ylabel("sigma0 VH")
     plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
     ax32=plt.twinx()
     ax32.yaxis.grid(False) 
-    ax32.bar(dfSAFRADOUR.index,dfSAFRADOUR.PRELIQ_Q,linewidth=0.1,color='blue')
+    ax32.bar(dfSAFRADOUR.sort_date.iloc[:-4],dfSAFRADOUR.PRELIQ_Q.iloc[:-4],linewidth=0.1,color='blue')
     ax32.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     ax32.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     plt.ylabel("Rainfall in mm")
@@ -992,6 +1041,6 @@ if __name__ == '__main__':
     plt.yticks(fontsize= 12)
     plt.xticks(visible=False)
 
-    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_sar_pluvio"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
-    
-   
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V2"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+
+

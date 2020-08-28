@@ -52,7 +52,7 @@ def mergeVectors(outname, opath, files, ext="shp", out_Tbl_name=None):
 
 if __name__ == "__main__":
     
-    years ="2017"
+    years ="2018"
     method="SHARK"# or "OPEN_CV" or "SEASON_TIME" or "SHARK"
     bv="NESTE" # or TARN
     d={}

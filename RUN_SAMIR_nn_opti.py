@@ -63,17 +63,18 @@ def test(X):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2006","2008","2010","2012","2014","2015"]:# "2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2006"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="Run_with_optim_params_init_RU_0_irr_man_Ze_125"
+        name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_SOL_NU_sans_irri_ss_Prec/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
-        d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
+        d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"#"/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
+        
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=125,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1031'),Ze=125,REW=10,maxZr=900,Zsoil=3000,DiffE=None,DiffR=None,Irrig_auto=0,Irrig_man=0,Lame_max=0,Init_RU=1)
 
 
     #  Lancement du code
@@ -81,26 +82,26 @@ if __name__ == "__main__":
         os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -fcover maize/FCOVER.df --fc_input -o output_T1.df -p param_modif.csv')
-        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output_test -p param_modif.csv ')
+        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output_test -p param_modif.csv ')
 
         #  Récupération des output de la simulation 
-        output_sim=pickle.load(open(d["PC_labo"]+"/output_T1.df","rb"))
-        all_quantity=[]
-        all_number=[]
-        all_id=[]
-        all_ETR=[]
-        for id in list(set(output_sim.id)):
-            lam=output_sim.loc[output_sim.id==id]
-            # print(r' n° parcelle : %s' %id)
-            # print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
-            # print(r' nb irrigation : %s' %lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
-            if id == 1:
-                ETRmod=lam[["ET","date"]]
-            all_id.append(id)
-            all_quantity.append(lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
-            all_number.append(lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
-        all_resu=pd.DataFrame([all_id,all_quantity,all_number]).T
-        all_resu.columns=['id','cumul_irr',"nb_irr"]
+        # output_sim=pickle.load(open(d["PC_labo"]+"/output_T1.df","rb"))
+        # all_quantity=[]
+        # all_number=[]
+        # all_id=[]
+        # all_ETR=[]
+        # for id in list(set(output_sim.id)):
+        #     lam=output_sim.loc[output_sim.id==id]
+        #     # print(r' n° parcelle : %s' %id)
+        #     # print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+        #     # print(r' nb irrigation : %s' %lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
+        #     if id == 1:
+        #         ETRmod=lam[["ET","date"]]
+        #     all_id.append(id)
+        #     all_quantity.append(lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
+        #     all_number.append(lam.Ir_auto.where(output_sim["Ir_auto"] != 0.0).dropna().count())
+        # all_resu=pd.DataFrame([all_id,all_quantity,all_number]).T
+        # all_resu.columns=['id','cumul_irr',"nb_irr"]
 # =============================================================================
 #     validation ETR 
 # =============================================================================
