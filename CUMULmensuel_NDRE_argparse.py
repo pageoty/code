@@ -1,4 +1,4 @@
-d#!/usr/bin/env python2
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Mon May  6 17:27:33 2019
@@ -14,37 +14,37 @@ import os
 import argparse
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Create cumul Indice')
-    parser.add_argument('-out', dest='out')
-    parser.add_argument('-inl', dest='inlist')
-    parser.add_argument('-NIR', dest='NIR') # exemple : 'B8A'
-    parser.add_argument('-rededge', dest='rededge') # exemple : 'B5'
-    parser.add_argument('-tile', dest='tile')
-    parser.add_argument('-inp', dest='path',nargs='+',required = True)
-    parser.add_argument('-time_vege',dest='vege', action='store_true') 
-    args = parser.parse_args()
+	parser = argparse.ArgumentParser(description='Create cumul Indice')
+	parser.add_argument('-out', dest='out') # sorties des images dossier 
+	parser.add_argument('-inl', dest='inlist') # list du nom des bandes issu de Iota2 
+	parser.add_argument('-NIR', dest='NIR') # exemple : 'B8A'
+	parser.add_argument('-rededge', dest='rededge') # exemple : 'B5'
+	parser.add_argument('-tile', dest='tile') # nom de la tuile
+	parser.add_argument('-inp', dest='path',nargs='+',required = True) # Chemin des images concaténe 
+	parser.add_argument('-time_vege',dest='vege', action='store_true') # uniquement si l'on veux réduire la période de traitement ici Avril a Novembre 
+	args = parser.parse_args()
 
-    print (args.vege)
+	print (args.vege)
 
 	#Mettre en forme le df
-    df=pd.read_csv("{}".format(str(args.inlist).strip("['']")),sep=',', header=None)
-    df1=df.T
-    df1.columns=["band_name"]
-    df1.index = np.arange(1, len(df1)+1)
-    df1["band"] = df1.index
-    df1["indice"] = df1.band_name.apply(lambda s: s[12:15])
-    df1["month"] = df1.band_name.apply(lambda s:s [-5:-3])
+	df=pd.read_csv("{}".format(str(args.inlist).strip("['']")),sep=',', header=None)
+	df1=df.T
+	df1.columns=["band_name"]
+	df1.index = np.arange(1, len(df1)+1)
+	df1["band"] = df1.index
+	df1["indice"] = df1.band_name.apply(lambda s: s[12:15])
+	df1["month"] = df1.band_name.apply(lambda s:s [-5:-3])
 	
     #Tableaux et liste avec les bandes NDVI
-    NIR = "{}".format(str(args.NIR).strip("[]"))
-    rededge = "{}".format(str(args.rededge).strip("[]"))
-    df_NIR = df1[df1['indice'] == "{}".format(str(args.NIR).strip("[]"))]
-    df_rededge = df1[df1['indice'] == "{}".format(str(args.rededge).strip("[]"))]
-    band_NIR = df_NIR["band"].tolist()
-    band_rededge = df_rededge["band"].tolist()
+	NIR = "{}".format(str(args.NIR).strip("[]"))
+	rededge = "{}".format(str(args.rededge).strip("[]"))
+	df_NIR = df1[df1['indice'] == "{}".format(str(args.NIR).strip("[]"))] # récuper les bandes 
+	df_rededge = df1[df1['indice'] == "{}".format(str(args.rededge).strip("[]"))] # récuper les bandes 
+	band_NIR = df_NIR["band"].tolist()
+	band_rededge = df_rededge["band"].tolist()
 
-    path_folder = "{}".format(str(args.path).strip("['']"))
-    if args.vege == False:
+	path_folder = "{}".format(str(args.path).strip("['']"))
+	if args.vege == False:
 		frequence=3 # interpolation tous les 10 jours -> cumul tous les 30 jours
 		t=1
 		lst_img=[]
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 		while frequence <= len(band_rededge):
 			expres = []
 
-			for i, j in zip(band_NIR[:frequence], band_rededge[:frequence]):
+			for i, j in zip(band_NIR[:frequence], band_rededge[:frequence]): # permet de faire le calcul mensuel des indices (a modifier pour le faire sur chaque image)
 				num = "(im1b"+str(i)+"-im1b"+str(j)+")"
 				denum = "(im1b"+str(i)+"+im1b"+str(j)+")"
 				x = num+"/"+denum
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 				compute = condition + x
 				expres.append(compute)
 			
-			expres = ','.join(str(x) for x in expres)
+			expres = ','.join(str(x) for x in expres) # écrit l'équation du band math 
 			
 			tile="{}".format(str(args.tile).strip("['']"))
 			print (tile)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 			BMapp.SetParameterString("exp", expres)
 			BMapp.ExecuteAndWriteOutput()
 			
-			lst_img.append(path_folder+"SUMmensuel_%s_%s_%s_temp%s.tif"% (tile,NIR,rededge,t))
+			lst_img.append(path_folder+"SUMmensuel_%s_%s_%s_temp%s.tif"% (tile,NIR,rededge,t)) 
 			print("image SUMmensuel_%s_%s_%s_temp%s.tif ajoutée à la liste"% (tile,NIR,rededge,t))
 			
 			frequence+=3
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 		ConcatImg.SetParameterString("out", path_folder+"SUMmensuel_%s_%s_%s.tif"% (tile,NIR,rededge))
 		ConcatImg.ExecuteAndWriteOutput()
 		
-    else:
+	else:
 		
 		freq=pd.value_counts(df_NIR['month'],sort=False)
 		freq=pd.DataFrame(freq)

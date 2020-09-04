@@ -33,73 +33,51 @@ if __name__ == "__main__":
     
     # recupérer les résultats 
     d={}
-    name_run="RUN_FERMETURE_BILAN_HYDRIQUE/RUN_SOL_NU_sans_irri_ss_Prec/"
+    name_run="RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     d['Output_model_PC_home']='D:/THESE_TMP/RUNS_SAMIR/'
     d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/'
-    # for y in ["2006","2008","2010","2012"]:
-    #     print (y)
-    #     res=pickle.load(open( d['Output_model_PC_labo']+name_run+str(y)+"/output_T1.df",'rb'))
-    #     meteo=pickle.load(open( d['Output_model_PC_labo']+name_run+str(y)+"/Inputdata/meteo.df",'rb'))
-    #     meteo_periode=meteo.loc[(meteo.date >= res.date[0])&(meteo.date <= res.date.iloc[-1] )]
- 
-    #     entre=pd.merge(res[["date",'Ir_auto']],meteo_periode[["Prec","date"]],on=["date"])
-    #     entre.fillna(0,inplace=True)
-    #     entre["sum"]=entre.eval("Ir_auto + Prec")
-    #     sortie=res[['date','SWC1', 'SWC2', 'SWC3', 'SWCvol1', 'SWCvol2', 'SWCvol3', 'Dd','ET']]
-    #     sortie.fillna(0,inplace=True)
-    #     sortie["sum"]=sortie.eval("ET+Dd")
-    #     # verifier la sortie Dd
-    #     plt.plot(sortie.Dd,label=(y))
-    #     plt.legend()
-    #     sortie['reserve']=sortie.eval("SWC1+SWC2+SWC3")
-    #     print(sum(sortie["reserve"]))
-    #     print(sum(sortie["sum"]))
-        
-    #     cloture=(entre["sum"]-sortie['sum']+sortie["reserve"])
-    #     print("bilan hydrique : %s" %sum(cloture))
-        
-    #     # regader fermeture uniquement sur la préiode de végétation pour supprimer les artéfacts en début de saison
-    #     entre_vege=entre.loc[(entre.date >= str(y)+"-03-02") &(entre.date <= str(y)+"-08-31")]
-    #     sortie_vege=sortie.loc[(sortie.date >= str(y)+"-03-02") & (sortie.date <= str(y)+"-08-31")]
-    #     cloture_vege=(entre_vege["sum"]-sortie_vege['sum']+sortie_vege["reserve"])
-    #     print("bilan hydrique : %s" %sum(cloture_vege))
-    #     plt.title("période de végétation")
-    #     plt.plot(sortie_vege.Dd,label=(y))
-    #     plt.legend()
-
 
 # =============================================================================
 # Version excel bilan hydrique 
-# =============================================================================
-    for y in ["2006"]:
-        print (y)
-        res=pickle.load(open( d['Output_model_PC_labo']+name_run+"/"+str(y)+"/Output/output_test",'rb'))
-        # res.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/simu_opti_%s_init_0_ze_125.csv"%y)
-        res_vege=res.loc[(res.date >= str(y)+"-03-02") &(res.date <= str(y)+"-08-31")]
+# # =============================================================================
+
+# Bilan hydrique journalier 
+    dif=[]
+    for y in ["2006",'2008',"2010","2012","2014","2015"]:
+        # print (y)
+        res=pickle.load(open(d['Output_model_PC_labo']+name_run+"/"+str(y)+"/Output/output.df",'rb'))
+        res_vege=res.loc[(res.date >= str(y)+"-05-01") &(res.date <= str(y)+"-08-31")]
         meteo=pickle.load(open( d['Output_model_PC_labo']+name_run+"/"+str(y)+"/Inputdata/meteo.df",'rb'))
-        meteo_vege=meteo.loc[(meteo.date >= str(y)+"-03-02") &(meteo.date <= str(y)+"-08-31")]
-        stop_init=res_vege.TAW.iloc[0]-res_vege.Dr.iloc[0]+res_vege.TDW.iloc[0]-res_vege.Dd.iloc[0]
+        meteo_vege=meteo.loc[(meteo.date >= str(y)+"-05-01") &(meteo.date <= str(y)+"-08-31")]
+        for j in np.arange(res_vege.shape[0]):
+            # print (res_vege.date.iloc[j])
+            stop_init=res_vege.TAW.iloc[j]-res_vege.Dr.iloc[j]+res_vege.TDW.iloc[j]-res_vege.Dd.iloc[j]
+            if j != np.arange(res_vege.shape[0])[-1]:
+                stop_fin=res_vege.TAW.iloc[int(j)+1]-res_vege.Dr.iloc[int(j)+1]+res_vege.TDW.iloc[int(j)+1]-res_vege.Dd.iloc[int(j)+1]
+            else: 
+                print("last day simul")
+            bilan=stop_init+meteo_vege.Prec.iloc[j]-res_vege.ET.iloc[j]
+            diff=bilan-stop_fin
+            # print('bilan hydrique: %s' %round(bilan,2))
+            # print("bilan fin de simu :%s" %round(stop_fin,2))
+            # if diff > 1 or diff < -1 :
+                # print(res_vege.date.iloc[j])
+                # print('##DIFF= %s'%(round(diff,2)))
+            # dif.append(diff)
+            # print(sum(dif))
+        res_vege.loc[res_vege.Ir_auto>1]
+        stop_init=res_vege.TAW.iloc[0]-0.0+res_vege.TDW.iloc[0]-0.0
         stop_fin=res_vege.TAW.iloc[-1]-res_vege.Dr.iloc[-1]+res_vege.TDW.iloc[-1]-res_vege.Dd.iloc[-1]
         #  Ajout de la zone evaporatice
-        if "irr_man" in name_run:
-            bilan=stop_init+sum(meteo_vege.Prec)+sum(meteo_vege.Irrig)-sum(res_vege.ET)
-        else:
-            bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)
+        bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)-sum(res_vege.DP)
+        print (y)
         print('bilan hydrique: %s' %round(bilan,2))
         print("bilan fin de simu :%s" %round(stop_fin,2))
-        meteo_vege.Prec.plot()
-        res_vege.Dr.plot()
-        res_vege.ET.plot()
-        res_vege.Dd.plot()
-        res_vege.Dei.plot()
-        plt.legend()
-        res_vege.iloc[0:10][['ET','Dei','Dr','Dd']].plot()
-        plt.plot(1-res_vege.loc[120:180][["Dei","Dr"]])
 
-        meteo_vege.loc[120:180].Prec.plot()
-        res_vege.loc[120:130][['TAW','TEW','TDW']].plot()
-    # # autre version 
-    # stock=res_vege.Dr +res_vege.Dei+res_vege.Dd
-    # stock1=res_vege.Dei.iloc[0]-res_vege.Dei.iloc[-1]
-    # entre=sum(res_vege.Ir_auto)+sum(meteo_vege.Prec) # 315
-    # sortie=sum(res_vege.ET) # 426
+        plt.figure(figsize=(10,7))
+        # plt.plot(res_vege.date,res_vege.NDVI)
+        plt.plot(res_vege.date,res_vege.Dr)
+        plt.plot(res_vege.date,res_vege.Ir_auto)
+        plt.bar(meteo_vege.date,meteo_vege.Prec,color='Red')
+        plt.plot(res_vege.date,res_vege.DP)
+        

@@ -212,7 +212,7 @@ if __name__ == '__main__':
     list_bd_drop=["region","labcroirr","ogc_fid","alt_band_0"]
     list_drop=["labcroirr","ogc_fid"]
     list_drop_bv=["labcroirr","ogc_fid","alt_band_0"]
-    years= "2017" #or 2018
+    years= "2018" #or 2018
     BV="ADOUR" # ADOUR
     
 # =============================================================================
@@ -969,9 +969,10 @@ if __name__ == '__main__':
     p5=plt.plot(NDVI44.sort_date,NDVI44.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
     plt.fill_between(NDVI44.sort_date, confiancesup[5]/1000, confianceinf[5]/1000, facecolor='black', alpha=0.1)
     plt.ylabel("NDVI")
-    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
+    # plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+    plt.text(325,0.90,"c",size="20")
     plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
     ax1 = plt.subplot(122)
@@ -989,6 +990,7 @@ if __name__ == '__main__':
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.xticks(size='large',rotation=45)
+    plt.text(325,0.16,"d",size="20")
     plt.yticks(fontsize= 12)
     plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
     plt.figure(figsize=(13,5))
@@ -1003,11 +1005,12 @@ if __name__ == '__main__':
     plt.fill_between(asc_vh22.sort_date, confiancesup[39], confianceinf[39], facecolor='red', alpha=0.1)
     p5=plt.plot(asc_vh44.sort_date,asc_vh44.T.iloc[:-2].mean(),color='black',linestyle='--')
     plt.fill_between(asc_vh44.sort_date, confiancesup[41], confianceinf[41], facecolor='black', alpha=0.1)
-    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
+    # plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.ylabel("sigma0 VV")
     plt.xticks(size='large',rotation=45)
+    plt.text(325,-11,"c",size="20")
     plt.yticks(fontsize= 12)
     ax42=plt.twinx()
     ax42.yaxis.grid(False) 
@@ -1030,6 +1033,7 @@ if __name__ == '__main__':
     plt.fill_between(asc_vv44.sort_date, confiancesup[35], confianceinf[35], facecolor='black', alpha=0.1)
     plt.ylabel("sigma0 VH")
     plt.xticks(size='large',rotation=45)
+    plt.text(325,-4,"d",size="20")
     plt.yticks(fontsize= 12)
     ax32=plt.twinx()
     ax32.yaxis.grid(False) 

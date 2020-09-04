@@ -295,8 +295,8 @@ if __name__ == "__main__":
         # NDVI=df[["Date","NDVI"]]
         # NDVI.columns=["date",'NDVI']
         NDVI["id"]=1
-        NDVI.NDVI=0 # test sans végétation 
-        NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/DATA_NDVI_SOIL_NU/NDVI%s.df"%(years))
+        # NDVI.NDVI=0.2 # test sans végétation 
+        NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie/"+str(years)+"/Inputdata/maize/NDVI"+str(years)+".df")
         # NDVI.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUN_SENSI_SOL/"+str(years)+"/Inputdata/maize/NDVI.df")
 #     for y in os.listdir("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/DONNEES_CALIBRATION/DATA_METEO/"):
 #         years=y[-8:-4]
