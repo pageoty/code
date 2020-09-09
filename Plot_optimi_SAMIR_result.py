@@ -75,6 +75,7 @@ if __name__ == "__main__":
     All_ETR=pd.DataFrame()
     d["Output_PC_home"]="G:/Yann_THESE/BESOIN_EAU/RESULT/Optimisation/"
     d['Output_model_PC_home']='D:/THESE_TMP/RUNS_SAMIR/Compar_Fcover/'
+    d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Compar_Fcover"
     for y in ["2006","2008","2010","2012","2014","2015"]:
         Fcover_sat=pickle.load(open( d['Output_model_PC_home']+"/Avec_Fcover_sat/"+str(y)+"/output_T1.df",'rb'))
         Fcover_mod=pickle.load(open( d['Output_model_PC_home']+"/Sans_Fcover_sat/"+str(y)+"/output_T1.df",'rb'))

@@ -36,10 +36,57 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    # d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
-    d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R12/Inputdata/"
-    d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
-#    runs=["R12"]
+    # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
+    # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
+    d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+str(y)+
+    sites=["LAM",'GRIGNON']
+    years=["2017","2019"]
+# =============================================================================
+# Validation Flux ETR ICOS 
+# =============================================================================
+    for site in sites:
+        for y in years:
+            d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+str(y)+
+            
+            ETR=pd.read_csv("/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_"+str(site)+"/DATA_ETR_"+str(site)+"_ICOS/ETR_"+str(site)+str(y)+".csv",decimal='.')
+            ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
+            ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
+            ETR_mod=pickle.load(open( d['Output_model_PC_home']+"Output/output_T1.df",'rb'))
+            
+            ETR_mod=Fcover_sat[["ET",'date']]
+            ETR_mod=Fcover_sat.loc[(Fcover_sat.date >= str(y)+"-03-02") &(Fcover_sat.date <= str(y)+"-10-31")]
+            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET']],on=['date'])
+            dfETR_obs.dropna(inplace=True)
+            slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE.to_list(),dfETR_obs.ET.to_list())
+            bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE) 
+            fitLine = predict(dfETR_obs.LE)
+            # Creation plot
+            plt.figure(figsize=(7,7))
+            plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
+            plt.plot(dfETR_obs.LE,fitLine,linestyle="--")
+            plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9)
+            plt.xlabel("ETR OBS")
+            plt.ylabel("ETR model")
+            plt.xlim(0,10)
+            plt.ylim(0,10)
+            plt.title("Scatter ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
+            rms = mean_squared_error(dfETR_obs.LE,dfETR_obs.ET,squared=False)
+            plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
+            plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
+            plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
+            plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
+            plt.savefig( d["Output_PC_home"]+"/plt_scatter_ETR_%s_Fcover_%s.png"%(Fcover,y))
+            plt.figure(figsize=(7,7))
+            plt.plot(dfETR_obs.date,dfETR_obs.LE,label='ETR_obs',color="black")
+            plt.plot(dfETR_obs.date,dfETR_obs.ET,label='ETR_mod',color='red')
+            plt.ylabel("ETR")
+            plt.ylim(0,10)
+            plt.title("Dynamique ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
+            plt.legend()
+            plt.savefig(d["Output_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_Fcover_%s.png"%(Fcover,y))
+# =============================================================================
+#  Validation Irri_ préparation data 
+# =============================================================================
     all_quantity=[]
     all_number=[]
     all_id=[]
@@ -60,10 +107,6 @@ if __name__ == '__main__':
                     print(r' n° parcelle : %s' %id)
                     print(r'sum irrigation in mm : %s'%lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
                     print(r' nb irrigation : %s' %lam.Ir_auto.where(df["Ir_auto"] != 0.0).dropna().count())
-#                    plt.figure(figsize=(5,5))
-#                    plt.title(r'run :%s : n° parcelle :%s '%(r,id))
-#                    plt.plot(lam.date,lam.Ir_auto)
-#                    plt.ylabel("quantité d'eau")
                     all_runs.append(r)
                     all_id.append(id)
                     all_quantity.append(lam.groupby(["LC","id"])["Ir_auto"].sum()[0])
@@ -74,50 +117,6 @@ if __name__ == '__main__':
                         all_date_jj.append(a)
     all_resu=pd.DataFrame([all_runs,all_id,all_quantity,all_number,all_date]).T
     all_resu.columns=["runs",'id','cumul_irr',"nb_irr","date_irr"]
-
-
-#                    plt.savefig(d["path_PC"][:-10]+"plt_quantity_irri_%s.png"%id)
-                
-# =============================================================================
-# Validation modelisation ETR     
-# =============================================================================
-#    Prépartion des datas Eddy-co au format journalière
-    #  Pour 2017 et autre année
-    for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
-        years=y[5:9]
-        LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
-#         LE_lam["TIMESTAMP"]=LE_lam["TIMESTAMP"].apply(lambda x:x[0:10])
-#         LE_lam["TIMESTAMP"]=pd.to_datetime(LE_lam["TIMESTAMP"],format="%d/%m/%Y")
-#         LE_lam_day=LE_lam.groupby("TIMESTAMP")["LE"].mean()
-#         ETR_lam_day=LE_lam_day*0.0352
-#         ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-#         ETR_lam_day.plot()
-#         ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM"+str(years)+".csv")
-
-#  Pour la station de Grignon gestion des LE en ETR
-    df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_GRIGNON/RAW_DATA/FLX_FR-Gri_FLUXNET2015_FULLSET_DD_2004-2014_1-4.csv")
-    df["TIMESTAMP"]=pd.to_datetime(df["TIMESTAMP"],format="%Y%m%d")
-    df_ETR=df[["TIMESTAMP","LE_F_MDS",'LE_CORR']]
-    df_ETR["ETR"]=df_ETR.eval("LE_F_MDS*0.0352")
-    df_ETR["ETR_ratio_bowen"]=df_ETR.eval("LE_CORR*0.0352")
-    df_ETR[df_ETR.ETR < -1]=pd.NaT
-    df_ETR[df_ETR.ETR_ratio_bowen < -1]=pd.NaT
-    for y in ["2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014"]:
-        df_ETR_years=df_ETR.loc[(df_ETR.TIMESTAMP >= str(y)+"-01-01") &(df_ETR.TIMESTAMP<= str(y)+"-12-31")]
-        plt.figure(figsize=(7,7))
-        plt.plot(df_ETR_years.TIMESTAMP,df_ETR_years.ETR)
-        df_ETR_years.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_GRIGNON/DATA_ETR_GRIGNON/ETR_GRI"+str(y)+".csv")
-    
-# #    Pour 2019
-#     ETR_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
-#     ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
-#     ETR_lam_day=ETR_lam.groupby("date")["LE"].mean()
-#     ETR_lam_day=ETR_lam_day*0.0352
-#     ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-#     ETR_lam_day.plot()
-#     ETR_lam_day.to_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM2019.csv")
-#    ## Récuparation date végétation sur ETR 
-
 
 # =============================================================================
 # Validation des Irr cumulées CACG
@@ -176,39 +175,7 @@ if __name__ == '__main__':
             plt.text(x = nb_irr.to_list()[j]+0.1 , y=all_resu.loc[all_resu.runs==r]["nb_irr"].iloc[j]+0.1,s = list(all_resu.loc[all_resu.runs==r]["id"])[j],size=9)
         plt.savefig(d["path_PC"][:-10]+"plt_scatter_nb_irri_%s.png"%r)
 
-#    ETsum = (df.groupby(['LC', 'id'])['ET'].sum()).reset_index()
-#    LCclasses = df.LC.cat.categories
-#    
-#    ETmin = ETsum.ET.min()
-#    ETmax = ETsum.ET.max()
-#    ET= {}
-#    for lc in LCclasses:
-#        ET[lc] = ETsum.loc[ETsum.LC == lc].reset_index()
-#        ET[lc].drop(columns = ['LC', 'index'], inplace = True)
-#    ETmin, ETmax
-#    LCclasses = df.LC.cat.categories
-#
-#    gdf = {}
-#    for lc in LCclasses:
-#
-#
-#        gdf[lc] = geo.read_file(d["path_PC"]+"shapefiles/PARCELLE_LABO_ref.shp")
-#        gdf[lc] = gdf[lc].merge(ET[lc], on='id') # attention ID en minicuel dans le shape
-#        
-#        gdf[lc].plot(column='ET',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True) # Création map evapotransipartion 
-#        plt.title(lc + '   : Evapotranspiration')
-#        
-#    lam=df.loc[df.id==0] # 0 lam 1 aur
-#    variables=['FCov', 'fewi', 'fewp', 'Zr', 'Zd', 'TEW', 'TAW', 'TDW', 'RAW', 'RUE',
-#       'Dei', 'Dep', 'Dr', 'Dd', 'Ir_auto', 'ET', 'SWC1', 'SWC2', 'SWC3',
-#       'SWCvol1', 'SWCvol2', 'SWCvol3']
-#    for v in variables:
-#        print(v)
-#        plt.figure(figsize=(5,5))
-#        plt.title(v)
-#        plt.plot(lam.date,lam[v])
-    
-    
+
 # =============================================================================
 #   Calcul le cumul d'irrigation 
 # =============================================================================
@@ -217,14 +184,3 @@ if __name__ == '__main__':
 #    # or
 #    lam.Ir_auto.where(lam["Ir_auto"] != 0.0).dropna().count() # resultat  980.0 et ref = 944 soit 44 mm surplus
 #
-# =============================================================================
-#   Vérification des Flux ETR
-# =============================================================================
-    # lam[["ET","date"]]
-    # Données de références station flux 
-    for y in os.listdir(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/"):
-        years=y[-8:-4]
-        LE_lam=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/"+y,encoding = 'utf-8',delimiter=",")
-        LE_lam.plot()
-        plt.title(years)
-        plt.savefig(d["PC_disk"]+"/RESULT/Dynamique_ETR_FLUX/plt_ETR_FLUX_LAM"+str(y)+".png")

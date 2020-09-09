@@ -179,6 +179,7 @@ if __name__ == "__main__":
 # =============================================================================
 
     meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_Grignon_2019_L93.shp")
     meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
     'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
     'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
@@ -214,30 +215,38 @@ if __name__ == "__main__":
         Meteo_par.info()
         Meteo_par.to_pickle(d["path_PC"]+"/meteo.df")
 
-
+# =============================================================================
+# for grignon
+# =============================================================================
+    meteo.drop(columns='geometry',inplace=True)
+    Meteo_par=meteo
+    Meteo_par.columns=["date",'Prec','ET0']
+    Meteo_par["Irrig"]=0
+    Meteo_par['id']=1
+    Meteo_par.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/2019/Inputdata/meteo.df")
     # Select data SAFRAN data 
-    Safran=pd.read_csv(d["PC_disk_labo"]+"/SIM2_2018_202002.csv",sep=";")
-    SAF2017=Safran.loc[(Safran.DATE >= 20180101)& (Safran["DATE"] < 20190101)]
-    SAF2017["X"]=SAF2017.LAMBX*100
-    SAF2017["Y"]=SAF2017.LAMBY*100
+    # Safran=pd.read_csv(d["PC_disk_labo"]+"/SIM2_2018_202002.csv",sep=";")
+    # SAF2017=Safran.loc[(Safran.DATE >= 20180101)& (Safran["DATE"] < 20190101)]
+    # SAF2017["X"]=SAF2017.LAMBX*100
+    # SAF2017["Y"]=SAF2017.LAMBY*100
     # geometry = SAF2017.apply(lambda row: Point(row.X, row.Y), axis=1)
     # crs = {'init': 'SR-ORG:7528'} 
     # geo_df = geo(SAF2017, crs=crs, geometry=geometry)
     # geo_df.to_file(filename = '/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_test_2018_l2.shp', driver ='ESRI Shapefile')
-    SAF2017.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
+    # SAF2017.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
 
     
-    saf2018=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
-    saf2018["geometry"] = SAF2017.apply(lambda row: Point(row.X, row.Y), axis=1)
-    saf_2019=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_ZONE_2019_L2.shp")
-    saf_zone=saf_2019.loc[saf_2019.DATE==20190101.0]
+    # saf2018=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_2018.csv")
+    # saf2018["geometry"] = SAF2017.apply(lambda row: Point(row.X, row.Y), axis=1)
+    # saf_2019=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/SAFRAN_ZONE_2019_L2.shp")
+    # saf_zone=saf_2019.loc[saf_2019.DATE==20190101.0]
     
-    a=list(saf_zone.X.astype(int))
-    saf_zone_test_2018=saf2018.loc[a]
+    # a=list(saf_zone.X.astype(int))
+    # saf_zone_test_2018=saf2018.loc[a]
     
     
-    df1.sort_index().sort_index(axis=1) == df2.sort_index().sort_index(axis=1)
-    saf2018[saf2018["X"]==saf_zone["X"].astype(int)]
+    # df1.sort_index().sort_index(axis=1) == df2.sort_index().sort_index(axis=1)
+    # saf2018[saf2018["X"]==saf_zone["X"].astype(int)]
 
 # =============================================================================
 # NDVI2014
@@ -319,3 +328,15 @@ if __name__ == "__main__":
         FCOVER["id"]=1
         # FCOVER['OS']="maize"
         FCOVER.to_pickle("D:/THESE_TMP/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/Run_opti_param_v2_ss_spin_Fcover/"+str(years)+"/Inputdata/maize/FCOVER.df")
+        
+# =============================================================================
+#  Grignon
+# =============================================================================
+    df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_2019.csv")
+    df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    df.set_index('date',inplace=True)
+    df=df.resample("D").interpolate()
+    df.reset_index(inplace=True)
+    NDVI=df
+    NDVI["id"]=1
+    NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/2019/Inputdata/maize/NDVI2019.df")

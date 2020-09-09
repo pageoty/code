@@ -33,9 +33,10 @@ if __name__ == "__main__":
     
     # recupérer les résultats 
     d={}
-    name_run="RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
+    name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
+    name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
     d['Output_model_PC_home']='D:/THESE_TMP/RUNS_SAMIR/'
-    d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/Bilan_hydrique/'
+    d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT//'
 
 # =============================================================================
 # Version excel bilan hydrique 
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 
 # Bilan hydrique journalier 
     dif=[]
-    for y in ["2006",'2008',"2010","2012","2014","2015"]:
+    for y in ["2019"]:
         # print (y)
         res=pickle.load(open(d['Output_model_PC_labo']+name_run+"/"+str(y)+"/Output/output.df",'rb'))
         res_vege=res.loc[(res.date >= str(y)+"-05-01") &(res.date <= str(y)+"-08-31")]
@@ -65,11 +66,12 @@ if __name__ == "__main__":
                 # print('##DIFF= %s'%(round(diff,2)))
             # dif.append(diff)
             # print(sum(dif))
-        res_vege.loc[res_vege.Ir_auto>1]
+        # res_vege.loc[res_vege.Ir_auto>1]
         stop_init=res_vege.TAW.iloc[0]-0.0+res_vege.TDW.iloc[0]-0.0
         stop_fin=res_vege.TAW.iloc[-1]-res_vege.Dr.iloc[-1]+res_vege.TDW.iloc[-1]-res_vege.Dd.iloc[-1]
         #  Ajout de la zone evaporatice
-        bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)-sum(res_vege.DP)
+        # bilan=stop_init+sum(meteo_vege.Prec)+sum(res_vege.Ir_auto)-sum(res_vege.ET)-sum(res_vege.DP)
+        bilan=stop_init+sum(meteo_vege.Prec)+sum(meteo_vege.Irrig)-sum(res_vege.ET)-sum(res_vege.DP)
         print (y)
         print('bilan hydrique: %s' %round(bilan,2))
         print("bilan fin de simu :%s" %round(stop_fin,2))

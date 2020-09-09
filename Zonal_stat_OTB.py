@@ -37,7 +37,7 @@ if __name__ == "__main__":
             print (i)
             os.system("otbcli_PolygonClassStatistics -in %s%s -vec %s -field %s -out stat.xml -ram %s"%(str(args.image).strip("['']"),i,str(args.vector).strip("['']"),str(args.label).strip("['']"),str(args.ram).strip("['']")))
             os.system("otbcli_SampleSelection -in %s%s -vec %s -field %s -instats stat.xml -strategy all -out SampleSelection.sqlite -ram %s"%(str(args.image).strip("['']"),i,str(args.vector).strip("['']"),str(args.label).strip("['']"),str(args.ram).strip("['']")))
-            os.system("otbcli_SampleExtraction -in %s%s -vec SampleSelection.sqlite -field %s -out %s/SampleExtraction%s.sqlite -ram %s"%(str(args.image).strip("['']"),i,str(args.label).strip("['']").lower(),str(args.outstat).strip("['']"),i,str(args.ram).strip("['']")))
+            os.system("otbcli_SampleExtraction -in %s%s -vec SampleSelection.sqlite -field %s -out %s/SampleExtraction%s.csv -ram %s"%(str(args.image).strip("['']"),i,str(args.label).strip("['']").lower(),str(args.outstat).strip("['']"),i,str(args.ram).strip("['']")))
             os.system("rm stat.xml")
             os.system("rm SampleSelection.sqlite")
     else :
