@@ -22,7 +22,7 @@ import pickle
 from SAMIR_optimi import RMSE
 import geopandas as geo
 import shapely.geometry as geom
-import descartes
+# import descartes
 from datetime import datetime, date, time, timezone
 from scipy import *
 from scipy import stats
@@ -43,14 +43,6 @@ def NS(s,o):
     # s,o = filter_nan(s,o)
     return 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
  
-
-
-# def nash (s):
-#     """The Nash function"""
-#    # 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
-#     nash=1 - sum((s-x)**2)/sum((x-np.mean(x))**2)
-#     return nash 
-    
 def RMSE(x,*args) :
     x_data = args[0]
     y_data = args[1]
@@ -65,7 +57,7 @@ if __name__ == "__main__":
     result=[]
     for y in ["2019"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -85,7 +77,7 @@ if __name__ == "__main__":
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -fcover maize/FCOVER.df --fc_input -o output_T1.df -p param_modif.csv')
         # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI'+str(y)+'.df  -fc maize/FC.df -wp maize/WP.df -fcover maize/FCOVER.df --fc_input  -o Output/output.df -p param_modif.csv ')
         # Sans le FCOVER sat
-        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI'+str(y)+'.df  -fc maize/FC.df -wp maize/WP.df  -o Output/output.df -p param_modif.csv ')
+        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n */NDVI'+str(y)+'.df  -fc */FC.df -wp */WP.df  -o Output/output.df -p param_modif.csv ')
        
         #  Récupération des output de la simulation 
         # output_sim=pickle.load(open(d["PC_labo"]+"/output_T1.df","rb"))

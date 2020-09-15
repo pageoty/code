@@ -164,16 +164,22 @@ if __name__ == "__main__":
 # =============================================================================
 #  SOIL data Lamothe
 # =============================================================================
-#        if i =="FC":
-#            soil[str(i)].loc[0]=0.3635
-#            soil[str(i)].loc[1]=np.mean([0.310,0.392])
-#        else:
-#            soil[str(i)].loc[0]=np.mean([0.175,0.169])
-#            soil[str(i)].loc[1]=np.mean([0.131,0.185])
-#        soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
-        
-    
-    
+        if i =="FC":
+            soil[str(i)].loc[0]=0.3635
+            soil[str(i)].loc[1]=np.mean([0.310,0.392])
+        else:
+            soil[str(i)].loc[0]=np.mean([0.175,0.169])
+            soil[str(i)].loc[1]=np.mean([0.131,0.185])
+        soil.to_pickle(d["path_PC"]+'/maize/'+str(i)+'.df')
+# =============================================================================
+#     Soil Grignon 
+# =============================================================================
+    soil=pd.DataFrame({'id': [2], 'FC': [0.22]})
+    soil.to_pickle('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/2019/Inputdata/maize_rain/FC.df')
+
+    WP=pd.DataFrame({'id': [2], 'WP': [0.11]})
+    WP.to_pickle('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/2019/Inputdata/maize_rain/WP.df')
+
 # =============================================================================
 #     Build METEO spatialieser 
 # =============================================================================
@@ -338,5 +344,7 @@ if __name__ == "__main__":
     df=df.resample("D").interpolate()
     df.reset_index(inplace=True)
     NDVI=df
-    NDVI["id"]=1
-    NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/2019/Inputdata/maize/NDVI2019.df")
+    NDVI["id"]=2
+    NDVI.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/2019/Inputdata/maize_rain/NDVI2019.df")
+
+
