@@ -38,20 +38,22 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/run_test_meteo/"
     sites=['GRIGNON']
     years=["2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
-    for site in sites:
-        for y in years:
+# modif pour groupby Lc
+    for y in years:
+        for lc in ["maize_irri",'maize_rain']:
             d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
-            ETR=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_"+str(site)+"/DATA_ETR_"+str(site)+"_ICOS/ETR_"+str(site)+str(y)+".csv",decimal='.')
+            ETR=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.')
             ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
             ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
-            ETR_mod=pickle.load(open( d['Output_model_PC_labo']+"Output/output.df",'rb'))
-            # ETR_mod=Fcover_sat[["ET",'date']]
+            ETR_mod=pickle.load(open( d['Output_model_PC_labo']+"Output/output_valid_modif_meteo_itenti.df",'rb'))
+            ETR_mod_crops=ETR_mod.groupby("LC")
+            ETR_mod=ETR_mod_crops.get_group(lc)
             ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
             dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET']],on=['date'])
             dfETR_obs.dropna(inplace=True)
@@ -82,8 +84,8 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             # plt.title("Dynamique ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
             plt.legend()
-            # plt.savefig(d["Output_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_Fcover_%s.png"%(Fcover,y))
-            
+        # plt.savefig(d["Output_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_Fcover_%s.png"%(Fcover,y))
+        
             # Cumul semaine dfETR_obs.set_index('date').resample("W").asfreq().plot()
 # =============================================================================
 #   RUN_multi_site 
