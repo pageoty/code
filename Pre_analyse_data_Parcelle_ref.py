@@ -115,7 +115,7 @@ if __name__ == "__main__":
         plt.ylabel("Pluvio cumul végétation")
         plt.title("Cumul pluvio période végétation")
         plt.text(x =x.iloc[-1] , y=Pluvio_seas.Prec.iloc[-2,i],s = y,size=9)
-    plt.savefig("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_sais_LAM_mais.png")
+    # plt.savefig("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_sais_LAM_mais.png")
 
 # =============================================================================
 # test SM 

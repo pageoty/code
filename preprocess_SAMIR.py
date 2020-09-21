@@ -228,8 +228,9 @@ if __name__ == "__main__":
     Meteo_par=meteo
     Meteo_par.columns=["date",'Prec','ET0']
     Meteo_par["Irrig"]=0
-    Meteo_par['id']=1
-    Meteo_par.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/2019/Inputdata/meteo.df")
+    # Meteo_par['id']=1
+    Meteo_par.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv")
+    # Meteo_par.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/2019/Inputdata/meteo.df")
     # Select data SAFRAN data 
     # Safran=pd.read_csv(d["PC_disk_labo"]+"/SIM2_2018_202002.csv",sep=";")
     # SAF2017=Safran.loc[(Safran.DATE >= 20180101)& (Safran["DATE"] < 20190101)]
