@@ -38,7 +38,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_POST_OPTIM_ZRMAX_REW_Irri_auto_Init_ru_1/"
     sites=['GRIGNON']
     years=["2019"]
 # =============================================================================
@@ -70,78 +70,32 @@ if __name__ == '__main__':
             plt.ylabel("ETR model")
             plt.xlim(0,10)
             plt.ylim(0,10)
-            # plt.title("Scatter ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
+            plt.title("Scatter ETR obs et ETR mod %s en %s"%(lc,y))
             rms = mean_squared_error(dfETR_obs.LE,dfETR_obs.ET)
             plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
             plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
             plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
             plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
-            # plt.savefig( d["Output_PC_home"]+"/plt_scatter_ETR_%s_Fcover_%s.png"%(Fcover,y))
+            plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
             plt.figure(figsize=(7,7))
             plt.plot(dfETR_obs.date,dfETR_obs.LE,label='ETR_obs',color="black")
             plt.plot(dfETR_obs.date,dfETR_obs.ET,label='ETR_mod',color='red')
             plt.ylabel("ETR")
             plt.ylim(0,10)
-            # plt.title("Dynamique ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
+            plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
-        # plt.savefig(d["Output_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_Fcover_%s.png"%(Fcover,y))
-        
-            # Cumul semaine dfETR_obs.set_index('date').resample("W").asfreq().plot()
-# =============================================================================
-#   RUN_multi_site 
-# =============================================================================
-    d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
-    ETR_GRI=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv",decimal='.')
-    ETR_GRI["date"]=pd.to_datetime(ETR_GRI["date"],format="%Y-%m-%d")
-    ETR_GRI_obs=ETR_GRI.loc[(ETR_GRI.date >= str(y)+"-03-02") &(ETR_GRI.date <= str(y)+"-10-31")]
-    
-    ETR_LAM=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
-    ETR_LAM["date"]=pd.to_datetime(ETR_LAM["date"],format="%Y-%m-%d")
-    ETR_LAM_obs=ETR_LAM.loc[(ETR_LAM.date >= str(y)+"-03-02") &(ETR_LAM.date <= str(y)+"-10-31")]
-    ETR_obs=pd.merge(ETR_GRI_obs,ETR_LAM_obs[["date",'LE']],on=["date"])
-    ETR_obs.columns=["date",'LE_GRI','LE_LAM']
-    
-    ETR_mod=pickle.load(open( d['Output_model_PC_labo']+"Output/output.df",'rb'))
-    # ETR_mod=Fcover_sat[["ET",'date']]
-    ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
-    ETR_mod=ETR_mod[["ET",'date','id']]
-    ETR_mod=ETR_mod.groupby('id')
-    ETR_mod_LAM=ETR_mod.get_group(1)
-    ETR_mod_GRI=ETR_mod.get_group(2)
-    dfETR_Gri=pd.merge(ETR_GRI_obs,ETR_mod_GRI[['date','ET']],on=["date"])
-    dfETR_Lam=pd.merge(ETR_LAM_obs,ETR_mod_LAM[['date','ET']],on=["date"])
-
-    # dfETR=pd.concat([ETR_obs,ETR_mod],axis=1)
-    # dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET']],on=['date'])
-    dfETR_obs.dropna(inplace=True)
-    ETR_week=dfETR_obs.set_index('date').resample("W").asfreq()
-    slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE.to_list(),dfETR_obs.ET.to_list())
-    bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE) 
-    fitLine = predict(dfETR_obs.LE)
-    # Creation plot
-    plt.figure(figsize=(7,7))
-    plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-    plt.plot(dfETR_obs.LE,fitLine,linestyle="--")
-    plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9)
-    plt.xlabel("ETR OBS")
-    plt.ylabel("ETR model")
-    plt.xlim(0,10)
-    plt.ylim(0,10)
-    # plt.title("Scatter ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
-    rms = mean_squared_error(dfETR_obs.LE,dfETR_obs.ET)
-    plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
-    plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
-    plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
-    plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
-    # plt.savefig( d["Output_PC_home"]+"/plt_scatter_ETR_%s_Fcover_%s.png"%(Fcover,y))
-    plt.figure(figsize=(7,7))
-    plt.plot(dfETR_obs.date,dfETR_obs.LE,label='ETR_obs',color="black")
-    plt.plot(dfETR_obs.date,dfETR_obs.ET,label='ETR_mod',color='red')
-    plt.ylabel("ETR")
-    plt.ylim(0,10)
-    # plt.title("Dynamique ETR obs et ETR mod %s Fcover en %s"%(Fcover,y))
-    plt.legend()
-
+            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            plt.figure(figsize=(7,7))
+            plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
+            plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
+            plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
+            plt.ylim(0,80)
+            plt.legend(loc='upper left')
+            ax2 = plt.twinx()
+            ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
+            ax2.set_ylim(-5,1)
+            plt.legend()
+            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_Ks_Dr_Irr_%s_%s.png"%(lc,y))
 # =============================================================================
 #   Validation SWC
 # =============================================================================

@@ -66,6 +66,17 @@ if __name__ == "__main__":
         ETR.date=pd.to_datetime(ETR.date,format="%Y-%m-%d")
         meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
         SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
+        dfnames=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/SAR_parcelle/PARCELLE_CESBIO/list_features_SAR31TCJ2019.txt",header=None)
+        colnames=dfnames.T.iloc[0:37]
+        date=colnames[0].apply(lambda x:x[-9:-1])
+        SAR=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/SAR_parcelle/PARCELLE_CESBIO/SampleExtractionVV_LAM_0112.tif.csv")
+        SAR=SAR[SAR.nom_parcel=="Lamothe"]
+        SAR.drop(columns=['num_com', 'nom_com', 'centroidx', 'centroidy','shape_leng', 'shape_area', 'labo','id','originfid',"value_37",'nom_parcel'],inplace=True)
+        SAR=SAR.T
+        SAR["date"]=date.to_list()
+        SAR.date=pd.to_datetime(SAR["date"],format="%Y%m%d")
+        SAR.set_index("date",inplace=True)
+        SAR_mean=SAR.T.mean()
         globals()["date_irr_%s"%y]=meteo.loc[meteo.Irrig > 0.0]
         fig, ax = plt.subplots(figsize=(12, 10))
         sns.set(style="darkgrid")
@@ -171,6 +182,7 @@ if __name__ == "__main__":
             sns.set_context('paper')
             ax1 = plt.subplot(311)
             plt.plot(SWC["Date/Time"],SWC.SWC_0)
+            plt.plot(SAR_mean)
             plt.plot(SWC["Date/Time"],np.repeat(0.172,len(SWC["Date/Time"])),c="r",label="WP")
             plt.plot(SWC["Date/Time"],np.repeat(0.363,len(SWC["Date/Time"])),c="b", label="FC")
             plt.plot(SWC["Date/Time"],np.repeat(0.363-RU75,len(SWC["Date/Time"])),c="b",linestyle='--',label='RU 75 %')
@@ -196,6 +208,9 @@ if __name__ == "__main__":
             plt.legend()
             plt.ylabel('SWC en profondeur 50 cm')
             plt.savefig(d["PC_labo"]+"RESULT/PLOT/Analyse_Flux_ICOS/plt_data_SWC_lam_"+str(y)+".png")
+    #  Comparaison flux SWC et polarisation VV
+
+        
             # plt.savefig("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_data_SWC_"+str(y)+".png")
         # cumul ETR
         # ETR_all=ETR_all.append(ETR)

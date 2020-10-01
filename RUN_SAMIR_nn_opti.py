@@ -57,7 +57,7 @@ if __name__ == "__main__":
     result=[]
     for y in ["2019"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_POST_OPTIM_ZRMAX_REW_Irri_auto_Init_ru_1/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -67,8 +67,9 @@ if __name__ == "__main__":
         d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"#"/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1031'),Ze=20,minZr=20,REW=10,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1)
-
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),Ze=50,minZr=50,REW=10,maxZr=700,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1)
+        params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),ligne_OS=7,Ze=50,REW=5,minZr=50,maxZr=500,A_kcb=1.48,Koffset=-0.22,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Init_RU=1)
 
     #  Lancement du code
         # os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "

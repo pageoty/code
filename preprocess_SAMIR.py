@@ -22,13 +22,24 @@ import random
 import shapely.geometry as geom
 import descartes
 from shapely.geometry import Point, Polygon
+import argparse
 if __name__ == "__main__":
     """ mise en place df pour SAMIR """
-    
+    # parser = argparse.ArgumentParser(description='Preprocess data SAMIR ')
+    # parser.add_argument('-path', dest='path',nargs='+',help="path file ",required = True)
+    # parser.add_argument('-zone',dest='zone',nargs='+',help='optimisation value',required = True)
+    # parser.add_argument('-name',dest='name_run',nargs='+',help='name run',required = True)
+    # parser.add_argument('-REW',dest='REW',nargs='+',help='name run',required = True)
+    # parser.add_argument('-RU_start',dest='IniRU',nargs='+',help='name run',required = True)
+    # args = parser.parse_args()
+    # print (args.optim)
+    # print(args.name_run)
+   
     years="2019"
     ZONE =["PARCELLE_CESBIO","PARCELLE_GRIGNON"] # Fusion PARCELLE_CESBIO
-    name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    mode="CSV"
+    # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/test_opti/2019/Inputdata"
+    # mode="CSV"
     Meteo="station"
     d={}
     d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run
@@ -132,7 +143,25 @@ if __name__ == "__main__":
 #         NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
 #         NDVI.columns=["NDVI","id","date"]
 #         # NDVI.to_pickle(d["path_run"]+'/maize/'+str(i)+'.df')
-        
+# =============================================================================
+#   NDVI 
+# =============================================================================
+    for bv in ZONE:
+         if bv =="PARCELLE_CESBIO":
+                df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
+                df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+                df.set_index('date',inplace=True)
+                meteo=df
+                meteo["id"]=1
+                meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
+         elif bv =="PARCELLE_GRIGNON":
+                 df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
+                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+                 df.set_index('date',inplace=True)
+                 NDVI=df
+                 NDVI["id"]=2
+                 NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
+
 # =============================================================================
 #     Build df FC and WP
 # =============================================================================
@@ -259,6 +288,7 @@ if __name__ == "__main__":
             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
             df.set_index('date',inplace=True)
+            df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
             df=df.resample("D").interpolate()
             df.reset_index(inplace=True)
             FCOVER=df
