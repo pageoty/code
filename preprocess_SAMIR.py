@@ -195,10 +195,10 @@ if __name__ == "__main__":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
                 if i=="FC":
-                    soil[str(i)].loc[0]=0.22
+                    soil[str(i)].loc[0]=0.48
                     soil[str(i)].loc[1]=np.nan
                 else:
-                    soil[str(i)].loc[0]=0.11
+                    soil[str(i)].loc[0]=0.25
                     soil[str(i)].loc[1]=np.nan
                 soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
 # =============================================================================

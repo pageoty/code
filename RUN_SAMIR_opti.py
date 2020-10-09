@@ -133,6 +133,9 @@ if __name__ == "__main__":
     parser.add_argument('-REW',dest='REW',nargs='+',help='Value REW ',required = True)
     parser.add_argument('-RU_start',dest='IniRU',nargs='+',help='Value init ru',required = True)
     parser.add_argument('-meteo',dest='meteo',nargs='+',help='source meteo data')
+    parser.add_argument('-REW2',dest='REW2',nargs='+',help='source meteo data')
+    parser.add_argument('-A_kcb',dest='akcb',nargs='+',help='slope_relation_NDVI/Kcb')
+    parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
     args = parser.parse_args()
     print (args.optim)
     print(args.name_run)
@@ -153,7 +156,7 @@ if __name__ == "__main__":
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
-        d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+        # d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_labo"]=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"
         print(d["PC_labo"])
         #  Creation file du run 
@@ -183,10 +186,10 @@ if __name__ == "__main__":
             if len(classes)==2:
                 params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
                           d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0301'),date_end=str(y)+str(lastdate),
-                          Ze=50,REW='optim',minZr=50,maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0)
+                          Ze=50,REW='optim',minZr=50,maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                 params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
                           d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0301'),date_end=str(y)+str(lastdate),
-                          ligne_OS=7,Ze=50,REW='optim',minZr=50,maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=1.48, Koffset=-0.22)
+                           ligne_OS=7,Ze=50,REW='optim',minZr=50,maxZr=2000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                 params_opti(d["PC_labo"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["PC_labo"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/50/5/lin")
                 params_opti(d["PC_labo"]+"/Inputdata/test_optim.csv",output_path=d["PC_labo"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/50/5/lin",ligne_OS=2)
             else:
@@ -201,10 +204,10 @@ if __name__ == "__main__":
             if len(classes)==2:
                 params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
                           d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                          Ze=50,REW=float(str(args.REW).strip("['']")),minZr=50,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0)
+                          Ze=50,REW=float(str(args.REW).strip("['']")),minZr=50,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                 params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
                               d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                              ligne_OS=7,Ze=50,REW=float(str(args.REW).strip("['']")),minZr=50,maxZr='optim',A_kcb=1.48,Koffset=-0.22,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1)
+                              ligne_OS=7,Ze=50,REW=float(str(args.REW2).strip("['']")),minZr=50,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                 params_opti(d["PC_labo"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["PC_labo"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="100/3000/100/lin")
                 params_opti(d["PC_labo"]+"/Inputdata/test_optim.csv",output_path=d["PC_labo"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="100/3000/100/lin",ligne_OS=2)
             else:
@@ -255,8 +258,8 @@ if __name__ == "__main__":
                 param.set_index(0,inplace=True)
             #  Récuparation data_validation ETR
             if classe =='maize_irri':
-               ETR_lam=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
-               ETR_lam.date=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
+                ETR_lam=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
+                ETR_lam.date=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
             else:
                 ETR_gri=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv",decimal='.')
                 ETR_gri.date=pd.to_datetime(ETR_gri["date"],format='%Y-%m-%d')
@@ -329,10 +332,10 @@ if __name__ == "__main__":
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years','OS'])
             else:
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
-            resultat.to_csv(d["PC_labo"][:-5]+"param_RMSE.csv")
+            resultat.to_csv(d["PC_labo"][:-5]+"param_RMSE%s.csv"%(optimis_val))
             
         all_min=[]
-        df=pd.read_csv(d["PC_labo"][:-5]+"param_RMSE.csv")
+        df=pd.read_csv(d["PC_labo"][:-5]+"param_RMSE%s.csv"%optimis_val)
         class_OS=df.groupby("OS")
         plt.figure(figsize=(7,7))
         for Os in classes:

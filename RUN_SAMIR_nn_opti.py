@@ -57,26 +57,43 @@ if __name__ == "__main__":
     result=[]
     for y in ["2019"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_POST_OPTIM_ZRMAX_REW_Irri_auto_Init_ru_1/"
+        meteo='SAFRAN'
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR//PARAM_KCB_1_ZR_max_1500/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
+        d["PC_labo_short"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
         d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"#"/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         
+        # if name_run not in os.listdir(d["PC_labo_short"]):
+        #     os.mkdir('%s/%s/'%(d["PC_labo_short"],name_run))
+        # if str(y) not in os.listdir(d["PC_labo"][:-5]):
+        #     os.mkdir ('%s/%s/%s'%(d["PC_labo_short"],name_run,str(y)))
+        # #  Déplacement all file 
+        # if meteo=="SAFRAN":
+        #     os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/* %s"%(d['PC_labo']))
+        # else:
+        #     os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/* %s"%(d['PC_labo']))
+        
+        
+        
+        
+        
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),Ze=50,minZr=50,REW=10,maxZr=700,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),Ze=50,minZr=50,REW=0,maxZr=700,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=0)
         params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),ligne_OS=7,Ze=50,REW=5,minZr=50,maxZr=500,A_kcb=1.48,Koffset=-0.22,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=1,Irrig_man=0,Init_RU=1)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0201'),date_end=str(y)+str('1031'),ligne_OS=7,Ze=50,REW=0,minZr=50,maxZr=1500,A_kcb=1.46,KmaxKcb=1,Koffset=-0.25,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=0,Irrig_man=1,Init_RU=1)
 
     #  Lancement du code
         # os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "
         os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -fcover maize/FCOVER.df --fc_input -o output_T1.df -p param_modif.csv')
-        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input  -o Output/output.df -p param_modif.csv ')
+        os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df  -o Output/output.df -p param_modif.csv ')
+        # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input  -o Output/output.df -p param_modif.csv ')
         # Sans le FCOVER sat
         # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n */NDVI'+str(y)+'.df  -fc */FC.df -wp */WP.df  -o Output/output.df -p param_modif.csv ')
        
