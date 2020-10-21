@@ -9,7 +9,7 @@ Created on Thu Mar 12 09:29:18 2020
 
 import os
 import sqlite3
-import geopandas as geo
+import geopandas as geo 
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,7 +17,7 @@ from matplotlib import cm
 import csv
 import numpy as np
 import pandas as pd
-import seaborn as sns
+import seaborn as sns 
 import TEST_ANALYSE_SIGNATURE
 import shapely.geometry as geom
 import descartes
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR/PARAM_KCB_1_ZR_max_1500/"
+    name_run="RUNS_SAMIR/RUN_CORRECTION_EQUATION/Apres_modif_Kcmax/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     sites=['GRIGNON']
     years=["2019"]
@@ -52,9 +52,13 @@ if __name__ == '__main__':
             if lc == "maize_irri":
                 SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
                 SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
+                meteo=pd.read_csv(d["PC_labo"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
+                meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
             else:
                 SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
                 SWC["date"]=pd.to_datetime(SWC["date"],format="%Y-%m-%d")
+                meteo=pd.read_csv(d["PC_labo"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
+                meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
             ETR=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.')
             ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
             ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
@@ -126,7 +130,9 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
             plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
-            plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
+            plt.plot(ETR_mod.date,(ETR_mod.Dei+ETR_mod.Dep),label='Dep evapo')
+            # plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
+            # plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
             plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)
             plt.ylim(0,200)
             plt.legend(loc='upper left')
@@ -143,14 +149,22 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.title("Dynamique des coefficients %s en %s"%(lc,y))
             plt.plot(ETR_mod.date,ETR_mod.Kcb,label='Kcb')
-            plt.plot(ETR_mod.date,ETR_mod.Kei,label="Kei")
-            plt.plot(ETR_mod.date,ETR_mod.Kep,label="Kep")
+            plt.plot(ETR_mod.date,(ETR_mod.Kei+ETR_mod.Kep),label="Ke")
+            # plt.plot(ETR_mod.date,ETR_mod.Kep,label="Kep")
+            # plt.plot(ETR_mod.date,ETR_mod.W,label="W capillary rise")
             plt.legend()
+            # ax2 = plt.twinx()
+            # ax2.grid()
+            # plt.bar(meteo.date,meteo.Prec,width=1,color='b')
             plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_coeff_Kcb_Ke_%s_%s.png"%(lc,y))
             plt.figure(figsize=(12,10))
             plt.title("Dynamique SWC with irrigation %s en %s"%(lc,y))
             plt.plot(ETR_mod.date,ETR_mod.SWC1,label='zone Ze')
             plt.plot(ETR_mod.date,ETR_mod.SWC2,label="zone Zr")
+            plt.ylim(-2,1.5)
+            plt.legend()
+            ax2 = plt.twinx()
+            plt.bar(meteo.date,meteo.Prec,width=1,color='b')
             # plt.plot(ETR_mod.date,ETR_mod.SWCvol3,label="zone Zd")
             # plt.legend()
             # ax2 = plt.twinx()
@@ -158,7 +172,7 @@ if __name__ == '__main__':
             # ax2.bar(ETR_mod.date,ETR_mod.Ir_auto,label="Irrigation",color='r',width=5)
             # ax2.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",color='b',width=1)
             # ax2.set_ylim(0,100)
-            plt.legend()
+            # plt.legend()
             plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_SWC_%s_%s.png"%(lc,y))
             ####### SWC evaluation ######
             # SWC_select=SWC.loc[(SWC.date >= str(y)+"-06-01") &(SWC.date <= str(y)+"-10-31")]

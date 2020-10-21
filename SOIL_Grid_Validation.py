@@ -333,3 +333,11 @@ if __name__ == '__main__':
         classe=inter.loc[inter.majority==i]
         a=classe.groupby('Name').count()
         print(a)
+        
+# =============================================================================
+#   Interpolation régles RRP Gers (pédo) others dprt
+# =============================================================================
+    Gers=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/SOIL/RRP/RRP_GERS_INTERSEC_RUM.shp")
+    UCS=Gers.groupby("NO_UCS")
+    test=list(set(UCS.get_group(1101).Name))
+    

@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2019"
+    years="2017"
     ZONE =["PARCELLE_CESBIO","PARCELLE_GRIGNON"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/test_opti/2019/Inputdata"
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
-    d["PC_disk_labo"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/"
+    d["PC_disk_labo"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/"
   
 
     
@@ -206,9 +206,9 @@ if __name__ == "__main__":
 # =============================================================================
     for bv in ZONE:
          if bv =="Fusion":
-             Parcellaire
-             meteo=geo.read_file(d["PC_disk"]+"DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
-             meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
+              # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/vector_Classif_ADOUR_Fusion_demps_Accu.shp")
+             meteo=geo.read_file(d["PC_disk_labo"]+"/SAFRAN_ZONE_"+str(years)+"_L93.shp")
+             meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
             'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
             'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
             'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
