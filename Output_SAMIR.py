@@ -38,7 +38,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_CORRECTION_EQUATION/Apres_modif_Kcmax/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR/PARAM_KCB_1_ZR_max_1500/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     sites=['GRIGNON']
     years=["2019"]
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 # =============================================================================
 # modif pour groupby Lc
     for y in years:
-        for lc in ["maize_irri",'maize_rain']:
+        for lc in ["maize_irri","maize_rain"]: # maize_rain
             d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
             if lc == "maize_irri":
                 SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")

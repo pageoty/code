@@ -35,14 +35,14 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2017"
-    ZONE =["PARCELLE_CESBIO","PARCELLE_GRIGNON"] # Fusion PARCELLE_CESBIO
+    years="2006"
+    ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/test_opti/2019/Inputdata"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/"+str(years)+"/Inputdata/"
     # mode="CSV"
-    Meteo="station"
+    Meteo="stattion"
     d={}
-    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run
+    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
@@ -150,14 +150,14 @@ if __name__ == "__main__":
          if bv =="PARCELLE_CESBIO":
                 df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                df.set_index('date',inplace=True)
+                # df.set_index('date',inplace=True)
                 meteo=df
                 meteo["id"]=1
                 meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
          elif bv =="PARCELLE_GRIGNON":
                  df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
                  df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                 df.set_index('date',inplace=True)
+                 # df.set_index('date',inplace=True)
                  NDVI=df
                  NDVI["id"]=2
                  NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
