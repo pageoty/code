@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for y in ["2019"]:# "2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='station'
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR/PARAM_KCB_1_ZR_max_1500/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR/PARAM_KCB_1_ZR_max_1500"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -83,9 +83,9 @@ if __name__ == "__main__":
         
         
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=150,minZr=150,REW=-20,maxZr=1000,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=0,Irrig_man=1,Lame_max=30,Init_RU=1)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),Ze=120,minZr=120,REW=-17.5,maxZr=900,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Irrig_auto=0,Irrig_man=1,Lame_max=30,Init_RU=1,KmaxKcb=1.5)
         params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),ligne_OS=7,Ze=120,REW=0,minZr=120,maxZr=2000,A_kcb=1.46,Koffset=0.25,Zsoil=3000,DiffE=10,DiffR=5,Irrig_auto=0,Irrig_man=1,Init_RU=1)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1031'),ligne_OS=7,Ze=150,REW=0,minZr=150,maxZr=2500,A_kcb=1.46,Koffset=0.25,Zsoil=3000,DiffE=5,DiffR=5,Irrig_auto=0,Irrig_man=1,Init_RU=1,KmaxKcb=1.5)
 
     #  Lancement du code
         # os.environ["PYTHONPATH"] = "/mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/:$PYTHONPATH      "

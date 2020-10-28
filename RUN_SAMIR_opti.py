@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     
     result=[]
-    for y in ['2006']:# 
+    for y in ['2006',"2008","2010","2012","2014","2015","2019"]:# 
         print (y)
         # name_run="RUN_MULTI_SITE_ICOS/OPTI_SAF_RU_Fcover_sta_value05/"
         name_run=str(args.name_run).strip("['']")
@@ -333,7 +333,7 @@ if __name__ == "__main__":
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years','OS'])
             else:
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
-            resultat.to_csv(d["PC_labo"][:-5]+"param_RMSE%s%s.csv"%(y,optimis_val))
+            resultat.to_csv(d["PC_labo"][:-5]+"param_RMSE%s.csv"%(optimis_val))
     plt.figure(figsize=(7,7))
     for y in ['2006',"2008","2010","2012","2014","2015","2019"]:#       
         all_min=[]
