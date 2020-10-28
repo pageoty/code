@@ -33,6 +33,14 @@ from sklearn.linear_model import LinearRegression
 def predict(x):
    return slope * x + intercept
 
+def select_color_NDVI(x):
+    couleurs=[]
+    for i in range(len(x)):
+        if x.iloc[i].NDVI<= 0.5 : 
+            couleurs.append("r")
+        else : 
+            couleurs.append("b")
+    return couleurs
 
 if __name__ == '__main__':
     d={}
@@ -66,7 +74,7 @@ if __name__ == '__main__':
             ETR_mod_crops=ETR_mod.groupby("LC")
             ETR_mod=ETR_mod_crops.get_group(lc)
             ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
-            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET']],on=['date'])
+            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"NDVI"]],on=['date'])
             dfETR_obs.dropna(inplace=True)
             ETR_week=dfETR_obs.set_index('date').resample("W").asfreq()
             ETR_week.dropna(inplace=True)
@@ -77,11 +85,12 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
             plt.plot(dfETR_obs.LE,fitLine,linestyle="--")
-            plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9)
+            plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9,c=select_color_NDVI(dfETR_obs))
             plt.xlabel("ETR OBS")
             plt.ylabel("ETR model")
             plt.xlim(0,10)
             plt.ylim(0,10)
+            plt.legend(('Soil nu','Vege'))
             plt.title("Scatter ETR obs et ETR mod %s en %s"%(lc,y))
             rms = mean_squared_error(dfETR_obs.LE,dfETR_obs.ET)
             plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
