@@ -46,31 +46,35 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_ETR_GRI_RECALAGE_ETR/PARAM_KCB_1_ZR_max_1500"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/OPTI_ICOS_MULTI_SITE_pluvio_stat_years_zrmax_900"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
+    d["PC_home"]="/mnt/d/THESE_TMP/"
+    d["PC_home_Wind"]="D:/THESE_TMP/"
     sites=['GRIGNON']
-    years=["2019"]
+    years=["2006","2008","2010","2012","2014","2015","2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
 # modif pour groupby Lc
     for y in years:
-        for lc in ["maize_rain","maize_irri"]: # maize_rain
-            d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
+        for lc in ["maize_irri"]: # maize_rain
+            # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
+            # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
+            d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
             if lc == "maize_irri":
-                SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
+                SWC=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
                 SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
-                meteo=pd.read_csv(d["PC_labo"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
+                meteo=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
                 meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
             else:
-                SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
+                SWC=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
                 SWC["date"]=pd.to_datetime(SWC["date"],format="%Y-%m-%d")
-                meteo=pd.read_csv(d["PC_labo"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
+                meteo=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
                 meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
-            ETR=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.')
+            ETR=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.')
             ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
             ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
-            ETR_mod=pickle.load(open( d['Output_model_PC_labo']+"Output/output.df",'rb'))
+            ETR_mod=pickle.load(open( d['Output_model_PC_home']+"Output/output.df",'rb'))
             ETR_mod_crops=ETR_mod.groupby("LC")
             ETR_mod=ETR_mod_crops.get_group(lc)
             ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
@@ -97,7 +101,7 @@ if __name__ == '__main__':
             plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
             plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
             plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
-            plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
+            plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
             ###### SCATTER moyenne semaine ######
             slope, intercept, r_value, p_value, std_err = stats.linregress(ETR_week.LE.to_list(),ETR_week.ET.to_list())
             bias=1/ETR_week.shape[0]*sum(np.mean(ETR_week.ET)-ETR_week.LE) 
@@ -117,7 +121,7 @@ if __name__ == '__main__':
             plt.text(8,min(ETR_week.ET)+0.4,"R² = "+str(round(r_value,2)))
             plt.text(8,min(ETR_week.ET)+0.6,"Pente = "+str(round(slope,2)))
             plt.text(8,min(ETR_week.ET)+0.8,"Biais = "+str(round(bias,2)))
-            plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_week_%s_%s.png"%(lc,y))
+            plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_week_%s_%s.png"%(lc,y))
             ### plot dynamique 
             plt.figure(figsize=(7,7))
             plt.plot(dfETR_obs.date,dfETR_obs.LE,label='ETR_obs',color="black")
@@ -126,7 +130,7 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
             plt.figure(figsize=(7,7))
             plt.plot(ETR_week.index,ETR_week.LE,label='ETR_obs',color="black")
@@ -135,7 +139,7 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             plt.title("Dynamique ETR week obs et ETR week mod %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_week_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
             plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
@@ -149,7 +153,7 @@ if __name__ == '__main__':
             ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
             ax2.set_ylim(-5,1)
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_Ks_Dr_Irr_%s_%s.png"%(lc,y))
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_Ks_Dr_Irr_%s_%s.png"%(lc,y))
             # plt.figure(figsize=(7,7))
             # plt.title("Dynamique Eva et Trans %s en %s"%(lc,y))
             # plt.plot(ETR_mod.date,ETR_mod.Ev,label='Evapo')
@@ -165,8 +169,8 @@ if __name__ == '__main__':
             # ax2 = plt.twinx()
             # ax2.grid()
             # plt.bar(meteo.date,meteo.Prec,width=1,color='b')
-            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_coeff_Kcb_Ke_%s_%s.png"%(lc,y))
-            plt.figure(figsize=(12,10))
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_Kcb_Ke_%s_%s.png"%(lc,y))
+            plt.figure(figsize=7,7)
             plt.title("Dynamique SWC with irrigation %s en %s"%(lc,y))
             plt.plot(ETR_mod.date,ETR_mod.SWC1,label='zone Ze')
             plt.plot(ETR_mod.date,ETR_mod.SWC2,label="zone Zr")
@@ -182,7 +186,7 @@ if __name__ == '__main__':
             # ax2.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",color='b',width=1)
             # ax2.set_ylim(0,100)
             # plt.legend()
-            plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_SWC_%s_%s.png"%(lc,y))
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_SWC_%s_%s.png"%(lc,y))
             ####### SWC evaluation ######
             # SWC_select=SWC.loc[(SWC.date >= str(y)+"-06-01") &(SWC.date <= str(y)+"-10-31")]
             # ETR_mod_select=ETR_mod.loc[(ETR_mod.date >= str(y)+"-06-01")&( ETR_mod.date <= SWC_select.date.iloc[-1])]
