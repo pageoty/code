@@ -35,20 +35,21 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2006"
+    years="2015"
     ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(years)+"/Inputdata/"
     # mode="CSV"
-    Meteo="stattion"
+    Meteo="station"
     d={}
     d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
     d["PC_disk_labo"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/"
-  
-
+    d["path_usb_PC"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(years)+"/Inputdata/"
+    d["PC_disk_home"]="D:/THESE_TMP/"
     
 
 #     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
@@ -146,14 +147,32 @@ if __name__ == "__main__":
 # =============================================================================
 #   NDVI 
 # =============================================================================
+    # for bv in ZONE:
+    #      if bv =="PARCELLE_CESBIO":
+    #             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
+    #             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #             # df.set_index('date',inplace=True)
+    #             meteo=df
+    #             meteo["id"]=1
+    #             meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
+    #      elif bv =="PARCELLE_GRIGNON":
+    #              df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
+    #              df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #              # df.set_index('date',inplace=True)
+    #              NDVI=df
+    #              NDVI["id"]=2
+    #              NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
+# =============================================================================
+# LAI
+# =============================================================================
     for bv in ZONE:
          if bv =="PARCELLE_CESBIO":
-                df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
+                df=LAI_sigmo=pd.read_csv(d["PC_disk_home"]+'/TRAITEMENT/INPUT_DATA/LAI_parcelle/PARCELLE_LABO/LAI_pre_inter_OTB/LAI_inter_date'+str(years)+'.csv')
                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
                 # df.set_index('date',inplace=True)
                 meteo=df
                 meteo["id"]=1
-                meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
+                meteo.to_pickle(d["path_run_home"]+"/maize_irri/LAI"+str(years)+".df")
          elif bv =="PARCELLE_GRIGNON":
                  df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
                  df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
@@ -161,138 +180,139 @@ if __name__ == "__main__":
                  NDVI=df
                  NDVI["id"]=2
                  NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
-
 # =============================================================================
 #     Build df FC and WP
 # =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
-            for i in ["WP",'FC']:
-                soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
-                soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
-           'min_0', 'max_0', 'geometry'],inplace=True)
-                soil.columns=["id",str(i),str(i+'std')]
-                soil.to_pickle(d["path_run"]+str(i)+'.df')
+#     for bv in ZONE:
+#         if bv =="Fusion":
+#             Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
+#             for i in ["WP",'FC']:
+#                 soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+#                 soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
+#            'min_0', 'max_0', 'geometry'],inplace=True)
+#                 soil.columns=["id",str(i),str(i+'std')]
+#                 soil.to_pickle(d["path_run"]+str(i)+'.df')
     
-    # =============================================================================
-    #  SOIL data Lamothe
-    # =============================================================================
-        elif bv =="PARCELLE_CESBIO":
-            for i in ["WP",'FC']:
-                soil=pd.DataFrame({"id": [1], i: [np.nan],i+"std":[np.nan]})
-                if i=="FC":
-                    soil[str(i)].loc[0]=0.3635
-                    soil[str(i)].loc[1]=np.mean([0.310,0.392])
-                else:
-                    soil[str(i)].loc[0]=np.mean([0.175,0.169])
-                    soil[str(i)].loc[1]=np.mean([0.131,0.185])
-                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
-    # =============================================================================
-    #     Soil Grignon 
-    # =============================================================================
-        elif bv == "PARCELLE_GRIGNON":
-            for i in ["WP",'FC']:
-                soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
-                if i=="FC":
-                    soil[str(i)].loc[0]=0.48
-                    soil[str(i)].loc[1]=np.nan
-                else:
-                    soil[str(i)].loc[0]=0.25
-                    soil[str(i)].loc[1]=np.nan
-                soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
-# =============================================================================
-#     Build METEO spatialieser 
-# =============================================================================
-    for bv in ZONE:
-         if bv =="Fusion":
-              # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/vector_Classif_ADOUR_Fusion_demps_Accu.shp")
-             meteo=geo.read_file(d["PC_disk_labo"]+"/SAFRAN_ZONE_"+str(years)+"_L93.shp")
-             meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
-            'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
-            'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
-            'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
-            'X', 'Y'],inplace=True)
-             dfmeteo=meteo.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
-             meteo.geometry=dfmeteo
-             meteo.DATE=pd.to_datetime(meteo.DATE,format='%Y%m%d')
-             Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection')
-             Meteo_par.drop(columns=['Unnamed_ 0','NOM', 'CULTURE', 'CULTURE'],inplace=True)
-             Meteo_par["Irrig"]=0.0
-             Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
-             Meteo_par.info()
-             Meteo_par.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
-         elif bv =="PARCELLE_CESBIO":
-             if "SAFRAN" in Meteo:
-                 df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(years)+".csv")
-                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                 df.set_index('date',inplace=True)
-                 df.reset_index(inplace=True)
-                 df.drop(columns=["Unnamed: 0"],inplace=True)
-                 meteo=df
-                 meteo["id"]=1
-                 meteo.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
-             else: 
-                 ET0=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(years)+".csv")
-                 ET0.date=pd.to_datetime(ET0.date,format="%Y-%m-%d")
-                 ET0.set_index('date',inplace=True)
-                 ET0.reset_index(inplace=True)
-                 ET0.drop(columns=["Unnamed: 0"],inplace=True)
-                 meteo_stat=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+str(years)+".csv")
-                 meteo_stat.date=pd.to_datetime(meteo_stat.date,format="%Y-%m-%d")
-                 meteo_stat["ET0"]=ET0.ET0
-                 meteo_stat["id"]=1
-                 meteo_stat["Irrig"]=ET0.Irrig.astype(int)
-                 meteo_stat.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
+#     # =============================================================================
+#     #  SOIL data Lamothe
+#     # =============================================================================
+#         elif bv =="PARCELLE_CESBIO":
+#             for i in ["WP",'FC']:
+#                 soil=pd.DataFrame({"id": [1], i: [np.nan],i+"std":[np.nan]})
+#                 if i=="FC":
+#                     soil[str(i)].loc[0]=0.3635
+#                     soil[str(i)].loc[1]=np.mean([0.310,0.392])
+#                 else:
+#                     soil[str(i)].loc[0]=np.mean([0.175,0.169])
+#                     soil[str(i)].loc[1]=np.mean([0.131,0.185])
+#                 soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
+#     # =============================================================================
+#     #     Soil Grignon 
+#     # =============================================================================
+#         elif bv == "PARCELLE_GRIGNON":
+#             for i in ["WP",'FC']:
+#                 soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
+#                 if i=="FC":
+#                     soil[str(i)].loc[0]=0.48
+#                     soil[str(i)].loc[1]=np.nan
+#                 else:
+#                     soil[str(i)].loc[0]=0.25
+#                     soil[str(i)].loc[1]=np.nan
+#                 soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
+# # =============================================================================
+# #     Build METEO spatialieser 
+# # =============================================================================
+#     for bv in ZONE:
+#          if bv =="Fusion":
+#               # Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/vector_Classif_ADOUR_Fusion_demps_Accu.shp")
+#              meteo=geo.read_file(d["PC_disk_labo"]+"/SAFRAN_ZONE_"+str(years)+"_L93.shp")
+#              meteo.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
+#             'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
+#             'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
+#             'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
+#             'X', 'Y'],inplace=True)
+#              dfmeteo=meteo.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
+#              meteo.geometry=dfmeteo
+#              meteo.DATE=pd.to_datetime(meteo.DATE,format='%Y%m%d')
+#              Meteo_par=geo.overlay(meteo,Parcellaire,how='intersection')
+#              Meteo_par.drop(columns=['Unnamed_ 0','NOM', 'CULTURE', 'CULTURE'],inplace=True)
+#              Meteo_par["Irrig"]=0.0
+#              Meteo_par.columns=["date","Prec",'ET0',"id",'Irrig']
+#              Meteo_par.info()
+#              Meteo_par.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
+#          elif bv =="PARCELLE_CESBIO":
+#              if "SAFRAN" in Meteo:
+#                  df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(years)+".csv")
+#                  df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+#                  df.set_index('date',inplace=True)
+#                  df.reset_index(inplace=True)
+#                  df.drop(columns=["Unnamed: 0"],inplace=True)
+#                  meteo=df
+#                  meteo["id"]=1
+#                  meteo.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
+#              else: 
+#                  ET0=pd.read_csv("H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(years)+".csv")
+#                  ET0.date=pd.to_datetime(ET0.date,format="%Y-%m-%d")
+#                  ET0.set_index('date',inplace=True)
+#                  ET0.reset_index(inplace=True)
+#                  ET0.drop(columns=["Unnamed: 0"],inplace=True)
+#                  meteo_stat=pd.read_csv("H:/YANN_THESE/BESOIN_EAU/BESOIN_EAU//TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+str(years)+".csv")
+#                  meteo_stat.date=pd.to_datetime(meteo_stat.date,format="%Y-%m-%d")
+#                  # meteo_stat.drop(columns=["Unnamed: 0"],inplace=True)
+#                  meteo_stat["ET0"]=ET0.ET0
+#                  meteo_stat["id"]=1
+#                  meteo_stat["Irrig"]=ET0.Irrig.astype(int)
+#                  meteo_stat["Irrig"]=0
+#                  meteo_stat.to_pickle(d["path_usb_PC"]+"/maize_irri/meteo.df")
    
-         elif bv =="PARCELLE_GRIGNON":
-             if "SAFRAN" in Meteo:
-                 df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_"+str(years)+".csv")
-                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                 df.set_index('date',inplace=True)
-                 df.reset_index(inplace=True)
-                 df.drop(columns=["Unnamed: 0"],inplace=True)
-                 meteo=df
-                 meteo["id"]=2
-                 meteo.to_pickle(d["path_run"]+"/maize_rain/meteo.df")
-             else: 
-                 ET0=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_"+str(years)+".csv")
-                 ET0.date=pd.to_datetime(ET0.date,format="%Y-%m-%d")
-                 ET0.set_index('date',inplace=True)
-                 ET0.reset_index(inplace=True)
-                 ET0.drop(columns=["Unnamed: 0"],inplace=True)
-                 meteo_stat=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/Meteo_station_"+str(years)+".csv")
-                 meteo_stat.date=pd.to_datetime(meteo_stat.date,format="%Y-%m-%d")
-                 meteo_stat["ET0"]=ET0.ET0
-                 meteo_stat["id"]=2
-                 meteo_stat["Irrig"]=0
-                 meteo_stat.to_pickle(d["path_run"]+"/maize_rain/meteo.df")
+#          elif bv =="PARCELLE_GRIGNON":
+#              if "SAFRAN" in Meteo:
+#                  df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_"+str(years)+".csv")
+#                  df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+#                  df.set_index('date',inplace=True)
+#                  df.reset_index(inplace=True)
+#                  df.drop(columns=["Unnamed: 0"],inplace=True)
+#                  meteo=df
+#                  meteo["id"]=2
+#                  meteo.to_pickle(d["path_run"]+"/maize_rain/meteo.df")
+#              else: 
+#                  ET0=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_"+str(years)+".csv")
+#                  ET0.date=pd.to_datetime(ET0.date,format="%Y-%m-%d")
+#                  ET0.set_index('date',inplace=True)
+#                  ET0.reset_index(inplace=True)
+#                  ET0.drop(columns=["Unnamed: 0"],inplace=True)
+#                  meteo_stat=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/Meteo_station_"+str(years)+".csv")
+#                  meteo_stat.date=pd.to_datetime(meteo_stat.date,format="%Y-%m-%d")
+#                  meteo_stat["ET0"]=ET0.ET0
+#                  meteo_stat["id"]=2
+#                  meteo_stat["Irrig"]=0
+#                  meteo_stat.to_pickle(d["path_run"]+"/maize_rain/meteo.df")
    
-# =============================================================================
-#  Préparation des Fcovers
-# =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            print("pas pret")
-        elif bv == "PARCELLE_CESBIO":
-            df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
-            df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            df.set_index('date',inplace=True)
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=1
-            FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
-        elif bv =="PARCELLE_GRIGNON":
-            df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
-            df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            df.set_index('date',inplace=True)
-            df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=2
-            FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
+# # =============================================================================
+# #  Préparation des Fcovers
+# # =============================================================================
+#     for bv in ZONE:
+#         if bv =="Fusion":
+#             print("pas pret")
+#         elif bv == "PARCELLE_CESBIO":
+#             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
+#             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+#             df.set_index('date',inplace=True)
+#             df=df.resample("D").interpolate()
+#             df.reset_index(inplace=True)
+#             FCOVER=df
+#             FCOVER.columns=["date","FCov"]
+#             FCOVER["id"]=1
+#             FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
+#         elif bv =="PARCELLE_GRIGNON":
+#             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
+#             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+#             df.set_index('date',inplace=True)
+#             df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
+#             df=df.resample("D").interpolate()
+#             df.reset_index(inplace=True)
+#             FCOVER=df
+#             FCOVER.columns=["date","FCov"]
+#             FCOVER["id"]=2
+#             FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
 

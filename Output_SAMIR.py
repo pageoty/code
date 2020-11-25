@@ -46,12 +46,12 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/OPTI_ICOS_MULTI_SITE_pluvio_stat_years_zrmax_900"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_LAI/OPTI_ICOS_MULTI_SITE_pluvio_REW_Init1_LAI_Fcover_m0/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     sites=['GRIGNON']
-    years=["2006","2008","2010","2012","2014","2015","2019"]
+    years=["2006","2008","2010","2012","2014","2015",'2019']
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -77,8 +77,8 @@ if __name__ == '__main__':
             ETR_mod=pickle.load(open( d['Output_model_PC_home']+"Output/output.df",'rb'))
             ETR_mod_crops=ETR_mod.groupby("LC")
             ETR_mod=ETR_mod_crops.get_group(lc)
-            ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
-            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"NDVI"]],on=['date'])
+            # ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
+            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"LAI"]],on=['date'])
             dfETR_obs.dropna(inplace=True)
             ETR_week=dfETR_obs.set_index('date').resample("W").asfreq()
             ETR_week.dropna(inplace=True)
@@ -89,7 +89,8 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
             plt.plot(dfETR_obs.LE,fitLine,linestyle="--")
-            plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9,c=select_color_NDVI(dfETR_obs))
+            # plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9,c=select_color_NDVI(dfETR_obs))
+            plt.scatter(dfETR_obs.LE,dfETR_obs.ET,s=9)
             plt.xlabel("ETR OBS")
             plt.ylabel("ETR model")
             plt.xlim(0,10)
@@ -131,6 +132,16 @@ if __name__ == '__main__':
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
             plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            #### plot dyna cum
+            plt.figure(figsize=(7,7))
+            plt.plot(dfETR_obs.date,dfETR_obs.LE.cumsum(),label='ETR_obs',color="black")
+            plt.plot(dfETR_obs.date,dfETR_obs.ET.cumsum(),label='ETR_mod',color='red')
+            plt.text(dfETR_obs.date.iloc[-1], dfETR_obs.ET.cumsum().iloc[-1], s=round(dfETR_obs.ET.cumsum().iloc[-1],2))
+            plt.text(dfETR_obs.date.iloc[-1], dfETR_obs.LE.cumsum().iloc[-1], s=round(dfETR_obs.LE.cumsum().iloc[-1],2))
+            plt.ylabel("ETR")
+            plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
             plt.figure(figsize=(7,7))
             plt.plot(ETR_week.index,ETR_week.LE,label='ETR_obs',color="black")
@@ -153,31 +164,40 @@ if __name__ == '__main__':
             ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
             ax2.set_ylim(-5,1)
             plt.legend()
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_Ks_Dr_Irr_%s_%s.png"%(lc,y))
+            
+            # print le NDVI max et le Kcb issu du modèle
+
+            # kc=ETR_mod.loc[ETR_mod.date==ETR_mod.iloc[ETR_mod.LAI.idxmax()]["date"]]["Kcb"]
+            # print(y)
+            # print (kc)
+            # plt.figure(figsize=(7,7))
+            # plt.plot(ETR_mod.date,ETR_mod.Kcb)
+            # plt.plot(ETR_mod.date,ETR_mod.NDVI,label="NDVI")
+            # plt.legend()
             # plt.figure(figsize=(7,7))
             # plt.title("Dynamique Eva et Trans %s en %s"%(lc,y))
             # plt.plot(ETR_mod.date,ETR_mod.Ev,label='Evapo')
             # plt.plot(ETR_mod.date,ETR_mod.Tr,label="Trans")
             # plt.legend()
-            plt.figure(figsize=(7,7))
-            plt.title("Dynamique des coefficients %s en %s"%(lc,y))
-            plt.plot(ETR_mod.date,ETR_mod.Kcb,label='Kcb')
-            plt.plot(ETR_mod.date,(ETR_mod.Kei+ETR_mod.Kep),label="Ke")
-            # plt.plot(ETR_mod.date,ETR_mod.Kep,label="Kep")
-            # plt.plot(ETR_mod.date,ETR_mod.W,label="W capillary rise")
-            plt.legend()
+            # plt.figure(figsize=(7,7))
+            # plt.title("Dynamique des coefficients %s en %s"%(lc,y))
+            # plt.plot(ETR_mod.date,ETR_mod.Kcb,label='Kcb')
+            # # plt.plot(ETR_mod.date,(ETR_mod.Kei+ETR_mod.Kep),label="Ke")
+            # ## plt.plot(ETR_mod.date,ETR_mod.Kep,label="Kep")
+            # # plt.plot(ETR_mod.date,ETR_mod.W,label="W capillary rise")
+            # # plt.legend()
+            # # ax2 = plt.twinx()
+            # # ax2.grid()
+            # # plt.bar(meteo.date,meteo.Prec,width=1,color='b')
+            # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_Kcb_Ke_%s_%s.png"%(lc,y))
+            # plt.figure(figsize=(7,7))
+            # plt.title("Dynamique SWC with irrigation %s en %s"%(lc,y))
+            # plt.plot(ETR_mod.date,ETR_mod.SWC1,label='zone Ze')
+            # plt.plot(ETR_mod.date,ETR_mod.SWC2,label="zone Zr")
+            # plt.ylim(-2,1.5)
+            # plt.legend()
             # ax2 = plt.twinx()
-            # ax2.grid()
             # plt.bar(meteo.date,meteo.Prec,width=1,color='b')
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_Kcb_Ke_%s_%s.png"%(lc,y))
-            plt.figure(figsize=7,7)
-            plt.title("Dynamique SWC with irrigation %s en %s"%(lc,y))
-            plt.plot(ETR_mod.date,ETR_mod.SWC1,label='zone Ze')
-            plt.plot(ETR_mod.date,ETR_mod.SWC2,label="zone Zr")
-            plt.ylim(-2,1.5)
-            plt.legend()
-            ax2 = plt.twinx()
-            plt.bar(meteo.date,meteo.Prec,width=1,color='b')
             # plt.plot(ETR_mod.date,ETR_mod.SWCvol3,label="zone Zd")
             # plt.legend()
             # ax2 = plt.twinx()
@@ -186,7 +206,7 @@ if __name__ == '__main__':
             # ax2.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",color='b',width=1)
             # ax2.set_ylim(0,100)
             # plt.legend()
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_SWC_%s_%s.png"%(lc,y))
+            # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_SWC_%s_%s.png"%(lc,y))
             ####### SWC evaluation ######
             # SWC_select=SWC.loc[(SWC.date >= str(y)+"-06-01") &(SWC.date <= str(y)+"-10-31")]
             # ETR_mod_select=ETR_mod.loc[(ETR_mod.date >= str(y)+"-06-01")&( ETR_mod.date <= SWC_select.date.iloc[-1])]
@@ -208,22 +228,39 @@ if __name__ == '__main__':
 # # =============================================================================
 # #   Isolé le problème ETR sous estimier
 # # =============================================================================
-#             Jui=ETR_mod.loc[(ETR_mod.date>="2019-07-01")&(ETR_mod.date<="2019-08-01")]
-#             Jui["date"]=pd.to_datetime(Jui["date"],format="%Y-%m-%d")
-#             # plt.plot(Jui.date,Jui.NDVI,label="NDVI")
-#             plt.figure(figsize=(7,7))
-#             plt.plot(Jui.date,Jui.ET,label='ET')
-#             ax2 = plt.twinx()
-#             ax2.plot(Jui.date,Jui.Ks,label="Stress",linestyle='--',color='red')
-#             ax2.set_ylim(-5,1)
-#             plt.legend()
-#             plt.figure(figsize=(7,7))
-#             plt.plot(Jui.date,Jui.Dr,label="Deep racin")
-#             plt.plot(Jui.date,Jui.Dei+Jui.Dep,label="Deep Evapo zone")
-#             plt.bar(Jui.date,Jui.Prec,label='Prec',color='Blue')
-#             plt.bar(Jui.date,Jui.Ir_auto,label='irr',color='red')
-#             plt.legend()
-
+            # Jui=ETR_mod.loc[(ETR_mod.date>="2019-08-01")&(ETR_mod.date<="2019-10-01")]
+            # ETR_o=dfETR_obs.loc[(dfETR_obs.date>="2019-08-01")&(dfETR_obs.date<="2019-10-01")]
+            # ETR_o["date"]=pd.to_datetime(ETR_o["date"],format="%Y-%m-%d")
+            # Jui["date"]=pd.to_datetime(Jui["date"],format="%Y-%m-%d")
+            # # plt.plot(Jui.date,Jui.NDVI,label="NDVI")
+            # plt.figure(figsize=(7,7))
+            # plt.plot(ETR_o.date,ETR_o.NDVI,label='NDVI')
+            # plt.plot(Jui.date,Jui.Kcb,label='Kcb')
+            # # plt.plot(Jui.date,Jui.ET,label='ET')
+            # # ax2 = plt.twinx()
+            # # ax2.plot(Jui.date,Jui.Ks,label="Stress",linestyle='--',color='red')
+            # # ax2.set_ylim(-5,1)
+            # plt.legend()
+            # # plt.figure(figsize=(7,7))
+            # # plt.plot(Jui.date,Jui.Dr,label="Deep racin")
+            # # plt.plot(Jui.date,Jui.Dei+Jui.Dep,label="Deep Evapo zone")
+            # # plt.bar(Jui.date,Jui.Prec,label='Prec',color='Blue')
+            # # plt.bar(Jui.date,Jui.Ir_auto,label='irr',color='red')
+            # plt.legend()
+# =============================================================================
+# comparaison data ETR Grignon maize année 2019 , 2015 et 2012
+# =============================================================================
+    # ETR_2015=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_ICOS_GRI2015.csv')
+    # ETR_2015["date"]=pd.to_datetime(ETR_2015["date"],format="%Y-%m-%d")
+    # ETR_2015=ETR_2015.loc[(ETR_2015.date>="2015-05-01")&(ETR_2015.date<="2015-10-31")]
+    # ETR_2015["month"]=ETR_2015.date.dt.strftime('%m-%d')
+    # dfETR_obs["month"]=dfETR_obs.date.dt.strftime("%m-%d")
+    # plt.figure(figsize=(7,7))
+    # plt.plot(ETR_2015.month,ETR_2015.ETR,label="2015")
+    # plt.plot(dfETR_obs.month,dfETR_obs.ET,label="2019")
+    # plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+    # plt.legend()
+    # plt.savefig(d["Output_model_PC_home"]+"/plt_DynamiqueETR_2015_2019_Gri.png")
 # =============================================================================
 #  Validation Irri_ préparation data 
 # =============================================================================
