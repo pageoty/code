@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2015"
+    years="2014"
     ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(years)+"/Inputdata/"
@@ -165,21 +165,21 @@ if __name__ == "__main__":
 # =============================================================================
 # LAI
 # =============================================================================
-    for bv in ZONE:
-         if bv =="PARCELLE_CESBIO":
-                df=LAI_sigmo=pd.read_csv(d["PC_disk_home"]+'/TRAITEMENT/INPUT_DATA/LAI_parcelle/PARCELLE_LABO/LAI_pre_inter_OTB/LAI_inter_date'+str(years)+'.csv')
-                df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                # df.set_index('date',inplace=True)
-                meteo=df
-                meteo["id"]=1
-                meteo.to_pickle(d["path_run_home"]+"/maize_irri/LAI"+str(years)+".df")
-         elif bv =="PARCELLE_GRIGNON":
-                 df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
-                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                 # df.set_index('date',inplace=True)
-                 NDVI=df
-                 NDVI["id"]=2
-                 NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
+    # for bv in ZONE:
+    #      if bv =="PARCELLE_CESBIO":
+    #             df=LAI_sigmo=pd.read_csv(d["PC_disk_home"]+'/TRAITEMENT/INPUT_DATA/LAI_parcelle/PARCELLE_LABO/LAI_pre_inter_OTB/LAI_inter_dat_date_'+str(years)+'.csv')
+    #             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #             # df.set_index('date',inplace=True)
+    #             meteo=df
+    #             meteo["id"]=1
+    #             meteo.to_pickle(d["path_run_home"]+"/maize_irri/LAI"+str(years)+".df")
+         # elif bv =="PARCELLE_GRIGNON":
+         #         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
+         #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+         #         # df.set_index('date',inplace=True)
+         #         NDVI=df
+         #         NDVI["id"]=2
+         #         NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
 # =============================================================================
 #     Build df FC and WP
 # =============================================================================

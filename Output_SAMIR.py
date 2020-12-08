@@ -46,12 +46,12 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_LAI/OPTI_ICOS_MULTI_SITE_pluvio_REW_Init1_LAI_Fcover_m0/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_INIT_RU/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_m0_full/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     sites=['GRIGNON']
-    years=["2006","2008","2010","2012","2014","2015",'2019']
+    years=["2006","2008","2010","2012","2014","2015","2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             ETR_mod_crops=ETR_mod.groupby("LC")
             ETR_mod=ETR_mod_crops.get_group(lc)
             # ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
-            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"LAI"]],on=['date'])
+            dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"NDVI"]],on=['date'])
             dfETR_obs.dropna(inplace=True)
             ETR_week=dfETR_obs.set_index('date').resample("W").asfreq()
             ETR_week.dropna(inplace=True)
@@ -153,18 +153,55 @@ if __name__ == '__main__':
             plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
-            plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
+            # plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
+            plt.plot(ETR_mod.date,ETR_mod.TEW,label="réservoir evapo")
             plt.plot(ETR_mod.date,(ETR_mod.Dei+ETR_mod.Dep),label='Dep evapo')
             # plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
             # plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
-            plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)
+            # plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)
             plt.ylim(0,ETR_mod.Dr.max())
             plt.legend(loc='upper left')
             ax2 = plt.twinx()
             ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
             ax2.set_ylim(-5,1)
+            ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
             plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TEW_De_%s_%s.png"%(lc,y))
+
+            plt.figure(figsize=(7,7))
+            plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
+            plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
+            plt.plot(ETR_mod.date,ETR_mod.RAW,label="réservoir racinaire")
+            # plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
+            # plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
+            # plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)
+            plt.ylim(0,ETR_mod.Dr.max()+10)
+            plt.legend(loc='upper left')
+            ax2 = plt.twinx()
+            ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
+            ax2.set_ylim(-5,1.1)
+            ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TAW_Dr_%s_%s.png"%(lc,y))
             
+            plt.figure(figsize=(7,7))
+            plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
+            # plt.plot(ETR_mod.date,ETR_mod.Kei,label='Ke')
+            plt.plot(ETR_mod.date,ETR_mod.Kcb,label="Kcb")
+            plt.plot(ETR_mod.date,ETR_mod.Tr,label="Tran")
+            plt.plot(ETR_mod.date,ETR_mod.Ev,label="eva")
+            plt.plot(ETR_mod.date,ETR_mod.FCov,label="Fcover")
+            # plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
+            # plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
+            # plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)
+            plt.ylim(0,ETR_mod.Tr.max()+1)
+            plt.legend(loc='upper left')
+            ax2 = plt.twinx()
+            ax2.plot(ETR_mod.date,ETR_mod.Ks,color='r',linestyle="--",label="Ks")
+            ax2.set_ylim(-5,1.1)
+            ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+            plt.legend(loc="upper right")
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_Tr_Kcb_Eva_%s_%s.png"%(lc,y))
             # print le NDVI max et le Kcb issu du modèle
 
             # kc=ETR_mod.loc[ETR_mod.date==ETR_mod.iloc[ETR_mod.LAI.idxmax()]["date"]]["Kcb"]

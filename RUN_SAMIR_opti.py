@@ -70,7 +70,7 @@ def predict(x):
 
 def params_update(path,output,date_start,date_end,ligne_OS=6,FminNDVI=0.2,FmaxNDVI=0.9,FminFC=0,FmaxFC=1,Fslope=1.25,Foffset=-0.13,
                   Plateau=70,KminNDVI=0.1,KmaxNDVI=0.9,KminKcb=0,A_kcb=1.358,KmaxKcb=0.98,Koffset=-0.27,Zsoil=1150,Ze=150,Init_RU=0.5,
-                  DiffE=0.00001,DiffR=0.00001,REW=6,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=30,minDays=20,Kcbmin_start=0.1,
+                  DiffE=0.00001,DiffR=0.00001,REW=6,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=0,minDays=20,Kcbmin_start=0.1,
                   Kcbmax_stop=0.85,m=0.15):
     
     param=pd.read_csv(path,delimiter=",",header=None)
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     
     result=[]
-    for y in ["2006","2008","2010","2012","2014","2015"]:# 
+    for y in ["2006","2008","2010","2012","2014","2015","2019"]:# 
         print (y)
         # name_run="RUN_MULTI_SITE_ICOS/OPTI_SAF_RU_Fcover_sta_value05/"
         name_run=str(args.name_run).strip("['']")
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         print(r'===============')
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
-        d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+        d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
         # d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
@@ -184,7 +184,7 @@ if __name__ == "__main__":
             b.close()
             if optimis_val =="REW" :
                 timestart=str(y)+"-07-01"
-                solnu=LAI.loc[(LAI.LAI>0.2)&(LAI.date<timestart)]
+                solnu=LAI.loc[(LAI.LAI>0.1)&(LAI.date<timestart)]
                 lastdate=solnu.iloc[-1]["date"].strftime('%m-%d').replace("-", "")
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
@@ -197,7 +197,7 @@ if __name__ == "__main__":
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
+                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str("lastdate"),
                               Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin")
             elif optimis_val =="maxZr" :
@@ -253,13 +253,13 @@ if __name__ == "__main__":
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
                                ligne_OS=7,Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin")
-                    params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin",ligne_OS=2)
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
+                    params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
+                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(1026),
                               Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin")
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
             elif optimis_val =="maxZr" :
                 timestart=str(y)+"-05-01"
                 vege=NDVI.loc[(NDVI.NDVI>0.25)&(NDVI.date>timestart)]
@@ -271,13 +271,13 @@ if __name__ == "__main__":
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
                                   ligne_OS=7,Ze=125,REW=float(str(args.REW2).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/500/lin")
-                    params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/500/lin",ligne_OS=2)
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
+                    params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
                              Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/500/lin")
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
             else:
                 print('two optimisation')
                 timestart=str(y)+"-05-01"
@@ -416,7 +416,7 @@ if __name__ == "__main__":
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
             resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%(optimis_val))
     plt.figure(figsize=(7,7))
-    for years in ["2006","2008","2010","2012","2014","2015"]:#       
+    for years in ["2006","2008","2010","2012","2014","2015","2019"]:#       
         # all_min=[]
         df=pd.read_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%optimis_val)
         class_OS=df.groupby("OS")

@@ -55,10 +55,10 @@ def test(X):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2006","2008","2010","2012","2014","2015"]: #"2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2006","2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='station'
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_LAI/OPTI_ICOS_MULTI_SITE_pluvio_REW_Init1_LAI_Fcover_m0/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_INIT_RU/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_m0_full/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
@@ -83,9 +83,9 @@ if __name__ == "__main__":
         
         
         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),Ze=120,minZr=120,REW=30,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,m=0.15,Irrig_auto=0,Irrig_man=1,Lame_max=30,Init_RU=1,KmaxKcb=1.15)
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),Ze=120,minZr=120,REW=30,maxZr=1250,Zsoil=3000,DiffE=0.000001,DiffR=0.000001,m=0.15,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
         params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=120,REW=-10,minZr=120,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Init_RU=1,KmaxKcb=1.15)
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=120,REW=-10,minZr=120,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
 
     #  Lancement du code
         # os.environ["PYTHONPATH"] = "/home/yann/sources/modspa2/Code/models/:$PYTHONPATH      "
