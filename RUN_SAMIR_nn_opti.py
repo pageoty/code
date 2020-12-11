@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for y in ["2006","2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='station'
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_INIT_RU/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_m0_full/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_LAI/RUN_TEST_Fcover/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
@@ -79,26 +79,24 @@ if __name__ == "__main__":
         #     os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/* %s"%(d['PC_labo']))
         
         
-        
-        
-        
         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),Ze=120,minZr=120,REW=30,maxZr=1250,Zsoil=3000,DiffE=0.000001,DiffR=0.000001,m=0.15,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0502'),date_end=str(y)+str('1026'),Ze=120,minZr=120,REW=20,maxZr=1250,Zsoil=3000,DiffE=0.000001,DiffR=0.000001,m=0.15,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15,Plateau=0)
         params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0501'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=120,REW=-10,minZr=120,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
+                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0502'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=120,REW=-10,minZr=120,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
 
     #  Lancement du code
         # os.environ["PYTHONPATH"] = "/home/yann/sources/modspa2/Code/models/:$PYTHONPATH      "
         # os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
         if "LAI" in name_run:
-            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
+            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output -p param_modif.csv')
         else:
             if "Fcover" not in name_run:
-                os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
+                # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
+                os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
             else:
+                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -fcover FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
                 # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
-                os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
            
         # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df  -o Output/output.df -p param_modif.csv ')
         # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input  -o Output/output.df -p param_modif.csv ')

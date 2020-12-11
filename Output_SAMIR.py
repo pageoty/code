@@ -46,7 +46,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_INIT_RU/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_m0_full/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_LAI/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_Fcover_m0_full/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -187,10 +187,10 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
             # plt.plot(ETR_mod.date,ETR_mod.Kei,label='Ke')
-            plt.plot(ETR_mod.date,ETR_mod.Kcb,label="Kcb")
+            # plt.plot(ETR_mod.date,ETR_mod.Kcb,label="Kcb")
             plt.plot(ETR_mod.date,ETR_mod.Tr,label="Tran")
             plt.plot(ETR_mod.date,ETR_mod.Ev,label="eva")
-            plt.plot(ETR_mod.date,ETR_mod.FCov,label="Fcover")
+            # plt.plot(ETR_mod.date,ETR_mod.FCov,label="Fcover")
             # plt.plot(ETR_mod.date,ETR_mod.Irrig,label="Irri")
             # plt.plot(ETR_mod.date,ETR_mod.Ir_auto,label="Irri")
             # plt.bar(ETR_mod.date,ETR_mod.Prec,label="Prec",width=2)

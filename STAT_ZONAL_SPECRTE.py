@@ -91,20 +91,21 @@ if __name__ == "__main__":
     # =============================================================================
     # Gestion des datas SAFRAN 
     # =============================================================================
-    df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SIM2_2018_201901.csv",sep=";")
+    # df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SIM2_2018_201901.csv",sep=";")
+    # df=pd.read_csv("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SIM2_2010_201811.csv",sep=";")
+    # LAMBX=df.LAMBX*100
+    # LAMBY=df.LAMBY*100
+    # df["lambX"]=LAMBX
+    # df['lambY']=LAMBY
+    # df=df.loc[(df.DATE >= 20110101) &(df.DATE <= 20111231)]
+    # df.to_csv("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN2011_L2.csv")
     
-    LAMBX=df.LAMBX*100
-    LAMBY=df.LAMBY*100
-    df["lambX"]=LAMBX
-    df['lambY']=LAMBY
-    df.to_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN2018_L2.csv")
+    # df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_TCJ.csv")
+    # df1=df.drop([0])
+    # preliq=df1[["DATE","PRELIQ_Q","X","Y"]]
     
-    df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_TCJ.csv")
-    df1=df.drop([0])
-    preliq=df1[["DATE","PRELIQ_Q","X","Y"]]
-    
-    preliq2=preliq.sort_values(by="DATE")
-    meandate=preliq2.groupby("DATE").mean()
+    # preliq2=preliq.sort_values(by="DATE")
+    # meandate=preliq2.groupby("DATE").mean()
 
 
     # =============================================================================

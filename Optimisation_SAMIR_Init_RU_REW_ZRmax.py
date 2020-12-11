@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 11 10:40:05 2020
+Created on Tue Dec  8 09:45:14 2020
 
 @author: Yann Pageot
 """
@@ -32,92 +32,10 @@ from scipy import stats
 from pylab import *
 from sklearn.linear_model import LinearRegression
 import argparse
-# from ambhas.errlib import NS
-
-def NS(s,o):
-    """
-    Nash Sutcliffe efficiency coefficient
-    input:
-        s: simulated
-        o: observed
-    output:
-        ns: Nash Sutcliffe efficient coefficient
-    """
-    # s,o = filter_nan(s,o)
-    return 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
- 
-def nash (s):
-    """The Nash function"""
-    # 1 - sum((s-o)**2)/sum((o-np.mean(o))**2)
-    nash=1 - sum((s-x)**2)/sum((x-np.mean(x))**2)
-    return nash 
-    
-def RMSE(x,*args) :
-    x_data = args[0]
-    y_data = args[1]
-    rmse= mean_squared_error(x_data,y_data,squared=False)
-    return rmse
-    
+from RUN_SAMIR_opti import params_update,params_opti ,select_color_date
 
 def predict(x):
     return slope * x + intercept
-
-def params_update(path,output,date_start,date_end,ligne_OS=6,FminNDVI=0.2,FmaxNDVI=0.9,FminFC=0,FmaxFC=1,Fslope=1.25,Foffset=-0.13,
-                  Plateau=70,KminNDVI=0.1,KmaxNDVI=0.9,KminKcb=0,A_kcb=1.358,KmaxKcb=0.98,Koffset=-0.27,Zsoil=1150,Ze=150,Init_RU=0.5,
-                  DiffE=0.00001,DiffR=0.00001,REW=6,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=0,minDays=20,Kcbmin_start=0.1,
-                  Kcbmax_stop=0.85,m=0.15):
-    
-    param=pd.read_csv(path,delimiter=",",header=None)
-    param.loc[int(ligne_OS),13]=A_kcb 
-    param.loc[int(ligne_OS),20]=REW
-    param.loc[int(ligne_OS),21]=m
-    param.loc[int(ligne_OS),23]=maxZr
-    param.loc[int(ligne_OS),2]=FminNDVI
-    param.loc[int(ligne_OS),3]=FmaxNDVI
-    param.loc[int(ligne_OS),4]=FminFC
-    param.loc[int(ligne_OS),5]=FmaxFC
-    param.loc[int(ligne_OS),6]=Fslope
-    param.loc[int(ligne_OS),7]=Foffset
-    param.loc[int(ligne_OS),8]=Plateau
-    param.loc[int(ligne_OS),9]=KminNDVI
-    param.loc[int(ligne_OS),10]=KmaxNDVI
-    param.loc[int(ligne_OS),11]=KminKcb
-    param.loc[int(ligne_OS),12]=KmaxKcb
-    param.loc[int(ligne_OS),14]=Koffset
-    param.loc[int(ligne_OS),15]=Zsoil
-    param.loc[int(ligne_OS),16]=Ze
-    param.loc[int(ligne_OS),17]=Init_RU
-    param.loc[int(ligne_OS),18]=DiffE
-    param.loc[int(ligne_OS),19]=DiffR
-    param.loc[int(ligne_OS),22]=minZr
-    param.loc[int(ligne_OS),24]=p
-    param.loc[int(ligne_OS),25]=FW
-    param.loc[int(ligne_OS),26]=Irrig_auto
-    param.loc[int(ligne_OS),27]=Irrig_man
-    param.loc[int(ligne_OS),28]=Lame_max
-    param.loc[int(ligne_OS),29]=minDays
-    param.loc[int(ligne_OS),30]=Kcbmin_start
-    param.loc[int(ligne_OS),31]=Kcbmax_stop
-    param.loc[0,1]=date_start
-    param.loc[0,3]=date_end
-    param.to_csv(output,header=False,sep= ',',index=False,na_rep="")
-   
-def params_opti(path,output_path,param1,value_P1,param2=None,value_P2=None,ligne_OS=1):
-    opti_para=pd.read_csv(path,header=None)
-    opti_para.loc[0,2]=param1
-    opti_para.loc[0,3]=param2
-    opti_para.loc[int(ligne_OS),2]=value_P1
-    opti_para.loc[int(ligne_OS),3]=value_P2
-    opti_para.to_csv(output_path,header=False,sep= ',',index=False,na_rep="")
-    
-def select_color_date(x):
-    couleurs=[]
-    for i in range(len(x)):
-        if x.index[i].strftime('%m-%d')<= "04-01" : 
-            couleurs.append("r")
-        else : 
-            couleurs.append("b")
-    return couleurs
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run optimisation SAMIR ')
@@ -134,13 +52,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print (args.optim)
     print(args.name_run)
-
+    years=["2014"]
     
     result=[]
-    for y in ["2006","2008","2010","2012","2014","2015","2019"]:# 
+    for y in years:# 
         print (y)
-        # name_run="RUN_MULTI_SITE_ICOS/OPTI_SAF_RU_Fcover_sta_value05/"
+        # name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Test_annee_2014"
         name_run=str(args.name_run).strip("['']")
+        print(name_run)
         # optimis_val="REW"
         optimis_val=str(args.optim).strip("['']")
         if len(optimis_val) < 6:
@@ -171,6 +90,52 @@ if __name__ == "__main__":
         else:
             os.system("cp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y)+"/* %s"%(d['SAMIR_run']))
 
+# =============================================================================
+#         # Calibration Init_Ru, année n-1
+# =============================================================================
+        y1=int(y)-1
+        
+        
+        if str(args.meteo).strip("['']")=="SAFRAN":
+            os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/ %s"%(d['SAMIR_run']))
+        else:
+            os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
+        d['SAMIR_run_RU']=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"+str(y1)+"/"
+        params_update(d['SAMIR_run_RU']+"/Inputdata/param_SAMIR12_13.csv",
+                      d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0302'),date_end=str(y1)+str('1026'),
+                      Ze=125,REW=20,minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+        if "Output" in os.listdir(d['SAMIR_run_RU']):
+            print ("existing file")
+        else :
+            os.mkdir ("%s/Output"%d['SAMIR_run_RU']) # allows create file via call system
+        if optimis_val in os.listdir(d['SAMIR_run_RU']+"/Output/"):
+            print ("existing file")
+        else :
+            os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
+
+        if "LAI" in name_run :
+                os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+        else:
+            if "Fcover" in name_run :
+                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv   ')
+            else:
+                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y1)+'.df  -fc /*/FC.df -wp /*/WP.df  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+        #  Extraction du résultat
+        df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
+        result_init_cops=df.groupby("LC")
+        result_init=result_init_cops.get_group("maize_irri")
+        result_init=result_init[["date","SWC1","SWC2","SWC3"]]
+        ru_init=result_init[["date","SWC1","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-10-26"]
+        RUn1=ru_init.SWC2.values
+        print(r'===============')
+        print(RUn1)
+        print(r'===============')
+        RUNsoln1 = ru_init[["SWC1","SWC2","SWC3"]].values.mean()
+        # moyenne pondére à l'épaisseur 
+        RUSOL_ponde=np.average([ru_init["SWC1"].values[0],ru_init["SWC2"].values[0],ru_init["SWC3"].values[0]], weights=[125,df["Zr"].loc[df.date==str(y1)+"-10-26"].values[0] , df["Zd"].loc[df.date==str(y1)+"-10-26"].values[0]])
+        print(r'===============')
+        print(RUSOL_ponde)
+        print(r'===============')
         classes=["maize_irri"]
         if "LAI" in name_run:
             b=open(d["SAMIR_run"]+"/Inputdata/maize_irri/LAI"+str(y)+".df","rb")
@@ -183,16 +148,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                               ligne_OS=7,Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                               ligne_OS=7,Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str("lastdate"),
-                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-100/100/10/lin")
             elif optimis_val =="maxZr" :
                 timestart=str(y)+"-05-01"
@@ -201,16 +166,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                              Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                                  ligne_OS=7,Ze=125,REW=float(str(args.REW2).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  ligne_OS=7,Ze=125,REW=float(str(args.REW2).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/500/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/100/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/100/lin")
             else:
                 print('two optimisation')
@@ -220,16 +185,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                              Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                                  ligne_OS=7,Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  ligne_OS=7,Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=ffloat(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",param2="REW",value_P2="-50/40/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",ligne_OS=2,param2="REW",value_P2="-50/40/10/lin")
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",param2="REW",value_P2="-50/40/10/lin")
         else:
             # Définir période sol nu
@@ -243,16 +208,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                               ligne_OS=7,Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                               ligne_OS=7,Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(1026),
-                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW='optim',minZr=125,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
             elif optimis_val =="maxZr" :
                 timestart=str(y)+"-05-01"
@@ -261,16 +226,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                              Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                                  ligne_OS=7,Ze=125,REW=float(str(args.REW2).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  ligne_OS=7,Ze=125,REW=float(str(args.REW2).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=125,REW=float(str(args.REW).strip("['']")),minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
             else:
                 print('two optimisation')
@@ -280,16 +245,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                              Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                                  ligne_OS=7,Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  ligne_OS=7,Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",param2="REW",value_P2="-50/40/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",ligne_OS=2,param2="REW",value_P2="-50/40/10/lin")
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=125,REW="optim",minZr=125,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",param2="REW",value_P2="-50/40/10/lin")
         #  Lancement du code
         if "Output" in os.listdir(d['SAMIR_run']):
@@ -410,7 +375,7 @@ if __name__ == "__main__":
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
             resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%(optimis_val))
     plt.figure(figsize=(7,7))
-    for years in ["2006","2008","2010","2012","2014","2015","2019"]:#       
+    for y in years: 
         # all_min=[]
         df=pd.read_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%optimis_val)
         class_OS=df.groupby("OS")
@@ -418,7 +383,7 @@ if __name__ == "__main__":
             # if len(optimis_val) < 6:
                 data=class_OS.get_group(Os)
                 a=data.groupby("years")
-                b=a.get_group(int(years))
+                b=a.get_group(int(y))
                 b.sort_values("Param1",ascending=True,inplace=True)
                 minval=b.loc[b["RMSE"].idxmin()]
                 print(minval)
@@ -431,7 +396,7 @@ if __name__ == "__main__":
                 #     x.append(b.loc[a].Param1)
                 #     y.append(b.loc[a].RMSE)
                 # plt.plot(x,y,label=str(years))
-                plt.plot(b.Param1,b.RMSE,label=str(years))
+                plt.plot(b.Param1,b.RMSE,label=str(set(b.years)).strip("{}"))
                 plt.plot(minval.Param1,minval.RMSE,marker="*",color="Black")
                 plt.text(minval.Param1,minval.RMSE,s="min: %s"%(minval.Param1))
                 plt.legend()
