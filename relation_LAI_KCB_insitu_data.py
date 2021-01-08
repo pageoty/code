@@ -78,11 +78,21 @@ if __name__ == "__main__":
 # =============================================================================
 #   calculer Kcb théorique ETR/ETO
 # =============================================================================
-        kc_theo=ETR.LE/meteo_SAF.ET0
+        kc_theo=ETR.LE/meteo_SAF.ET0 # probleme avec l'ETR
         Kc_theo=pd.DataFrame(kc_theo)
         Kc_theo["Date"]=ETR.date
         Kc_theo_ss_stress=Kc_theo.loc[Kc_theo['Date'].isin(a)]
-        data_relation=pd.merge(Kc_theo,LAI_ss_stress[["LAI","Date"]],on="Date")
+        moving_avg = Kc_theo_ss_stress.rolling(10).mean()
+        moving_avg["Date"]=Kc_theo_ss_stress["Date"]
+        # plt.plot(moving_avg.index,moving_avg[0])
+        data_relation=pd.merge(moving_avg,LAI_ss_stress[["LAI","Date"]],on="Date")
         df=data_relation.loc[data_relation.LAI>0.15]
         print(df)
-        df.to_csv("D:/THESE_TMP/TRAITEMENT/Relation_LAI_Kcb/data_"+str(y)+"_LAI_KCB_period_ss_stress_60_RU.csv")
+        df.to_csv("D:/THESE_TMP/TRAITEMENT/Relation_LAI_Kcb/data_"+str(y)+"_LAI_KCB_lissage_mean_10_period_ss_stress_60_RU.csv")
+        
+        plt.plot(df.Date,df.LAI)
+        plt.plot(df.Date,df[0])
+        # a=Kc_theo.set_index("Date")
+        # # a.resample("W").interpolate()
+        # moving_avg = a.rolling(12).mean()
+        # plt.plot(moving_avg.index,moving_avg[0])
