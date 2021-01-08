@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2011"
+    years="2012"
     ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
@@ -148,12 +148,12 @@ if __name__ == "__main__":
 #   NDVI 
 # =============================================================================
     # for bv in ZONE:
-    #      if bv =="PARCELLE_CESBIO":
-                # df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
-                # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-                # # df.set_index('date',inplace=True)
-                # meteo=df
-                # meteo["id"]=1
+    #       if bv =="PARCELLE_CESBIO":
+    #             df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv")
+    #             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #             # df.set_index('date',inplace=True)
+    #             meteo=df
+    #             meteo["id"]=1
                 # meteo.to_pickle(d["path_run_home"]+"/maize_irri/NDVI"+str(years)+".df")
     #      elif bv =="PARCELLE_GRIGNON":
     #              df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
@@ -291,18 +291,18 @@ if __name__ == "__main__":
 # # =============================================================================
 # #  Préparation des Fcovers
 # # =============================================================================
-#     for bv in ZONE:
-#         if bv =="Fusion":
-#             print("pas pret")
-#         elif bv == "PARCELLE_CESBIO":
-            # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
-            # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            # df.set_index('date',inplace=True)
-            # df=df.resample("D").interpolate()
-            # df.reset_index(inplace=True)
-            # FCOVER=df
-            # FCOVER.columns=["date","FCov"]
-            # FCOVER["id"]=1
+    # for bv in ZONE:
+    #     if bv =="Fusion":
+    #         print("pas pret")
+    #     elif bv == "PARCELLE_CESBIO":
+    #         df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
+    #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #         df.set_index('date',inplace=True)
+    #         df=df.resample("D").interpolate()
+    #         df.reset_index(inplace=True)
+    #         FCOVER=df
+    #         FCOVER.columns=["date","FCov"]
+    #         FCOVER["id"]=1
             # FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
 #         elif bv =="PARCELLE_GRIGNON":
 #             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
@@ -322,28 +322,28 @@ if __name__ == "__main__":
 #   Météo_SAFRAN
 # =============================================================================
     # Lecture data SAFRAN
-    SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2011_L93.shp")
-    # Lecture parcellaire
-    parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
-    SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
-            'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
-            'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
-            'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
-            'lambX_1', 'lambY_1'],inplace=True)
-    dfmeteo=SAF.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
-    SAF.geometry=dfmeteo
-    SAF.DATE=pd.to_datetime(SAF.DATE,format='%Y%m%d')
-    SAF_par=geo.overlay(SAF,parce,how='intersection')
-    SAF_par.id=1
-    SAF_par.drop(columns=['NOM_PARCEL', 'EVAP_Q', 'LABO','geometry'],inplace=True)
-    SAF_par["Irrig"]=0.0
-    SAF_par.columns=["date","Prec",'ET0',"id",'Irrig']
-    SAF_par.to_pickle(d["path_run_home"]+"/maize_irri/meteo.df")
+    # SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2011_L93.shp")
+    # # Lecture parcellaire
+    # parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
+    # SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
+    #         'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
+    #         'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
+    #         'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
+    #         'lambX_1', 'lambY_1'],inplace=True)
+    # dfmeteo=SAF.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
+    # SAF.geometry=dfmeteo
+    # SAF.DATE=pd.to_datetime(SAF.DATE,format='%Y%m%d')
+    # SAF_par=geo.overlay(SAF,parce,how='intersection')
+    # SAF_par.id=1
+    # SAF_par.drop(columns=['NOM_PARCEL', 'EVAP_Q', 'LABO','geometry'],inplace=True)
+    # SAF_par["Irrig"]=0.0
+    # SAF_par.columns=["date","Prec",'ET0',"id",'Irrig']
+    # SAF_par.to_pickle(d["path_run_home"]+"/maize_irri/meteo.df")
     
-    FCover=pd.read_csv("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/FCOVER/FCOVER2018/FCOVER_LAM_2018_OTB_INTERPO.csv",sep=";")
-    FCover.drop(columns=["Parcelle"],inplace=True)
-    FCover=FCover.mean()
-    Fcover=pd.DataFrame(FCover)
-    Fcover["date"]=pd.date_range("2011-01-01", periods=365)
-    Fcover.columns=['FCov',"date"]
-    Fcover.to_pickle(d["path_run_home"]+"/maize_irri/FCOVER.df")
+    # FCover=pd.read_csv("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/FCOVER/FCOVER2018/FCOVER_LAM_2018_OTB_INTERPO.csv",sep=";")
+    # FCover.drop(columns=["Parcelle"],inplace=True)
+    # FCover=FCover.mean()
+    # Fcover=pd.DataFrame(FCover)
+    # Fcover["date"]=pd.date_range("2011-01-01", periods=365)
+    # Fcover.columns=['FCov',"date"]
+    # Fcover.to_pickle(d["path_run_home"]+"/maize_irri/FCOVER.df")
