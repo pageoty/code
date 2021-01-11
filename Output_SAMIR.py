@@ -50,8 +50,9 @@ if __name__ == '__main__':
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
-    years=["2006","2008","2010","2012","2014","2015","2019"]
+    years=["2008","2010","2012","2014","2015","2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -71,7 +72,7 @@ if __name__ == '__main__':
                 SWC["date"]=pd.to_datetime(SWC["date"],format="%Y-%m-%d")
                 meteo=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
                 meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
-            ETR=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.')
+            ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
             ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
             ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
             ETR_mod=pickle.load(open( d['Output_model_PC_home']+"Output/output.df",'rb'))
@@ -82,9 +83,9 @@ if __name__ == '__main__':
             dfETR_obs.dropna(inplace=True)
             ETR_week=dfETR_obs.set_index('date').resample("W").asfreq()
             ETR_week.dropna(inplace=True)
-            slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE.to_list(),dfETR_obs.ET.to_list())
-            bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE) 
-            fitLine = predict(dfETR_obs.LE)
+            slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE_Bowen.to_list(),dfETR_obs.ET.to_list())
+            bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE_Bowen) 
+            fitLine = predict(dfETR_obs.LE_Bowen)
             # Creation plot
             # plt.figure(figsize=(7,7))
             # plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
