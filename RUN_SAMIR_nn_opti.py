@@ -55,10 +55,10 @@ def test(X):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2006","2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2006"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='SAFRAN'
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_REW_impact_Vol_irr/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_Init1_m1_full_REW4"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/run_test_plateau_Fcover/"
         # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
         d={}
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
@@ -91,11 +91,12 @@ if __name__ == "__main__":
         if "LAI" in name_run:
             os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output -p param_modif.csv')
         else:
-            if "Fcover" not in name_run:
+            # if "Fcover" not in name_run:
                 # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
-                os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
-            else:
-                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -fcover FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
+                # os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
+            os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -o Output/output.df -p param_modif.csv')
+            # else:
+                # os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -fcover FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
                 # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
            
         # os.system('python /home/pageot/sources/modspa2/Code/models/main/runSAMIR.py -wd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df  -fc /*/FC.df -wp /*/WP.df  -o Output/output.df -p param_modif.csv ')
