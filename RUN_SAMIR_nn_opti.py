@@ -55,46 +55,57 @@ def test(X):
 
 if __name__ == "__main__":
     result=[]
-    for y in ["2006"]: #"2008","2010","2012","2014","2015","2017","2019"
+    for y in ["2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='SAFRAN'
-        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/run_test_plateau_Fcover/"
-        # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
+        name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/Correction_Fcover/run_test_plateau_Fcover/"
         d={}
-        d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
+        # d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
+        d['SAMIR_run']="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/"
-        d["PC_labo_short"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"
+        # d["PC_labo_short"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/Correction_Fcover/"
         d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"#"/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         
-        # if name_run not in os.listdir(d["PC_labo_short"]):
+        # if "run_test_plateau_Fcover" not in os.listdir(d["PC_labo_short"]):
         #     os.mkdir('%s/%s/'%(d["PC_labo_short"],name_run))
+        # else: 
+        #     print('existing folder')
         # if str(y) not in os.listdir(d["PC_labo"][:-5]):
         #     os.mkdir ('%s/%s/%s'%(d["PC_labo_short"],name_run,str(y)))
-        # #  Déplacement all file 
-        # if meteo=="SAFRAN":
-        #     os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/* %s"%(d['PC_labo']))
-        # else:
-        #     os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/* %s"%(d['PC_labo']))
+        # else: 
+        #     print('existing folder')
+        #  Déplacement all file 
+        if meteo=="SAFRAN":
+            os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/* %s"%(d['PC_labo'][:-5]))
+        else:
+            os.system("cp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT/* %s"%(d['PC_labo'][:-5]))
         
         
-        params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1026'),Ze=150,minZr=150,REW=4,maxZr=1250,Zsoil=2000,DiffE=0.000001,DiffR=0.000001,m=1,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1,KmaxKcb=1.15,Plateau=0)
-        params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
-                      d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=150,REW=-10,minZr=150,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
+        ##### Calcule du REW via les focntions de pédotransfert d'Allen 2005
+        # Soil_prop= pd.read_csv()
+        # Sand = 
+        # Clay = 
+        # if Sand >= 0.80 :
+        #     REW = 20 - 0.15 * Sand
+        # elif Clay >= 0.50 : 
+        #     REW = 11 - 0.06 * Clay 
+        # elif (Sand < 0.80) and (Clay < 0.50):
+        #     REW = 8 + 0.008 * Clay
+        
+        params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),Ze=150,minZr=150,REW=10,maxZr=1250,Zsoil=2000,DiffE=0.000001,DiffR=0.000001,m=1,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1,KmaxKcb=1.15,Plateau=70,Fslope=1.39, Foffset=-0.25)
+        # params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
+        #               d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=150,REW=-10,minZr=150,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
 
     #  Lancement du code
-        # os.environ["PYTHONPATH"] = "/home/yann/sources/modspa2/Code/models/:$PYTHONPATH      "
-        # os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
-        # os.system('python /mnt/c/users/Yann\ Pageot/Documents/code/modspa/modspa2/code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/RUNS_SAMIR/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n maize/NDVI.df -fc maize/FC.df -wp maize/WP.df -o output_T1.df -p param_modif.csv')
-        if "LAI" in name_run:
-            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output -p param_modif.csv')
-        else:
-            # if "Fcover" not in name_run:
-                # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
-                # os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -o Output/output.df -p param_modif.csv')
-            os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -o Output/output.df -p param_modif.csv')
+        # if "LAI" in name_run:
+        #     os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output -p param_modif.csv')
+        # else:
+        #     if "Fcover" not in name_run:
+                # os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -o Output/output.df -p param_modif.csv')
+        os.system("python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd "+d['PC_labo']+" -dd /"+d['PC_labo']+"Inputdata/ -m meteo.df -n NDVI"+str(y)+".df -fc FC.df -wp WP.df -o Output/output.df -p param_modif.csv")
             # else:
                 # os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fc FC.df -wp WP.df -fcover FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')
                 # os.system('python /home/yann/sources/modspa2/Code/models/main/runSAMIR.py -wd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/'' -dd /mnt/d/THESE_TMP/TRAITEMENT/'+name_run+'/'+str(y)+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fc /*/FC.df -wp /*/WP.df -fcover /*/FCOVER.df --fc_input -o Output/output.df -p param_modif.csv')

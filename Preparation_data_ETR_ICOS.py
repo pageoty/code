@@ -364,15 +364,17 @@ if __name__ == '__main__':
     # Prépartion des datas Eddy-co au format journalière
       # Pour 2017 et autre année
     # for y in os.listdir(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
-    for y in os.listdir("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/FLUX_ETR/Corr_fluxes/"):
+    for y in os.listdir("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/FLUX_ETR/Corr_fluxes/"):
         print(y)
         # years=y[5:9]
         # if years =="2017":
             # LE_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
-        LE_lam=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/FLUX_ETR/Corr_fluxes/"+y,encoding = 'utf-8',delimiter=",")
+        # LE_lam=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/FLUX_ETR/Corr_fluxes/"+y,encoding = 'utf-8',delimiter=",")
+        LE_lam=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/FLUX_ETR/Corr_fluxes/"+y,encoding = 'utf-8',delimiter=",")
         LE_lam.drop(0,inplace=True)
         LE_lam["time"]=LE_lam["Time"].astype(str)
         LE_lam["LE_Bowen"]=LE_lam["LE Bowen"].astype(float)
+        LE_lam["LE_Res"]=LE_lam["LE Res"].astype(float)
         LE_lam["date"]=LE_lam["time"].apply(lambda x:x[0:10])
         LE_lam["time_hours"]=LE_lam["time"].apply(lambda x:x[10:-3]).replace(":",'.')
         LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%d/%m/%Y")
@@ -387,6 +389,8 @@ if __name__ == '__main__':
         ETR_lam_day
         ETR_lam_day.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
 
+    ##### mesu diff ratio Bowen et LE nn corr
+    diff=LE_lam.LE_Bowen-LE_lam.LE_Res
   # Pour la station de Grignon gestion des LE en ETR
     for y in ["2019"]:
         print (y)
