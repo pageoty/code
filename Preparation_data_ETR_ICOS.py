@@ -374,7 +374,7 @@ if __name__ == '__main__':
         LE_lam.drop(0,inplace=True)
         LE_lam["time"]=LE_lam["Time"].astype(str)
         LE_lam["LE_Bowen"]=LE_lam["LE Bowen"].astype(float)
-        LE_lam["LE_Res"]=LE_lam["LE Res"].astype(float)
+        # LE_lam["LE_Res"]=LE_lam["LE Res"].astype(float)
         LE_lam["date"]=LE_lam["time"].apply(lambda x:x[0:10])
         LE_lam["time_hours"]=LE_lam["time"].apply(lambda x:x[10:-3]).replace(":",'.')
         LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%d/%m/%Y")
@@ -385,12 +385,21 @@ if __name__ == '__main__':
         ETR_lam_day=LE_lam_day*0.0352
         ETR_lam_day[ETR_lam_day < -1]=pd.NaT
         ETR_lam_day=pd.DataFrame(ETR_lam_day)
-        ETR_lam_day.plot()
+        # ETR_lam_day.plot()
         ETR_lam_day
-        ETR_lam_day.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
-
+        # ETR_lam_day.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+        
+        LE_lam_nn_corr=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y),encoding = 'utf-8',delimiter=",")
+        LE_lam_nn_corr.date=pd.to_datetime(LE_lam_nn_corr.date,format="%Y-%m-%d")
+        LE_nn_corr=LE_lam_nn_corr.loc[(LE_lam_nn_corr.date >=str(y)[:-4]+"-04-01") & (LE_lam_nn_corr.date <= str(y)[:-4]+"-09-30")]
+        # plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
+        plt.figure(figsize=(7,7))
+        plt.plot(ETR_lam_day.index,ETR_lam_day.LE_Bowen,label='LE_bowen')
+        plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
+        plt.legend()
+        plt.savefig('/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)[:-4]+'.png')
     ##### mesu diff ratio Bowen et LE nn corr
-    diff=LE_lam.LE_Bowen-LE_lam.LE_Res
+
   # Pour la station de Grignon gestion des LE en ETR
     for y in ["2019"]:
         print (y)
