@@ -396,8 +396,12 @@ if __name__ == '__main__':
         plt.figure(figsize=(7,7))
         plt.plot(ETR_lam_day.index,ETR_lam_day.LE_Bowen,label='LE_bowen')
         plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
+        
         plt.legend()
         plt.savefig('/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)[:-4]+'.png')
+        diff=ETR_lam_day.LE_Bowen.to_list()-LE_nn_corr.LE
+        plt.figure(figsize=(7,7))
+        plt.plot(ETR_lam_day.index,diff)
     ##### mesu diff ratio Bowen et LE nn corr
 
   # Pour la station de Grignon gestion des LE en ETR
