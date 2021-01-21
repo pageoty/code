@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for y in ["2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='SAFRAN'
-        name_run="OPTI_ICOS_MULTI_SITE_SAFRAN_REW_allen2005_Zrmax1500_Init1_m1_Fcover_sat"
+        name_run="OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1"
         d={}
         # d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run']="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"
@@ -89,8 +89,11 @@ if __name__ == "__main__":
         
         #### Calcule du REW via les focntions de pédotransfert d'Allen 2005 pour lam
 
-        Sand = mean([0.471,0.639,0.64,0.829])
-        Clay = mean([0.50,0.48])
+        # Sand = mean([0.471,0.639,0.64,0.829]) # ensemble de la colonne sol 
+        # Clay = mean([0.50,0.48])
+        
+        Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
+        Clay = 0.5026
         if Sand >= 0.80 :
             REW = 20 - 0.15 * Sand
         elif Clay >= 0.50 : 
@@ -101,7 +104,7 @@ if __name__ == "__main__":
         params_update(d['PC_labo']+"/Inputdata/param_SAMIR12_13.csv",
                       d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),Ze=150,minZr=150,REW=REW,maxZr=1500,Zsoil=2000,DiffE=0.000001,DiffR=0.000001,m=1,Irrig_auto=1,Irrig_man=0,Lame_max=30,Init_RU=1,KmaxKcb=1.15,Plateau=70,Fslope=1.39, Foffset=-0.25)
         params_update(d['PC_labo']+"/Inputdata/param_modif.csv",
-                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str('1026'),ligne_OS=7,Ze=150,REW=-10,minZr=150,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
+                      d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),ligne_OS=7,Ze=150,REW=-10,minZr=150,maxZr=1500,A_kcb=1.358,Koffset=-0.017,Zsoil=3000,DiffE=10,DiffR=10,Irrig_auto=0,Irrig_man=1,Lame_max=0,Init_RU=1,KmaxKcb=1.15)
 
 # =============================================================================
 #     #  Lancement du code

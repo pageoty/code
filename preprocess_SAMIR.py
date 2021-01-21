@@ -35,10 +35,10 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2008"
-    ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
+    years="2019"
+    ZONE =["PARCELLE_GRIGNON"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
     d["PC_disk_labo"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/DONNES_METEO/"
-    d["path_usb_PC"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(years)+"/Inputdata/"
+    d["path_usb_PC"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
     d["PC_disk_home"]="D:/THESE_TMP/"
     
 
@@ -160,6 +160,9 @@ if __name__ == "__main__":
           elif bv =="PARCELLE_GRIGNON":
                   df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
                   df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+                  df.set_index('date',inplace=True)
+                  df=df.resample("D").interpolate()
+                  df.reset_index(inplace=True)
                   # df.set_index('date',inplace=True)
                   NDVI=df
                   NDVI["id"]=2
