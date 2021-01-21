@@ -46,19 +46,19 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_output_moyen_gliss/test_moyenn"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_Apport_FCOVER/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
-    flux=None
-    years=["2019"]
+    flux="Bowen"
+    years=["2008","2010","2012","2014","2015","2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
-# modif pour groupby Lc
+# modif pour groupby lc
 
     for y in years:
         for lc in ["maize_irri"]: # maize_rain
@@ -84,7 +84,7 @@ if __name__ == '__main__':
                 ETR=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
                 ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
                 ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
-                ETR_mod=pickle.load(open( d['Output_model_PC_labo']+"Output/output.df",'rb'))
+                ETR_mod=pickle.load(open(d['Output_model_PC_labo']+"Output/output.df",'rb'))
                 ETR_mod_crops=ETR_mod.groupby("LC")
                 ETR_mod=ETR_mod_crops.get_group(lc)
                 # ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                 date_ETR_moy=pd.DataFrame(date_moy)
                 ETR_week_moye=pd.DataFrame(jours5m)
                 ETR_week=pd.concat([date_ETR_moy,ETR_week_moye],axis=1)
-                ETR_week.columns=["date","LE_bowen","ET"]
+                ETR_week.columns=["date","LE_Bowen","ET"]
                 slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE_Bowen.to_list(),dfETR_obs.ET.to_list())
                 bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE_Bowen) 
                 fitLine = predict(dfETR_obs.LE_Bowen)
@@ -119,13 +119,13 @@ if __name__ == '__main__':
                 plt.ylabel("ETR model")
                 plt.xlim(0,10)
                 plt.ylim(0,10)
-                plt.legend(('Soil nu','Vege'))
+                # plt.legend(('Soil nu','Vege'))
                 plt.title("Scatter ETR obs et ETR mod %s en %s"%(lc,y))
                 rms = mean_squared_error(dfETR_obs.LE_Bowen,dfETR_obs.ET)
                 plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
                 plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
-                plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
-                plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
+                plt.text(8,min(dfETR_obs.ET)+0.7,"Pente = "+str(round(slope,2)))
+                plt.text(8,min(dfETR_obs.ET)+1,"Biais = "+str(round(bias,2)))
                 plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
                 ###### SCATTER moyenne semaine ######
                 slope, intercept, r_value, p_value, std_err = stats.linregress(ETR_week.LE_Bowen.to_list(),ETR_week.ET.to_list())
@@ -144,8 +144,8 @@ if __name__ == '__main__':
                 rms = mean_squared_error(ETR_week.LE_Bowen,ETR_week.ET)
                 plt.text(8,min(ETR_week.ET)+0.1,"RMSE = "+str(round(rms,2))) 
                 plt.text(8,min(ETR_week.ET)+0.4,"R² = "+str(round(r_value,2)))
-                plt.text(8,min(ETR_week.ET)+0.6,"Pente = "+str(round(slope,2)))
-                plt.text(8,min(ETR_week.ET)+0.8,"Biais = "+str(round(bias,2)))
+                plt.text(8,min(ETR_week.ET)+0.7,"Pente = "+str(round(slope,2)))
+                plt.text(8,min(ETR_week.ET)+1,"Biais = "+str(round(bias,2)))
                 plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_week_%s_%s.png"%(lc,y))
                 ### plot dynamique 
                 plt.figure(figsize=(7,7))
@@ -168,8 +168,8 @@ if __name__ == '__main__':
                 plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
                 ###########" Dynamique week #############
                 plt.figure(figsize=(7,7))
-                plt.plot(ETR_week.index,ETR_week.LE_Bowen,label='ETR_obs',color="black")
-                plt.plot(ETR_week.index,ETR_week.ET,label='ETR_mod',color='red')
+                plt.plot(ETR_week.date,ETR_week.LE_Bowen,label='ETR_obs',color="black")
+                plt.plot(ETR_week.date,ETR_week.ET,label='ETR_mod',color='red')
                 plt.ylabel("ETR")
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR week obs et ETR week mod %s en %s"%(lc,y))
@@ -214,8 +214,8 @@ if __name__ == '__main__':
                 rms = mean_squared_error(dfETR_obs.LE,dfETR_obs.ET)
                 plt.text(8,min(dfETR_obs.ET)+0.1,"RMSE = "+str(round(rms,2))) 
                 plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
-                plt.text(8,min(dfETR_obs.ET)+0.6,"Pente = "+str(round(slope,2)))
-                plt.text(8,min(dfETR_obs.ET)+0.8,"Biais = "+str(round(bias,2)))
+                plt.text(8,min(dfETR_obs.ET)+0.7,"Pente = "+str(round(slope,2)))
+                plt.text(8,min(dfETR_obs.ET)+1,"Biais = "+str(round(bias,2)))
                 plt.savefig(d["Output_model_PC_labo"]+"/plt_scatter_ETR_flux_nn_corr_%s_%s.png"%(lc,y))
                 ###### SCATTER moyenne semaine ######
                 slope, intercept, r_value, p_value, std_err = stats.linregress(ETR_week.LE.to_list(),ETR_week.ET.to_list())
@@ -234,8 +234,8 @@ if __name__ == '__main__':
                 rms = mean_squared_error(ETR_week.LE,ETR_week.ET)
                 plt.text(8,min(ETR_week.ET)+0.1,"RMSE = "+str(round(rms,2))) 
                 plt.text(8,min(ETR_week.ET)+0.4,"R² = "+str(round(r_value,2)))
-                plt.text(8,min(ETR_week.ET)+0.6,"Pente = "+str(round(slope,2)))
-                plt.text(8,min(ETR_week.ET)+0.8,"Biais = "+str(round(bias,2)))
+                plt.text(8,min(ETR_week.ET)+0.7,"Pente = "+str(round(slope,2)))
+                plt.text(8,min(ETR_week.ET)+1,"Biais = "+str(round(bias,2)))
                 plt.savefig( d["Output_model_PC_labo"]+"/plt_scatter_ETR_nn_corr_week_%s_%s.png"%(lc,y))
                 ### plot dynamique 
                 plt.figure(figsize=(7,7))
@@ -258,8 +258,8 @@ if __name__ == '__main__':
                 plt.savefig(d["Output_model_PC_labo"]+"/plt_Dynamique_ETR_obs_nn_corr_ETR_mod_cumul_%s_%s.png"%(lc,y))
                 ###########" Dynamique week #############
                 plt.figure(figsize=(7,7))
-                plt.plot(ETR_week.index,ETR_week.LE,label='ETR_obs',color="black")
-                plt.plot(ETR_week.index,ETR_week.ET,label='ETR_mod',color='red')
+                plt.plot(ETR_week.date,ETR_week.LE,label='ETR_obs',color="black")
+                plt.plot(ETR_week.date ,ETR_week.ET,label='ETR_mod',color='red')
                 plt.ylabel("ETR")
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR week obs et ETR week mod %s en %s"%(lc,y))
