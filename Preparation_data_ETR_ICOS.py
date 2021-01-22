@@ -353,7 +353,7 @@ if __name__ == '__main__':
     d={}
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/R12/Inputdata/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     Celsius2Kelvin = lambda x: x + 273.16
     hPa2kPa = lambda x: x/10.
     # Saturated Vapour pressure [kPa] at temperature temp [C]
@@ -384,7 +384,7 @@ if __name__ == '__main__':
         ETR_lam_day=pd.DataFrame(ETR_lam_day)
         ETR_lam_day.plot()
         ETR_lam_day
-        ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+        # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
         
         
         #  Flux non corrigées
@@ -407,7 +407,7 @@ if __name__ == '__main__':
                 ETR_lam_day[ETR_lam_day < -1]=pd.NaT
                 ETR_lam_day=pd.DataFrame(ETR_lam_day)
                 ETR_lam_day
-                ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+                # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
 
             else:
                 years=y[5:9]
@@ -430,21 +430,24 @@ if __name__ == '__main__':
                 ETR_lam_day=pd.DataFrame(ETR_lam_day)
                 ETR_lam_day.plot()
                 ETR_lam_day
-                ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+                # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
         
-        LE_lam_nn_corr=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y),encoding = 'utf-8',delimiter=",")
-        LE_lam_nn_corr.date=pd.to_datetime(LE_lam_nn_corr.date,format="%Y-%m-%d")
-        LE_nn_corr=LE_lam_nn_corr.loc[(LE_lam_nn_corr.date >=str(y)[:-4]+"-04-01") & (LE_lam_nn_corr.date <= str(y)[:-4]+"-09-30")]
-        # plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
-        plt.figure(figsize=(7,7))
-        plt.plot(ETR_lam_day.index,ETR_lam_day.LE_Bowen,label='LE_bowen')
-        plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
-        
-        plt.legend()
-        plt.savefig('/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)[:-4]+'.png')
-        diff=ETR_lam_day.LE_Bowen.to_list()-LE_nn_corr.LE
-        plt.figure(figsize=(7,7))
-        plt.plot(ETR_lam_day.index,diff)
+        for y in ["2008","2010","2012","2014","2015","2019"]:
+            ETR_lam_day=pd.read_csv("D:/THESE_TMP/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv")
+            ETR_lam_day.date=pd.to_datetime(ETR_lam_day.date,format="%Y-%m-%d",)
+            LE_lam_nn_corr=pd.read_csv("D:/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",encoding = 'utf-8',delimiter=",")
+            LE_lam_nn_corr.date=pd.to_datetime(LE_lam_nn_corr.date,format="%Y-%m-%d")
+            LE_nn_corr=LE_lam_nn_corr.loc[(LE_lam_nn_corr.date >=str(y)+"-04-01") & (LE_lam_nn_corr.date <= str(y)+"-09-30")]
+            # plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
+            plt.figure(figsize=(7,7))
+            plt.plot(ETR_lam_day.date,ETR_lam_day.LE_Bowen,label='LE_Bowen')
+            plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
+            
+            plt.legend()
+            plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
+        # diff=ETR_lam_day.LE_Bowen.to_list()-LE_nn_corr.LE
+        # plt.figure(figsize=(7,7))
+        # plt.plot(ETR_lam_day.index,diff)
     ##### mesu diff ratio Bowen et LE nn corr
 
   # Pour la station de Grignon gestion des LE en ETR
@@ -499,12 +502,12 @@ if __name__ == '__main__':
     Meteo_lam.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_2019.csv")
     
     # PLUVIO_STAT LAM autres anénes
-    for y in ["2006","2008","2010","2012","2014","2015"]:
-        mat = scipy.io.loadmat('/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/DATA_METEO_LAM/LAM_'+y+'_IS.mat')
-        Plui=pd.DataFrame(mat["Rain"])
-        Plui["date"]=pd.to_datetime(np.arange(0,Plui.shape[0]), unit='D',origin=pd.Timestamp(str(y)+'-01-01'))
-        Plui.columns=["Prec",'date']
-        Plui.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+y+".csv")
+    # for y in ["2006","2008","2010","2012","2014","2015"]:
+    #     mat = scipy.io.loadmat('/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/DATA_METEO_LAM/LAM_'+y+'_IS.mat')
+    #     Plui=pd.DataFrame(mat["Rain"])
+    #     Plui["date"]=pd.to_datetime(np.arange(0,Plui.shape[0]), unit='D',origin=pd.Timestamp(str(y)+'-01-01'))
+    #     Plui.columns=["Prec",'date']
+    #     Plui.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+y+".csv")
     # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/DATA_METEO_LAM/LAM_MTO_N3_2005-2016_GP.csv",encoding = 'utf-8',sep=',')
     # df["time"]=df["TEMPS"].astype(str)
     # df["date"]=df["time"].apply(lambda x:x[0:10])

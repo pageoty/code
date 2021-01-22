@@ -93,12 +93,13 @@ if __name__ == "__main__":
     # =============================================================================
     # df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SIM2_2018_201901.csv",sep=";")
     # df=pd.read_csv("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SIM2_2010_201811.csv",sep=";")
+    # df=pd.read_csv('G:/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SIM2_2000_2009.csv',sep=";")
     # LAMBX=df.LAMBX*100
     # LAMBY=df.LAMBY*100
     # df["lambX"]=LAMBX
     # df['lambY']=LAMBY
-    # df=df.loc[(df.DATE >= 20110101) &(df.DATE <= 20111231)]
-    # df.to_csv("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN2011_L2.csv")
+    # df=df.loc[(df.DATE >= 20090101) &(df.DATE <= 20091231)]
+    # df.to_csv("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN2009_L2.csv")
     
     # df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/DONNEES_METEO/SAFRAN_TCJ.csv")
     # df1=df.drop([0])
