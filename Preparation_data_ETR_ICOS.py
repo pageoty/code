@@ -33,6 +33,15 @@ import scipy.io
 def predict(x):
    return slope * x + intercept
 
+def select_color_date(x):
+    couleurs=[]
+    for i in range(len(x)):
+        if x.date.iloc[i].strftime('%m-%d')<= "04-01" : 
+            couleurs.append("r")
+        else : 
+            couleurs.append("b")
+    return couleurs
+
 def penman_monteith(doy, LAT, ELEV, TMIN, TMAX, AVRAD, VAP, WIND2):
     """Calculates reference ET0 based on the Penman-Monteith model.
 
@@ -442,9 +451,16 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.plot(ETR_lam_day.date,ETR_lam_day.LE_Bowen,label='LE_Bowen')
             plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
-            
             plt.legend()
-            plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
+            # plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
+            plt.figure(figsize=(7,7))
+            plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
+            plt.plot([0.0, 10], [0.0, 10], 'r-', lw=2)
+            plt.title(str(y))
+            plt.xlabel("ETR corrigés")
+            plt.ylabel("ETR non corrigés")
+            plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_scatter_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
+
         # diff=ETR_lam_day.LE_Bowen.to_list()-LE_nn_corr.LE
         # plt.figure(figsize=(7,7))
         # plt.plot(ETR_lam_day.index,diff)

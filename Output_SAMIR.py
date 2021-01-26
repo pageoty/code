@@ -46,14 +46,14 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_Apport_FCOVER/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_Apport_FCOVER/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1_Fcover_sat/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
-    flux=None
+    flux="Bowen"
     years=["2008","2010","2012","2014","2015","2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
@@ -85,6 +85,11 @@ if __name__ == '__main__':
                 ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
                 ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
                 ETR_mod=pickle.load(open(d['Output_model_PC_home']+"Output/output.df",'rb'))
+                # flux non corrigés
+                ETR_nn=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.',sep=",")
+                ETR_nn["date"]=pd.to_datetime(ETR_nn["date"],format="%Y-%m-%d")
+                ETR_obs_nn=ETR_nn.loc[(ETR_nn.date >= str(y)+"-04-01") &(ETR_nn.date <= str(y)+"-09-30")]
+                # Flux non corrigés
                 ETR_mod_crops=ETR_mod.groupby("LC")
                 ETR_mod=ETR_mod_crops.get_group(lc)
                 ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
@@ -160,8 +165,10 @@ if __name__ == '__main__':
                 plt.figure(figsize=(7,7))
                 plt.plot(dfETR_obs.date,dfETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
                 plt.plot(dfETR_obs.date,dfETR_obs.ET.cumsum(),label='ETR_mod',color='red')
+                plt.plot(ETR_obs_nn.date,ETR_obs_nn.LE.cumsum(),label='ETR_obs non corrigés',color='blue')
                 plt.text(dfETR_obs.date.iloc[-1], dfETR_obs.ET.cumsum().iloc[-1], s=round(dfETR_obs.ET.cumsum().iloc[-1],2))
                 plt.text(dfETR_obs.date.iloc[-1], dfETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(dfETR_obs.LE_Bowen.cumsum().iloc[-1],2))
+                plt.text(ETR_obs_nn.date.iloc[-1], ETR_obs_nn.LE.cumsum().iloc[-1], s=round(ETR_obs_nn.LE.cumsum().iloc[-1],2))
                 plt.ylabel("ETR")
                 plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
                 plt.legend()
