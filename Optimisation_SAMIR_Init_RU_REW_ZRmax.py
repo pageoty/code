@@ -91,10 +91,20 @@ if __name__ == "__main__":
             os.system("cp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y)+"/* %s"%(d['SAMIR_run']))
 
 # =============================================================================
+#       # Calcule REW allen 2005 
+# =============================================================================
+        Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
+        Clay = 0.5026
+        if Sand >= 0.80 :
+            REW = 20 - 0.15 * Sand
+        elif Clay >= 0.50 : 
+            REW = 11 - 0.06 * Clay 
+        elif (Sand < 0.80) and (Clay < 0.50):
+            REW = 8 + 0.008 * Clay
+# =============================================================================
 #         # Calibration Init_Ru, année n-1
 # =============================================================================
         y1=int(y)-1
-        
         
         if str(args.meteo).strip("['']")=="SAFRAN":
             os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/ %s"%(d['SAMIR_run']))
@@ -102,8 +112,8 @@ if __name__ == "__main__":
             os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
         d['SAMIR_run_RU']=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"+str(y1)+"/"
         params_update(d['SAMIR_run_RU']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0302'),date_end=str(y1)+str('1026'),
-                      Ze=150,REW=20,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                      d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0101'),date_end=str(y1)+str('1231'),
+                      Ze=150,REW=REW,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
         if "Output" in os.listdir(d['SAMIR_run_RU']):
             print ("existing file")
         else :
@@ -125,7 +135,7 @@ if __name__ == "__main__":
         result_init_cops=df.groupby("LC")
         result_init=result_init_cops.get_group("maize_irri")
         result_init=result_init[["date","SWC1","SWC2","SWC3"]]
-        ru_init=result_init[["date","SWC1","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-10-26"]
+        ru_init=result_init[["date","SWC1","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-12-31"]
         RUn1=ru_init.SWC2.values
         print(r'===============')
         print(RUn1)
