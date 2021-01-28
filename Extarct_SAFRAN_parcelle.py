@@ -28,13 +28,9 @@ if __name__ == '__main__':
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
     meteo.set_index("field_1",inplace=True)
     parcelle.set_index("idparcelle",inplace=True)
-    # meteo["geometry"].distance(parcelle["geometry"].loc[0]).min() # sort id grid SAFRAN plus proche de la parcelle 0
-    # extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].loc[0]).idxmin()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]] # récuper info météo pour parcelle 0
-    # meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[0])==meteo["geometry"].distance(parcelle["geometry"].iloc[0]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
-
     resu=pd.DataFrame()
     idgeom=[]
-    # loop
+
     for par in parcelle.index:
          extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[0])==meteo["geometry"].distance(parcelle["geometry"].iloc[0]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
          idgeom.append(np.repeat(par,extart_meteo.shape[0]))
@@ -43,4 +39,7 @@ if __name__ == '__main__':
     resu["idparcelle"]=idpar
     test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'idparcelle']],on="idparcelle")
 
-# mettre cela en df SAMIR 
+# mettre cela en df SAMIR    
+    meteo=test.filter(['idparcelle',"DATE","ETP_Q", 'PRELIQ_Q'])
+    meteo.columns=["id",'date',"ET0",'Prec']
+    meteo["Irrig"]=0.0

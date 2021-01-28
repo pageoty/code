@@ -50,21 +50,21 @@ if __name__ == "__main__":
 # =============================================================================
 #  Input data 
 # =============================================================================
-    for y in ['2008','2010','2012','2014','2015']:
-        d["PC_disk_home"]="D:/THESE_TMP/"
-        ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",")
+    for y in ['2015']:
+        # d["PC_labo"]="D:/THESE_TMP/"
+        ITK=pd.read_csv(d["PC_labo"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",")
         ITK["TIMESTAMP"]=ITK["TIMESTAMP"].apply(lambda x:x[0:10])
         ITK["TIMESTAMP"]=pd.to_datetime(ITK["TIMESTAMP"],format="%d/%m/%Y")
-        NDVI=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(y)+".csv",decimal=".")
+        NDVI=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(y)+".csv",decimal=".")
         NDVI.date=pd.to_datetime(NDVI.date,format="%Y-%m-%d")
-        LAI_sat=pd.read_csv("H:\Yann_THESE\BESOIN_EAU\BESOIN_EAU\DONNEES_RAW\PARCELLE_LABO\LAI_sat_CESBIO\LAI_LAM_"+str(y)+".csv",sep=";")
+        LAI_sat=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/LAI_parcelle/PARCELLE_LABO/LAI_LAM_"+str(y)+".csv",sep=";")
         # LAI_sigmo=pd.read_csv(d["PC_disk_home"]+'/TRAITEMENT/INPUT_DATA/LAI_parcelle/PARCELLE_LABO/LAI_pre_inter_OTB/LAI_inter_dat_date_'+str(y)+'.csv')
-        meteo_SAF=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
-        meteo_temp=pd.read_csv(d["PC_disk_home"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/DATA_PREC_TEMP/meteo_prec_temp_"+y+".csv")
+        meteo_SAF=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
+        meteo_temp=pd.read_csv(d["PC_labo"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/DATA_PREC_TEMP/meteo_prec_temp_"+y+".csv")
         meteo_temp.columns=["date","Ta","Prec"]
-        SWC=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
-        ETR=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM_corr"+str(y)+".csv")
-        ETR_nn_corr=pd.read_csv(d["PC_disk"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv")
+        SWC=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
+        ETR=pd.read_csv(d["PC_labo"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM_corr"+str(y)+".csv")
+        ETR_nn_corr=pd.read_csv(d["PC_labo"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv")
         ETR.date=pd.to_datetime(ETR.date,format="%Y-%m-%d")
         ETR_nn_corr.date=pd.to_datetime(ETR.date,format="%Y-%m-%d")
         meteo_SAF.date=pd.to_datetime(meteo_SAF.date,format="%Y-%m-%d")

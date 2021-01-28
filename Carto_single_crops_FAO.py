@@ -77,6 +77,7 @@ if __name__ == '__main__':
     'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
     'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
     'X', 'Y'],inplace=True)
+    # Ancienne méthode
     dfmeteo=meteo.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
     meteo.geometry=dfmeteo
     meteo.DATE=pd.to_datetime(meteo.DATE,format='%Y%m%d')
@@ -84,6 +85,21 @@ if __name__ == '__main__':
     Meteo_par.drop(columns=['id_parcel', 'surf_parc','code_cultu', 'summer','majority', '1', '11', '44', '33', '2', '22'],inplace=True)
     Meteo_par.sort_values(["ID","DATE"],ascending=True,inplace=True)
     Meteo_par=Meteo_par.loc[(Meteo_par.DATE >= "2017-03-02") &(Meteo_par.DATE <= "2017-10-31")]
+    
+    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/SHAPE_test_SAFRAN_EXTART.shp")
+    meteo.DATE=meteo.DATE.astype(int)
+    meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
+    meteo.set_index("field_1",inplace=True)
+    parcelle.set_index("idparcelle",inplace=True)
+    resu=pd.DataFrame()
+    idgeom=[]
+    for par in parcelle.index:
+         extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[0])==meteo["geometry"].distance(parcelle["geometry"].iloc[0]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
+         idgeom.append(np.repeat(par,extart_meteo.shape[0]))
+         resu=resu.append(extart_meteo)
+    idpar=pd.DataFrame(idgeom).stack().to_list()
+    resu["idparcelle"]=idpar
+    test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'idparcelle']],on="idparcelle")
     #  Calcul besion pour chaque parcelle 
     Bes_irri=[]
     id_p=[]

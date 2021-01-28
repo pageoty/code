@@ -291,8 +291,8 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=2000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin",param2="REW",value_P2="0/15/1/lin")
+                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=2000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")),KmaxKcb=1.15,m=1, Lame_max=30)
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/100/lin",param2="REW",value_P2="5/15/1/lin")
         #  Lancement du code
         if "Output" in os.listdir(d['SAMIR_run']):
             print ("existing file")
