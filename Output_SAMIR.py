@@ -46,7 +46,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_Apport_FCOVER/OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1_Fcover_sat/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_kr//"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
     flux="Bowen"
-    years=["2008","2010","2012","2014","2015","2019"]
+    years=["2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -68,25 +68,25 @@ if __name__ == '__main__':
             d["Output_model_PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             if lc == "maize_irri":
-                SWC=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
+                SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
                 SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
-                meteo=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
+                meteo=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
                 meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
             else:
-                SWC=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
+                SWC=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
                 SWC["date"]=pd.to_datetime(SWC["date"],format="%Y-%m-%d")
-                meteo=pd.read_csv(d["PC_home_Wind"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
+                meteo=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_GRI/meteo_gri_2019.csv",decimal=".")
                 meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
 # =============================================================================
 #             Utilisation des flux corrigées
 # =============================================================================
             if flux =="Bowen":
-                ETR=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
+                ETR=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
                 ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
                 ETR_obs=ETR.loc[(ETR.date >= str(y)+"-03-02") &(ETR.date <= str(y)+"-10-31")]
-                ETR_mod=pickle.load(open(d['Output_model_PC_home']+"Output/output.df",'rb'))
+                ETR_mod=pickle.load(open(d['Output_model_PC_labo']+"Output/output.df",'rb'))
                 # flux non corrigés
-                ETR_nn=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.',sep=",")
+                ETR_nn=pd.read_csv(d["PC_labo_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.',sep=",")
                 ETR_nn["date"]=pd.to_datetime(ETR_nn["date"],format="%Y-%m-%d")
                 ETR_obs_nn=ETR_nn.loc[(ETR_nn.date >= str(y)+"-04-01") &(ETR_nn.date <= str(y)+"-09-30")]
                 # Flux non corrigés
@@ -131,7 +131,7 @@ if __name__ == '__main__':
                 plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
                 plt.text(8,min(dfETR_obs.ET)+0.7,"Pente = "+str(round(slope,2)))
                 plt.text(8,min(dfETR_obs.ET)+1,"Biais = "+str(round(bias,2)))
-                plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
+                # plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_%s_%s.png"%(lc,y))
                 ###### SCATTER moyenne semaine ######
                 slope, intercept, r_value, p_value, std_err = stats.linregress(ETR_week.LE_Bowen.to_list(),ETR_week.ET.to_list())
                 bias=1/ETR_week.shape[0]*sum(np.mean(ETR_week.ET)-ETR_week.LE_Bowen) 
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                 plt.text(8,min(ETR_week.ET)+0.4,"R² = "+str(round(r_value,2)))
                 plt.text(8,min(ETR_week.ET)+0.7,"Pente = "+str(round(slope,2)))
                 plt.text(8,min(ETR_week.ET)+1,"Biais = "+str(round(bias,2)))
-                plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_week_%s_%s.png"%(lc,y))
+                # plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_week_%s_%s.png"%(lc,y))
                 ### plot dynamique 
                 plt.figure(figsize=(7,7))
                 plt.plot(dfETR_obs.date,dfETR_obs.LE_Bowen,label='ETR_obs',color="black")
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
                 #### plot dyna cum
                 plt.figure(figsize=(7,7))
                 plt.plot(dfETR_obs.date,dfETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")

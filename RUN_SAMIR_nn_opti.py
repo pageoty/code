@@ -58,14 +58,14 @@ if __name__ == "__main__":
     for y in ["2008","2010","2012","2014","2015","2019"]: #"2008","2010","2012","2014","2015","2017","2019"
         print (y)
         meteo='SAFRAN'
-        name_run="OPTI_ICOS_MULTI_SITE_SAFRAN_REW_0_30_allen2005_Zrmax1500_Init1_m1"
+        name_run="test_kr"
         d={}
         # d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run']="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/"
-        d["PC_labo_short"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_Apport_FCOVER/"
+        d["PC_labo_short"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/"
         d["PC_labo"]=d["PC_labo_short"]+name_run+"/"+str(y)+"/"#"/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUNS_optim_LUT_LAM_ETR/"+name_run+"/"+str(y)+"/"
         
         if name_run not in os.listdir(d["PC_labo_short"]):
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         # Sand = mean([0.471,0.639,0.64,0.829]) # ensemble de la colonne sol 
         # Clay = mean([0.50,0.48])
         
-        Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
+        Sand = np.mean([0.471,0.646]) # ensemble de la colonne sol 
         Clay = 0.5026
         if Sand >= 0.80 :
             REW = 20 - 0.15 * Sand
@@ -176,3 +176,16 @@ if __name__ == "__main__":
         # plt.text(5,min(ETR_resu_ss_nn["ET"])+0.7,"Biais = "+str(round(bias,2)))
         # plt.text(5,min(ETR_resu_ss_nn["ET"])+0.9,"Nash = "+str(round(NS(ETR_resu_ss_nn['LE'],ETR_resu_ss_nn["ET"]),2)))
         # # plt.savefig(d["SAMIR_run"]+"/plot_ETRobs_ETR_mod.png")
+            kr=[]
+            Hum_sat = 0.489 - 0.126*Sand # issue de Cosby et al 1984, estime l'humidté à saturation du sol en focntion de la fraction de sable 
+            Hum_half= 0.20 + 0.28*Clay - 0.16* Sand
+            Hum = maize_ir.WP/2 + maize_ir.SWC1 * maize_ir.TEW/150 # correspond à l'humidité du sol du jour simulé 
+            for i in Hum:
+                if i <= Hum_sat:
+                    P = np.log(0.5)/np.log(0.5 - 0.5 * np.cos(np.pi*Hum_half/Hum_sat))
+                    print('ici_P == %s' %P)
+                    cKr = np.power((1/2-1/2*np.cos(np.pi*(i/Hum_sat))),1.6)
+                else:
+                    cKr = 1
+                print(cKr)
+                kr.append(cKr)

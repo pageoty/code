@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2018"
+    years="2019"
     ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
@@ -191,42 +191,80 @@ if __name__ == "__main__":
 # =============================================================================
 #     Build df FC and WP
 # =============================================================================
-#     for bv in ZONE:
-#         if bv =="Fusion":
-#             Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
-#             for i in ["WP",'FC']:
-#                 soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
-#                 soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
-#            'min_0', 'max_0', 'geometry'],inplace=True)
-#                 soil.columns=["id",str(i),str(i+'std')]
-#                 soil.to_pickle(d["path_run"]+str(i)+'.df')
+    # for bv in ZONE:
+    #     if bv =="Fusion":
+    #         Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
+    #         for i in ["WP",'FC']:
+    #             soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+    #             soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
+    #         'min_0', 'max_0', 'geometry'],inplace=True)
+    #             soil.columns=["id",str(i),str(i+'std')]
+    #             soil.to_pickle(d["path_run"]+str(i)+'.df')
     
-#     # =============================================================================
-#     #  SOIL data Lamothe
-#     # =============================================================================
-#         elif bv =="PARCELLE_CESBIO":
-#             for i in ["WP",'FC']:
-#                 soil=pd.DataFrame({"id": [1], i: [np.nan],i+"std":[np.nan]})
-#                 if i=="FC":
-#                     soil[str(i)].loc[0]=0.3635
-#                     soil[str(i)].loc[1]=np.mean([0.310,0.392])
-#                 else:
-#                     soil[str(i)].loc[0]=np.mean([0.175,0.169])
-#                     soil[str(i)].loc[1]=np.mean([0.131,0.185])
-#                 soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
-#     # =============================================================================
-#     #     Soil Grignon 
-#     # =============================================================================
-#         elif bv == "PARCELLE_GRIGNON":
-#             for i in ["WP",'FC']:
-#                 soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
-#                 if i=="FC":
-#                     soil[str(i)].loc[0]=0.48
-#                     soil[str(i)].loc[1]=np.nan
-#                 else:
-#                     soil[str(i)].loc[0]=0.25
-#                     soil[str(i)].loc[1]=np.nan
-#                 soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
+    # # =============================================================================
+    # #  SOIL data Lamothe
+    # # =============================================================================
+    #     elif bv =="PARCELLE_CESBIO":
+    #         for i in ["WP",'FC']:
+    #             soil=pd.DataFrame({"id": [1], i: [np.nan],i+"std":[np.nan]})
+    #             if i=="FC":
+    #                 soil[str(i)].loc[0]=0.3635
+    #                 soil[str(i)].loc[1]=np.mean([0.310,0.392])
+    #             else:
+    #                 soil[str(i)].loc[0]=np.mean([0.175,0.169])
+    #                 soil[str(i)].loc[1]=np.mean([0.131,0.185])
+    #             soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
+    # # =============================================================================
+    # #     Soil Grignon 
+    # # =============================================================================
+    #     elif bv == "PARCELLE_GRIGNON":
+    #         for i in ["WP",'FC']:
+    #             soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
+    #             if i=="FC":
+    #                 soil[str(i)].loc[0]=0.48
+    #                 soil[str(i)].loc[1]=np.nan
+    #             else:
+    #                 soil[str(i)].loc[0]=0.25
+    #                 soil[str(i)].loc[1]=np.nan
+    #             soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
+# =============================================================================
+#     Texture soil
+# =============================================================================
+    for bv in ZONE:
+        if bv =="Fusion":
+            Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
+            for i in ["WP",'FC']:
+                soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+                soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
+            'min_0', 'max_0', 'geometry'],inplace=True)
+                soil.columns=["id",str(i),str(i+'std')]
+                soil.to_pickle(d["path_run"]+str(i)+'.df')
+    # =============================================================================
+    #  SOIL data Lamothe
+    # =============================================================================
+        elif bv =="PARCELLE_CESBIO":
+            soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+            for i in ["Clay",'Sand']:
+                if i=="Clay":
+                    soil[str(i)].loc[0]=0.5026
+                    soil[str(i)].loc[1]=np.mean([0,0])
+                else:
+                    soil[str(i)].loc[0]=0.5585
+                    soil[str(i)].loc[1]=np.mean([0,0])
+            soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
+    # =============================================================================
+    #     Soil Grignon 
+    # =============================================================================
+        elif bv == "PARCELLE_GRIGNON":
+            for i in ["WP",'FC']:
+                soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
+                if i=="FC":
+                    soil[str(i)].loc[0]=0.48
+                    soil[str(i)].loc[1]=np.nan
+                else:
+                    soil[str(i)].loc[0]=0.25
+                    soil[str(i)].loc[1]=np.nan
+                soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
 # # =============================================================================
 # #     Build METEO spatialieser 
 # # =============================================================================
@@ -331,25 +369,25 @@ if __name__ == "__main__":
 # =============================================================================
 #   Météo_SAFRAN
 # =============================================================================
-    # Lecture data SAFRAN
-    SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
-    # Lecture parcellaire
-    parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
-    SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
-            'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
-            'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
-            'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
-            'Y', 'X'],inplace=True)
-    dfmeteo=SAF.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
-    SAF.geometry=dfmeteo
-    SAF.DATE=pd.to_datetime(SAF.DATE,format='%Y%m%d')
-    SAF_par=geo.overlay(SAF,parce,how='intersection')
-    SAF_par.id=1
-    SAF_par.drop(columns=['NOM_PARCEL', 'EVAP_Q', 'LABO','geometry'],inplace=True)
-    SAF_par["Irrig"]=0.0
-    SAF_par.columns=["date","Prec",'ET0',"id",'Irrig']
-    SAF_par.to_pickle(d["path_run_home"]+"/maize_irri/meteo.df")
-    SAF_par.to_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+str(years)+".csv")
+    # # Lecture data SAFRAN
+    # SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
+    # # Lecture parcellaire
+    # parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
+    # SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
+    #         'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
+    #         'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
+    #         'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
+    #         'Y', 'X'],inplace=True)
+    # dfmeteo=SAF.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
+    # SAF.geometry=dfmeteo
+    # SAF.DATE=pd.to_datetime(SAF.DATE,format='%Y%m%d')
+    # SAF_par=geo.overlay(SAF,parce,how='intersection')
+    # SAF_par.id=1
+    # SAF_par.drop(columns=['NOM_PARCEL', 'EVAP_Q', 'LABO','geometry'],inplace=True)
+    # SAF_par["Irrig"]=0.0
+    # SAF_par.columns=["date","Prec",'ET0',"id",'Irrig']
+    # SAF_par.to_pickle(d["path_run_home"]+"/maize_irri/meteo.df")
+    # SAF_par.to_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_"+str(years)+".csv")
     
     # FCover=pd.read_csv("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/FCOVER/FCOVER2018/FCOVER_LAM_2018_OTB_INTERPO.csv",sep=";")
     # FCover.drop(columns=["Parcelle"],inplace=True)
