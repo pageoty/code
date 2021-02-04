@@ -20,8 +20,22 @@ if __name__ == '__main__':
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-
-
+# =============================================================================
+# Conversion csv en shp (geopandas)
+# =============================================================================
+    df=pd.read_csv(/file/meteo.csv)
+    LAMBX=df.LAMBX*100
+    LAMBY=df.LAMBY*100
+    df["lambX"]=LAMBX
+    df['lambY']=LAMBY
+    df=df.loc[(df.DATE >= 20090101) &(df.DATE <= 20091231)]
+    geometry = df['geometry'].map(shapely.wkt.loads)
+    meteo_spa=geo.df(df, crs="EPSG:", geometry=geometry)
+    
+    #  Pour le reprojection pas encore regarder
+# =============================================================================
+#     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
+# =============================================================================
     meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/SAFRAN_extrat_test_large.shp")
     parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/SHAPE_test_SAFRAN_EXTART.shp")
     meteo.DATE=meteo.DATE.astype(int)
@@ -43,3 +57,25 @@ if __name__ == '__main__':
     meteo=test.filter(['idparcelle',"DATE","ETP_Q", 'PRELIQ_Q'])
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
+    
+# =============================================================================
+#     Ancienne version avec intersection 
+# =============================================================================
+    # Lecture data SAFRAN
+    # SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
+    # # Lecture parcellaire
+    # parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
+    # SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
+    #         'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
+    #         'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',
+    #         'ECOULEMENT', 'WG_RACINE_', 'WGI_RACINE', 'TINF_H_Q', 'TSUP_H_Q',
+    #         'Y', 'X'],inplace=True)
+    # dfmeteo=SAF.buffer(4000).envelope # Création d'un buffer carée de rayon 4 km
+    # SAF.geometry=dfmeteo
+    # SAF.DATE=pd.to_datetime(SAF.DATE,format='%Y%m%d')
+    # SAF_par=geo.overlay(SAF,parce,how='intersection')
+    # SAF_par.id=1
+    # SAF_par.drop(columns=['NOM_PARCEL', 'EVAP_Q', 'LABO','geometry'],inplace=True)
+    # SAF_par["Irrig"]=0.0
+    # SAF_par.columns=["date","Prec",'ET0',"id",'Irrig']
+    # SAF_par.to_pickle(d["path_run_home"]+"/maize_irri/meteo.df")
