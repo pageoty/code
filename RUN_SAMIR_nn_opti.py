@@ -176,16 +176,3 @@ if __name__ == "__main__":
         # plt.text(5,min(ETR_resu_ss_nn["ET"])+0.7,"Biais = "+str(round(bias,2)))
         # plt.text(5,min(ETR_resu_ss_nn["ET"])+0.9,"Nash = "+str(round(NS(ETR_resu_ss_nn['LE'],ETR_resu_ss_nn["ET"]),2)))
         # # plt.savefig(d["SAMIR_run"]+"/plot_ETRobs_ETR_mod.png")
-            kr=[]
-            Hum_sat = 0.489 - 0.126*Sand # issue de Cosby et al 1984, estime l'humidté à saturation du sol en focntion de la fraction de sable 
-            Hum_half= 0.20 + 0.28*Clay - 0.16* Sand
-            Hum = maize_ir.WP/2 + maize_ir.SWC1 * maize_ir.TEW/150 # correspond à l'humidité du sol du jour simulé 
-            for i in Hum:
-                if i <= Hum_sat:
-                    P = np.log(0.5)/np.log(0.5 - 0.5 * np.cos(np.pi*Hum_half/Hum_sat))
-                    print('ici_P == %s' %P)
-                    cKr = np.power((1/2-1/2*np.cos(np.pi*(i/Hum_sat))),1.6)
-                else:
-                    cKr = 1
-                print(cKr)
-                kr.append(cKr)

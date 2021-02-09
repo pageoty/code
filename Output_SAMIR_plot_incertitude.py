@@ -107,36 +107,65 @@ if __name__ == '__main__':
             ### plot dynamique 
             plt.figure(figsize=(7,7))
             plt.plot(ETR_obs.date,ETR_obs.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-            plt.plot(ETR_mod.T.index,ETR_mod.T[7.0,1000.0],label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+            plt.plot(ETR_mod.T.index,ETR_mod.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
             # for REW in np.arange(0,16,1):
             #     print(float(REW))
             #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].values,ETR_mod.T[float(REW),2500.0].values,alpha=0.2,facecolor="red")
-            plt.fill_between(ETR_mod.T.index, ETR_mod.xs(800.0,level=1).min(),ETR_mod.xs(1200.0,level=1).max(),alpha=0.5,facecolor="red")
+            # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(800.0,level=1).min(),ETR_mod.xs(1200.0,level=1).max(),alpha=0.5,facecolor="red")
+            plt.fill_between(ETR_mod.T.index, ETR_mod.min(),ETR_mod.max(),alpha=0.5,facecolor="red")
             plt.ylabel("ETR")
             plt.ylim(0,10)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
             plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
-
+            # ETR_test=ETR_mod.iloc[:,90:120]
+            # print(ETR_test.idxmax())
+            # print(ETR_test.idxmin())
             # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             #### plot dyna cum
             plt.figure(figsize=(7,7))
             plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
             plt.fill_between(ETR_mod.T.index, ETR_mod.xs(800.0,level=1).min().cumsum(),ETR_mod.xs(1200.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
+            plt.fill_between(ETR_mod.T.index, ETR_mod.min().cumsum(),ETR_mod.max().cumsum(),alpha=0.2,facecolor="red")
+
             # for REW in np.arange(0,16,1):
             #     print(float(REW))
             #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].cumsum(),ETR_mod.T[float(REW),2500.0].cumsum(),alpha=0.2,facecolor="red")
-            plt.plot(ETR_mod.T.index,ETR_mod.T[7.0,1000.0].cumsum(),label='ETR_mod',color='red')
+            plt.plot(ETR_mod.T.index,ETR_mod.mean().cumsum(),label='ETR_mod',color='red')
             plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
-            plt.text(ETR_mod.T.index[-1], ETR_mod.T[7.0,1000.0].cumsum().iloc[-1], s=round(ETR_mod.T[7.0,1000.0].cumsum().iloc[-1],2))
+            plt.text(ETR_mod.T.index[-1], ETR_mod.mean().cumsum().iloc[-1], s=round(ETR_mod.mean().cumsum().iloc[-1],2))
             plt.ylabel("ETR")
+            plt.ylim(0,700)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
             plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
            # Modification récuper max et min 
             # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(500.0,level=1).min().cumsum(),ETR_mod.xs(2500.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
-            
+# =============================================================================
+#              Isole forte periode incertitude 
+# =============================================================================
+    ETR_test=ETR_mod.iloc[:,80:120]
+    plt.figure(figsize=(7,7))
+    plt.plot(ETR_test.T.index,ETR_test.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+    plt.fill_between(ETR_test.T.index, ETR_test.min(),ETR_test.max(),alpha=0.5,facecolor="red")
+    
+#  permet de connaitre le paramétrage
+    plt.figure(figsize=(7,7))
+    # plt.plot(ETR_obs.date,ETR_obs.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
+    plt.plot(ETR_mod.T.index,ETR_mod.T[7.0,1000.0],label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+    # for REW in np.arange(0,16,1):
+    #     print(float(REW))
+    #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].values,ETR_mod.T[float(REW),2500.0].values,alpha=0.2,facecolor="red")
+    plt.fill_between(ETR_mod.T.index, ETR_mod.xs(800.0,level=1).min(),ETR_mod.xs(1200.0,level=1).max(),alpha=0.5,facecolor="red")
+    # permer d'identifier le couple de parametre donnant le max 
+    # ETR_test.idxmax().mode()
+    
+# =============================================================================
+#    hypothèse irrigation 2008 
+# =============================================================================
+#  lecture des output_LUT
+    # dfmax=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/2008/Output/REWmaxZr/output_test.df_maize_irri_5","rb"))
 # =============================================================================
 #  Validation Irri_ préparation data 
 # =============================================================================

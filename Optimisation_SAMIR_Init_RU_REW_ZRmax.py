@@ -126,10 +126,8 @@ if __name__ == "__main__":
         if "LAI" in name_run :
                 os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
         else:
-            if "Fcover" in name_run :
-                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv   ')
-            else:
-                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y1)+'.df  -fc /*/FC.df -wp /*/WP.df  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+            os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv   ')
+           
         #  Extraction du résultat
         df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
         result_init_cops=df.groupby("LC")

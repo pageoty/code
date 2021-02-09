@@ -46,6 +46,7 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
+
     name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_kr//"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
     flux="Bowen"
-    years=["2019"]
+    years=["2008"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================

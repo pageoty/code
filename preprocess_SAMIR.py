@@ -147,29 +147,29 @@ if __name__ == "__main__":
 # =============================================================================
 #   NDVI 
 # =============================================================================
-    # for bv in ZONE:
-    #       if bv =="PARCELLE_CESBIO":
-    #             df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
-    #             # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
-    #             df.date=pd.to_datetime(df.date,format="%Y%m%d")
-    #             df.set_index('date',inplace=True)
-    #             df=df.resample("D").interpolate()
-    #             df.reset_index(inplace=True)
-    #             # df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
-    #             # df.set_index('date',inplace=True)
-    #             meteo=df
-    #             meteo["id"]=1
-    #             meteo.to_pickle(d["path_run_home"]+"/maize_irri/NDVI"+str(years)+".df")
-    #       elif bv =="PARCELLE_GRIGNON":
-    #               df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
-    #               df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-    #               df.set_index('date',inplace=True)
-    #               df=df.resample("D").interpolate()
-    #               df.reset_index(inplace=True)
-    #               # df.set_index('date',inplace=True)
-    #               NDVI=df
-    #               NDVI["id"]=2
-    #               NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
+    for bv in ZONE:
+          if bv =="PARCELLE_CESBIO":
+                # df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
+                df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
+                df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+                df.set_index('date',inplace=True)
+                df=df.resample("D").interpolate()
+                df.reset_index(inplace=True)
+                # df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
+                # df.set_index('date',inplace=True)
+                meteo=df
+                meteo["id"]=1
+                meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
+          # elif bv =="PARCELLE_GRIGNON":
+          #         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
+          #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+          #         df.set_index('date',inplace=True)
+          #         df=df.resample("D").interpolate()
+          #         df.reset_index(inplace=True)
+          #         # df.set_index('date',inplace=True)
+          #         NDVI=df
+          #         NDVI["id"]=2
+          #         NDVI.to_pickle(d["path_run"]+"/maize_rain/NDVI"+str(years)+".df")
 # =============================================================================
 # LAI
 # =============================================================================
@@ -229,42 +229,42 @@ if __name__ == "__main__":
     #             soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
 # =============================================================================
 #     Texture soil
-# =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
-            for i in ["WP",'FC']:
-                soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
-                soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
-            'min_0', 'max_0', 'geometry'],inplace=True)
-                soil.columns=["id",str(i),str(i+'std')]
-                soil.to_pickle(d["path_run"]+str(i)+'.df')
-    # =============================================================================
-    #  SOIL data Lamothe
-    # =============================================================================
-        elif bv =="PARCELLE_CESBIO":
-            soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
-            for i in ["Clay",'Sand']:
-                if i=="Clay":
-                    soil[str(i)].loc[0]=0.5026
-                    soil[str(i)].loc[1]=np.mean([0,0])
-                else:
-                    soil[str(i)].loc[0]=0.5585
-                    soil[str(i)].loc[1]=np.mean([0,0])
-            soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
-    # =============================================================================
-    #     Soil Grignon 
-    # =============================================================================
-        elif bv == "PARCELLE_GRIGNON":
-            for i in ["WP",'FC']:
-                soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
-                if i=="FC":
-                    soil[str(i)].loc[0]=0.48
-                    soil[str(i)].loc[1]=np.nan
-                else:
-                    soil[str(i)].loc[0]=0.25
-                    soil[str(i)].loc[1]=np.nan
-                soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
+# # =============================================================================
+#     for bv in ZONE:
+#         if bv =="Fusion":
+#             Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
+#             for i in ["WP",'FC']:
+#                 soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+#                 soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
+#             'min_0', 'max_0', 'geometry'],inplace=True)
+#                 soil.columns=["id",str(i),str(i+'std')]
+#                 soil.to_pickle(d["path_run"]+str(i)+'.df')
+#     # =============================================================================
+#     #  SOIL data Lamothe
+#     # =============================================================================
+#         elif bv =="PARCELLE_CESBIO":
+#             soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+#             for i in ["Clay",'Sand']:
+#                 if i=="Clay":
+#                     soil[str(i)].loc[0]=0.5026
+#                     soil[str(i)].loc[1]=np.mean([0,0])
+#                 else:
+#                     soil[str(i)].loc[0]=0.5585
+#                     soil[str(i)].loc[1]=np.mean([0,0])
+#             soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
+#     # =============================================================================
+#     #     Soil Grignon 
+#     # =============================================================================
+#         elif bv == "PARCELLE_GRIGNON":
+#             for i in ["WP",'FC']:
+#                 soil=pd.DataFrame({"id": [2], i: [np.nan],i+"std":[np.nan]})
+#                 if i=="FC":
+#                     soil[str(i)].loc[0]=0.48
+#                     soil[str(i)].loc[1]=np.nan
+#                 else:
+#                     soil[str(i)].loc[0]=0.25
+#                     soil[str(i)].loc[1]=np.nan
+#                 soil.to_pickle(d["path_run"]+'/maize_rain/'+str(i)+'.df')
 # # =============================================================================
 # #     Build METEO spatialieser 
 # # =============================================================================
@@ -337,32 +337,32 @@ if __name__ == "__main__":
 # # =============================================================================
 # #  Préparation des Fcovers
 # # =============================================================================
-    # for bv in ZONE:
-    #     if bv =="Fusion":
-    #         print("pas pret")
-    #     elif bv == "PARCELLE_CESBIO":
-    #         df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
-    #         # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=";")
-    #         # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-    #         df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
-    #         df.set_index('date',inplace=True)
-    #         df=df.resample("D").interpolate()
-    #         df.reset_index(inplace=True)
-    #         FCOVER=df
-    #         FCOVER.columns=["date","FCov"]
-    #         FCOVER["id"]=1
-    #         FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
-    #     elif bv =="PARCELLE_GRIGNON":
-    #         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
-    #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-    #         df.set_index('date',inplace=True)
-    #         df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
-    #         df=df.resample("D").interpolate()
-    #         df.reset_index(inplace=True)
-    #         FCOVER=df
-    #         FCOVER.columns=["date","FCov"]
-    #         FCOVER["id"]=2
-    #         FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
+    for bv in ZONE:
+        if bv =="Fusion":
+            print("pas pret")
+        elif bv == "PARCELLE_CESBIO":
+            # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
+            df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
+            df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+            # df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
+            df.set_index('date',inplace=True)
+            df=df.resample("D").interpolate()
+            df.reset_index(inplace=True)
+            FCOVER=df
+            FCOVER.columns=["date","FCov"]
+            FCOVER["id"]=1
+            FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
+        # elif bv =="PARCELLE_GRIGNON":
+        #     df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
+        #     df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+        #     df.set_index('date',inplace=True)
+        #     df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
+        #     df=df.resample("D").interpolate()
+        #     df.reset_index(inplace=True)
+        #     FCOVER=df
+        #     FCOVER.columns=["date","FCov"]
+        #     FCOVER["id"]=2
+        #     FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
 
 
 

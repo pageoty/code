@@ -385,81 +385,80 @@ if __name__ == '__main__':
         LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%d/%m/%Y")
         LE_lam.drop(columns=["Time"],inplace=True)
         # Suppression des flux nocture
-        LE_lam=LE_lam.loc[(LE_lam.time_hours >=' 06:00') & (LE_lam.time_hours <=' 19:00')]
+        LE_lam=LE_lam.loc[(LE_lam.time_hours >=' 06:00') & (LE_lam.time_hours <=' 21:00')]
         LE_lam_day=LE_lam.groupby("date")["LE_Bowen"].mean()
-        l=46800/2264000
+        l=57600/2264000
         ETR_lam_day=LE_lam_day*l
         ETR_lam_day[ETR_lam_day < -1]=pd.NaT
         ETR_lam_day=pd.DataFrame(ETR_lam_day)
-        ETR_lam_day.plot()
-        ETR_lam_day
-        # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+        # ETR_lam_day.plot()
+        # ETR_lam_day["date"]=LE_lam.date
+        ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
         
         
         #  Flux non corrigées
-        for y in os.listdir(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
-            print(y)
-            if "eddy" in y:
-                years='2019'
-                LE_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
-                LE_lam.drop(0,inplace=True)
-                LE_lam["time"]=LE_lam["time"].astype(str)
-                LE_lam["LE"]=LE_lam["LE"].astype(float)
-                LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%Y-%m-%d")
-                # Suppression des flux nocture
-                LE_lam=LE_lam.loc[(LE_lam.time >=' 06:00') & (LE_lam.time <=' 19:00')]
-                LE_lam_day=LE_lam.groupby("date")["LE"].mean()
-                inter=LE_lam_day*46800
-                l=46800/2264000
-                ETR_lam_day=LE_lam_day*l
-                # ETR_lam_day=LE_lam_day*0.0352
-                ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-                ETR_lam_day=pd.DataFrame(ETR_lam_day)
-                ETR_lam_day
-                # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
+    for y in os.listdir(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"):
+        print(y)
+        if "eddy" in y:
+            years='2019'
+            LE_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
+            LE_lam.drop(0,inplace=True)
+            LE_lam["time"]=LE_lam["time"].astype(str)
+            LE_lam["LE"]=LE_lam["LE"].astype(float)
+            LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%Y-%m-%d")
+            # Suppression des flux nocture
+            LE_lam=LE_lam.loc[(LE_lam.time >='06:00') & (LE_lam.time <='21:00')]
+            LE_lam_day=LE_lam.groupby("date")["LE"].mean()
+            # inter=LE_lam_day*46800
+            l=57600/2264000
+            ETR_lam_day=LE_lam_day*l
+            # ETR_lam_day=LE_lam_day*0.0352
+            ETR_lam_day[ETR_lam_day < -1]=pd.NaT
+            ETR_lam_day=pd.DataFrame(ETR_lam_day)
+            # ETR_lam_day["date"]=LE_lam.date
+            ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(years)+".csv")
 
-            else:
-                years=y[5:9]
-                LE_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
-                LE_lam.drop(0,inplace=True)
-                LE_lam["time"]=LE_lam["TIMESTAMP"].astype(str)
-                LE_lam["LE"]=LE_lam["LE"].astype(float)
-                LE_lam["date"]=LE_lam["time"].apply(lambda x:x[0:10])
-                LE_lam["time_hours"]=LE_lam["time"].apply(lambda x:x[10:-3]).replace(":",'.')
-                LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%d/%m/%Y")
-                LE_lam.drop(columns=["TIMESTAMP"],inplace=True)
-                # Suppression des flux nocture
-                LE_lam=LE_lam.loc[(LE_lam.time_hours >=' 06:00') & (LE_lam.time_hours <=' 19:00')]
-                LE_lam_day=LE_lam.groupby("date")["LE"].mean()
-                inter=LE_lam_day*46800
-                l=46800/2264000
-                ETR_lam_day=LE_lam_day*l
-                # ETR_lam_day=LE_lam_day*0.0352
-                ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-                ETR_lam_day=pd.DataFrame(ETR_lam_day)
-                ETR_lam_day.plot()
-                ETR_lam_day
-                # ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y[:-4])+".csv")
-        
-        for y in ["2008","2010","2012","2014","2015","2019"]:
-            ETR_lam_day=pd.read_csv("D:/THESE_TMP/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv")
-            ETR_lam_day.date=pd.to_datetime(ETR_lam_day.date,format="%Y-%m-%d",)
-            LE_lam_nn_corr=pd.read_csv("D:/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",encoding = 'utf-8',delimiter=",")
-            LE_lam_nn_corr.date=pd.to_datetime(LE_lam_nn_corr.date,format="%Y-%m-%d")
-            LE_nn_corr=LE_lam_nn_corr.loc[(LE_lam_nn_corr.date >=str(y)+"-04-01") & (LE_lam_nn_corr.date <= str(y)+"-09-30")]
-            # plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
-            plt.figure(figsize=(7,7))
-            plt.plot(ETR_lam_day.date,ETR_lam_day.LE_Bowen,label='LE_Bowen')
-            plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
-            plt.legend()
-            # plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
-            plt.figure(figsize=(7,7))
-            plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
-            plt.plot([0.0, 10], [0.0, 10], 'r-', lw=2)
-            plt.title(str(y))
-            plt.xlabel("ETR corrigés")
-            plt.ylabel("ETR non corrigés")
-            plt.savefig('D:/THESE_TMP/RESULT/PLOT/Comparaison_ETR_lam/plot_scatter_LE_corr_vsLE_Bowen_dynamique'+str(y)+'.png')
+        else:
+            years=y[5:9]
+            LE_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/"+str(y),encoding = 'utf-8',delimiter=",")
+            LE_lam.drop(0,inplace=True)
+            LE_lam["time"]=LE_lam["TIMESTAMP"].astype(str)
+            LE_lam["LE"]=LE_lam["LE"].astype(float)
+            LE_lam["date"]=LE_lam["time"].apply(lambda x:x[0:10])
+            LE_lam["time_hours"]=LE_lam["time"].apply(lambda x:x[10:-3]).replace(":",'.')
+            LE_lam["date"]=pd.to_datetime(LE_lam["date"],format="%d/%m/%Y")
+            LE_lam.drop(columns=["TIMESTAMP"],inplace=True)
+            # Suppression des flux nocture
+            LE_lam=LE_lam.loc[(LE_lam.time_hours >=' 06:00') & (LE_lam.time_hours <=' 21:00')]
+            LE_lam_day=LE_lam.groupby("date")["LE"].mean()
+            l=57600/2264000
+            ETR_lam_day=LE_lam_day*l
+            # ETR_lam_day=LE_lam_day*0.0352
+            ETR_lam_day[ETR_lam_day < -1]=pd.NaT
+            ETR_lam_day=pd.DataFrame(ETR_lam_day)
+            # ETR_lam_day.plot()
+            # ETR_lam_day["date"]=LE_lam.date
+            ETR_lam_day.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(years)+".csv")
+
+    for y in ["2008","2010","2012","2014","2015","2019"]:
+        ETR_lam_day=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv")
+        ETR_lam_day.date=pd.to_datetime(ETR_lam_day.date,format="%Y-%m-%d",)
+        LE_lam_nn_corr=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_maize_irri/ETR_maize_irri"+str(y)+".csv",encoding = 'utf-8',delimiter=",")
+        LE_lam_nn_corr.date=pd.to_datetime(LE_lam_nn_corr.date,format="%Y-%m-%d")
+        LE_nn_corr=LE_lam_nn_corr.loc[(LE_lam_nn_corr.date >=str(y)+"-04-01") & (LE_lam_nn_corr.date <= str(y)+"-09-30")]
+        # plt.scatter(ETR_lam_day.LE_Bowen,LE_nn_corr.LE)
+        plt.figure(figsize=(7,7))
+        plt.plot(ETR_lam_day.date,ETR_lam_day.LE_Bowen,label='LE_Bowen')
+        plt.plot(LE_nn_corr.date,LE_nn_corr.LE,label="LE_nn_corr")
+        plt.legend()
+        plt.savefig('/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/Comparaison_ETR_lam/plot_LE_corr_vsLE_Bowen_dynamique_'+str(y)+'.png')
+        plt.figure(figsize=(7,7))
+        plt.scatter(LE_nn_corr.LE,ETR_lam_day.LE_Bowen)
+        plt.plot([0.0, 14], [0.0, 14], 'r-', lw=2)
+        plt.title(str(y))
+        plt.ylabel("ETR corrigés")
+        plt.xlabel("ETR non corrigés")
+        plt.savefig('/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/Comparaison_ETR_lam/plot_scatter_LE_corr_vsLE_Bowen_dynamique_large_window'+str(y)+'.png')
 
         # diff=ETR_lam_day.LE_Bowen.to_list()-LE_nn_corr.LE
         # plt.figure(figsize=(7,7))
@@ -467,57 +466,57 @@ if __name__ == '__main__':
     ##### mesu diff ratio Bowen et LE nn corr
 
   # Pour la station de Grignon gestion des LE en ETR
-    for y in ["2019"]:
-        print (y)
-        # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DATA_PARCELLE_GRIGNON/RAW_DATA/DATA_ICOS_ECO/EFDC_L2_Flx_FRGri_"+str(y)+"_30m.txt",sep=',')
-        # df["time"]=df["TIMESTAMP_START"].astype(str)
-        # df["date"]=df["time"].apply(lambda x:x[0:8])
-        # df["time_hours"]=df["time"].apply(lambda x:x[8:]).astype(int)
-        df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DATA_PARCELLE_GRIGNON/RAW_DATA/DATA_ICOS_ECO/FR-Gri_Flux_2019.csv")
-        df["time"]=df["TIMESTAMP"].astype(str)
-        df["date"]=df["time"].apply(lambda x:x[0:8])
-        df["time_hours"]=df["time"].apply(lambda x:x[8:])
-        df["date"]=pd.to_datetime(df["date"],format="%Y%m%d")
-        df.drop(columns=["TIMESTAMP"],inplace=True)
-        # Suppression des flux nocture
-        df=df.loc[(df.time_hours >='0600.0') & (df.time_hours <='1900.0')]
-        df=df.groupby('date').mean()
-        df["LE"]=df.eval("LE_1_1_1*0.0352")
-        df[df.LE < -1]=np.nan
-        df.drop(columns=['CO2_1_1_1', 'H2O_1_1_1', 'ZL_1_1_1', 'FC_1_1_1', 'FC_SSITC_TEST',
-        'H_1_1_1', 'H_SSITC_TEST', 'LE_1_1_1', 'LE_SSITC_TEST', 'TAU_1_1_1',
-        'TAU_SSITC_TEST', 'MO_LENGTH_1_1_1', 'USTAR_1_1_1', 'U_SIGMA_1_1_1',
-        'V_SIGMA_1_1_1', 'W_SIGMA_1_1_1', 'WS_1_2_1', 'WD_1_2_1', 'SC_1_1_1'],inplace=True)
-        df.LE.plot()
-        df.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv")
+#     for y in ["2019"]:
+#         print (y)
+#         # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DATA_PARCELLE_GRIGNON/RAW_DATA/DATA_ICOS_ECO/EFDC_L2_Flx_FRGri_"+str(y)+"_30m.txt",sep=',')
+#         # df["time"]=df["TIMESTAMP_START"].astype(str)
+#         # df["date"]=df["time"].apply(lambda x:x[0:8])
+#         # df["time_hours"]=df["time"].apply(lambda x:x[8:]).astype(int)
+#         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DATA_PARCELLE_GRIGNON/RAW_DATA/DATA_ICOS_ECO/FR-Gri_Flux_2019.csv")
+#         df["time"]=df["TIMESTAMP"].astype(str)
+#         df["date"]=df["time"].apply(lambda x:x[0:8])
+#         df["time_hours"]=df["time"].apply(lambda x:x[8:])
+#         df["date"]=pd.to_datetime(df["date"],format="%Y%m%d")
+#         df.drop(columns=["TIMESTAMP"],inplace=True)
+#         # Suppression des flux nocture
+#         df=df.loc[(df.time_hours >='0600.0') & (df.time_hours <='1900.0')]
+#         df=df.groupby('date').mean()
+#         df["LE"]=df.eval("LE_1_1_1*0.0352")
+#         df[df.LE < -1]=np.nan
+#         df.drop(columns=['CO2_1_1_1', 'H2O_1_1_1', 'ZL_1_1_1', 'FC_1_1_1', 'FC_SSITC_TEST',
+#         'H_1_1_1', 'H_SSITC_TEST', 'LE_1_1_1', 'LE_SSITC_TEST', 'TAU_1_1_1',
+#         'TAU_SSITC_TEST', 'MO_LENGTH_1_1_1', 'USTAR_1_1_1', 'U_SIGMA_1_1_1',
+#         'V_SIGMA_1_1_1', 'W_SIGMA_1_1_1', 'WS_1_2_1', 'WD_1_2_1', 'SC_1_1_1'],inplace=True)
+#         df.LE.plot()
+#         df.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv")
     
-#    Pour 2019
-    ETR_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
-    ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
-    ETR_lam=ETR_lam.loc[(ETR_lam.time >='06:00') & (ETR_lam.time <='19:00')]
-    ETR_lam_day=ETR_lam.groupby("date")["LE"].mean()
-    ETR_lam_day=ETR_lam_day*0.0352
-    ETR_lam_day[ETR_lam_day < -1]=pd.NaT
-    ETR_lam_day.plot()
-    ETR_lam_day.to_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM2019.csv")
+# #    Pour 2019
+#     ETR_lam=pd.read_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_LAM_lec_python/eddypro_FR-Lam_full_output_2020-01-28T012345_adv.csv")
+#     ETR_lam["date"]=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
+#     ETR_lam=ETR_lam.loc[(ETR_lam.time >='06:00') & (ETR_lam.time <='19:00')]
+#     ETR_lam_day=ETR_lam.groupby("date")["LE"].mean()
+#     ETR_lam_day=ETR_lam_day*0.0352
+#     ETR_lam_day[ETR_lam_day < -1]=pd.NaT
+#     ETR_lam_day.plot()
+#     ETR_lam_day.to_csv(d["path_labo"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/ETR_LAM2019.csv")
 
 #     ## Récuparation date végétation sur ETR 
 # # =============================================================================
 # # Pluvio satation mise en forme
 # # =============================================================================
-#  # LAM
-    meteo_lam_station=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_LAM_original/eddypro_FR-Lam_biomet_2020-01-28T012345_adv_ss_unit.csv")
-    meteo_lam_station=meteo_lam_station.iloc[:-49]
-    Meteo=meteo_lam_station[["date","P_1_1_1"]]
-    Meteo=Meteo.iloc[1:]
-    Meteo["Prec"]=Meteo.P_1_1_1.astype(float)
-    Meteo[Meteo.Prec<=-9998]=np.nan
-    Meteo["Prec"]=Meteo.Prec*1000
-    Meteo_lam=Meteo.groupby("date").sum()
-    Meteo_lam=Meteo_lam.iloc[:-2]
-    Meteo_lam.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_2019.csv")
+# #  # LAM
+#     meteo_lam_station=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_LE_LAM_original/eddypro_FR-Lam_biomet_2020-01-28T012345_adv_ss_unit.csv")
+#     meteo_lam_station=meteo_lam_station.iloc[:-49]
+#     Meteo=meteo_lam_station[["date","P_1_1_1"]]
+#     Meteo=Meteo.iloc[1:]
+#     Meteo["Prec"]=Meteo.P_1_1_1.astype(float)
+#     Meteo[Meteo.Prec<=-9998]=np.nan
+#     Meteo["Prec"]=Meteo.Prec*1000
+#     Meteo_lam=Meteo.groupby("date").sum()
+#     Meteo_lam=Meteo_lam.iloc[:-2]
+#     Meteo_lam.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/Meteo_station_2019.csv")
     
-    # PLUVIO_STAT LAM autres anénes
+#     # PLUVIO_STAT LAM autres anénes
     # for y in ["2006","2008","2010","2012","2014","2015"]:
     #     mat = scipy.io.loadmat('/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/PARCELLE_LABO/DATA_METEO_LAM/LAM_'+y+'_IS.mat')
     #     Plui=pd.DataFrame(mat["Rain"])

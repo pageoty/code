@@ -320,18 +320,18 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s/CSV"%(d['SAMIR_run'],optimis_val)) 
         # os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         if "LAI" in name_run :
-                os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
+                os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET ')
         else:
             if "Fcover" in name_run :
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
+                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET NDVI Ir_auto Ks Kei Kep')
             else:
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET')
+                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET')
         for classe in classes:
             if len(optimis_val) > 5:
-                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
+                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
                 param.set_index(0,inplace=True)
             else:
-                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
+                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
                 param.set_index(0,inplace=True)
             #  Récuparation data_validation ETR
             if classe =='maize_irri':
@@ -347,7 +347,7 @@ if __name__ == "__main__":
             for run in os.listdir(d["SAMIR_run"]+"Output/"+optimis_val+"/"):
                 print(run)
                 if classe in run and "txt" not in run:
-                    num_run=run[23:]
+                    num_run=run[26:]
                     a=open(d["SAMIR_run"]+"Output/"+optimis_val+"/"+run,"rb")
                     output_sim=pickle.load(a)
                     ETRmod=output_sim[["ET","date"]]
@@ -371,17 +371,17 @@ if __name__ == "__main__":
                         # dfETR=pd.concat([ETR_gri,ETRmod],axis=1)
                         dfETR=pd.merge(ETR_gri,ETRmod,on=["date"])
                     dfETR.columns=["date",'LE','ET']
-                    dfETR_day=dfETR.set_index('date').resample("D").asfreq()
-                    dfETR=dfETR.set_index('date').resample("W").asfreq()
+                    dfETR=dfETR.set_index('date').resample("D").asfreq()
+                    # dfETR=dfETR.set_index('date').resample("W").asfreq()
                     # dfETR.to_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/CSV/ETR_%s_%s.csv"%(classe,num_run))
                     dfETR.dropna(inplace=True)
-                    dfETR_day.dropna(inplace=True)
+                    dfETR.dropna(inplace=True)
                     if dfETR.shape[0]==0:
                         print("%s non utilisable " %y) # pas de date similaire entre modélisation et ETRobs
                         continue
                     else:
                         slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
-                        bias=1/dfETR_day.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
+                        bias=1/dfETR.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
                         fitLine = predict(dfETR.LE)
                         # plt.figure(figsize=(7,7))
                         # plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
