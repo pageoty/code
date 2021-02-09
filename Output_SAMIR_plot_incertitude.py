@@ -142,6 +142,38 @@ if __name__ == '__main__':
             ###########" Dynamique week #############
            # Modification récuper max et min 
             # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(500.0,level=1).min().cumsum(),ETR_mod.xs(2500.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
+            # =============================================================================
+        # Moyenne glissante
+        # =============================================================================
+            plt.figure(figsize=(7,7))
+            plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
+            plt.plot(ETR_mod_rolling.index,ETR_mod_rolling.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+            # for REW in np.arange(0,16,1):
+            #     print(float(REW))
+            #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].values,ETR_mod.T[float(REW),2500.0].values,alpha=0.2,facecolor="red")
+            plt.fill_between(ETR_mod_rolling.index, ETR_mod_rolling.min(),ETR_mod_rolling.max(),alpha=0.5,facecolor="red")
+            plt.ylabel("ETR")
+            plt.ylim(0,10)
+            plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+
+            # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            #### plot dyna cum
+            plt.figure(figsize=(7,7))
+            plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen.cumsum(),label='ETR_obs',color="black")
+            plt.fill_between(ETR_mod_rolling.index, ETR_mod_rolling.min().cumsum(),ETR_mod_rolling.max().cumsum(),alpha=0.2,facecolor="red")
+            # for REW in np.arange(0,16,1):
+            #     print(float(REW))
+            #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].cumsum(),ETR_mod.T[float(REW),2500.0].cumsum(),alpha=0.2,facecolor="red")
+            plt.plot(ETR_mod_rolling.index,ETR_mod_rolling.mean().cumsum(),label='ETR_mod',color='red')
+            plt.text(ETR_rolling.date.iloc[-1], ETR_rolling.LE_Bowen.cumsum().iloc[-1], s=round(ETR_rolling.LE_Bowen.cumsum().iloc[-1],2))
+            plt.text(ETR_mod_rolling.index[-1], ETR_mod_rolling.mean().cumsum().iloc[-1], s=round(ETR_mod_rolling.mean().cumsum().iloc[-1],2))
+            plt.ylabel("ETR")
+            plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_mean_rolling_%s_%s.png"%(lc,y))
+            
 # =============================================================================
 #              Isole forte periode incertitude 
 # =============================================================================
@@ -166,6 +198,38 @@ if __name__ == '__main__':
 # =============================================================================
 #  lecture des output_LUT
     # dfmax=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/2008/Output/REWmaxZr/output_test.df_maize_irri_5","rb"))
+
+# =============================================================================
+# Moyenne glissante
+# =============================================================================
+            plt.figure(figsize=(7,7))
+            plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
+            plt.plot(ETR_mod_rolling.index,ETR_mod_rolling[7.0,1000.0],label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+            # for REW in np.arange(0,16,1):
+            #     print(float(REW))
+            #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].values,ETR_mod.T[float(REW),2500.0].values,alpha=0.2,facecolor="red")
+            plt.fill_between(ETR_mod_rolling.index, ETR_mod_rolling.T.xs(800.0,level=1).min(),ETR_mod_rolling.T.xs(1200.0,level=1).max(),alpha=0.5,facecolor="red")
+            plt.ylabel("ETR")
+            plt.ylim(0,10)
+            plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+
+            # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+            #### plot dyna cum
+            plt.figure(figsize=(7,7))
+            plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen.cumsum(),label='ETR_obs',color="black")
+            plt.fill_between(ETR_mod_rolling.index, ETR_mod_rolling.T.xs(800.0,level=1).min().cumsum(),ETR_mod_rolling.T.xs(1200.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
+            # for REW in np.arange(0,16,1):
+            #     print(float(REW))
+            #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].cumsum(),ETR_mod.T[float(REW),2500.0].cumsum(),alpha=0.2,facecolor="red")
+            plt.plot(ETR_mod_rolling.index,ETR_mod_rolling[7.0,1000.0].cumsum(),label='ETR_mod',color='red')
+            plt.text(ETR_rolling.date.iloc[-1], ETR_rolling.LE_Bowen.cumsum().iloc[-1], s=round(ETR_rolling.LE_Bowen.cumsum().iloc[-1],2))
+            plt.text(ETR_mod_rolling.index[-1], ETR_mod_rolling[7.0,1000.0].cumsum().iloc[-1], s=round(ETR_mod_rolling[7.0,1000.0].cumsum().iloc[-1],2))
+            plt.ylabel("ETR")
+            plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
+            plt.legend()
+            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_mean_rolling_%s_%s.png"%(lc,y))
 # =============================================================================
 #  Validation Irri_ préparation data 
 # =============================================================================

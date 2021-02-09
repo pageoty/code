@@ -23,10 +23,10 @@ if __name__ == '__main__':
     df_ALL=pd.DataFrame()
     years="2017"
     BV="ADOUR"
-    for i in os.listdir("G:/THESE/CLASSIFICATION/data_time_processing_not_cumul/"+str(years)):
+    for i in os.listdir("G:/THESE/CLASSIFICATION/TIME_PROCESSING/"+str(years)):
         if "_full" in i:
             print(i)
-            df=pd.read_csv("G:/THESE/CLASSIFICATION/data_time_processing_not_cumul/"+str(years)+"/"+str(i),header=None)
+            df=pd.read_csv("G:/THESE/CLASSIFICATION/TIME_PROCESSING/"+str(years)+"/"+str(i),header=None)
             df.columns=["step","RAM","TIME","cpuask","cpu_used","model"]
             df["config"]=np.repeat(i,df.shape[0])
             globals()["df%s"%i]=df
