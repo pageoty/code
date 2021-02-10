@@ -375,7 +375,6 @@ if __name__ == "__main__":
                     # dfETR=dfETR.set_index('date').resample("W").asfreq()
                     # dfETR.to_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/CSV/ETR_%s_%s.csv"%(classe,num_run))
                     dfETR.dropna(inplace=True)
-                    dfETR.dropna(inplace=True)
                     if dfETR.shape[0]==0:
                         print("%s non utilisable " %y) # pas de date similaire entre modélisation et ETRobs
                         continue
@@ -411,7 +410,7 @@ if __name__ == "__main__":
                         else: 
                             result.append([num_run,parametre1,parametre2,rms,bias,r_value,y,classe])
                             concat_ETR.append(ETRmod["ET"])
-                            params.append([parametre1,parametre2])
+                            params.append([num_run,parametre1,parametre2])
             if len(optimis_val) < 6:
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years','OS'])
                 conca=pd.DataFrame(concat_ETR)
@@ -424,7 +423,7 @@ if __name__ == "__main__":
                 # Utiliser le multi_index de pandas avec Date en columns et params1 /2/3 en index 
                 conca=pd.DataFrame(concat_ETR)
                 para=pd.DataFrame(params)
-                a=pd.MultiIndex.from_frame(para,names=["REW","maxZr"])
+                a=pd.MultiIndex.from_frame(para,names=['num_run',"REW","maxZr"])
                 RESU=pd.DataFrame(conca.values,index=a,columns=ETRmod.date)
                 RESU.sort_index(inplace=True)
                 # RESU.[-50.0][1000.0] # selection les ET REW -50 et maxZr = 1000

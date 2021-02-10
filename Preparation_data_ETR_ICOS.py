@@ -42,7 +42,6 @@ def select_color_date(x):
             couleurs.append("b")
     return couleurs
 
-def penman_monteith(doy, LAT, ELEV, TMIN, TMAX, AVRAD, VAP, WIND2):
     """Calculates reference ET0 based on the Penman-Monteith model.
 
      This routine calculates the potential evapotranspiration rate from
@@ -134,7 +133,6 @@ def penman_monteith(doy, LAT, ELEV, TMIN, TMAX, AVRAD, VAP, WIND2):
     #     ET0 = np.nan
     return ET0
 
-def astro(latitude, radiation,doy, _cache={}):
     """python version of ASTRO routine by Daniel van Kraalingen.
     
     This subroutine calculates astronomic daylength, diurnal radiation
