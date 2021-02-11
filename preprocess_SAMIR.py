@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2019"
+    years="2014"
     ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
@@ -149,8 +149,8 @@ if __name__ == "__main__":
 # =============================================================================
     for bv in ZONE:
           if bv =="PARCELLE_CESBIO":
-                # df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
-                df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
+                df=pd.read_csv("D:/THESE_TMP/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=",")
+                # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(years)+".csv",sep=";")
                 df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
                 df.set_index('date',inplace=True)
                 df=df.resample("D").interpolate()
@@ -159,7 +159,7 @@ if __name__ == "__main__":
                 # df.set_index('date',inplace=True)
                 meteo=df
                 meteo["id"]=1
-                meteo.to_pickle(d["path_run"]+"/maize_irri/NDVI"+str(years)+".df")
+                meteo.to_pickle(d["path_run_home"]+"/maize_irri/NDVI"+str(years)+".df")
           # elif bv =="PARCELLE_GRIGNON":
           #         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_Grignon/NDVI_Grignon_"+str(years)+".csv")
           #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
@@ -337,21 +337,21 @@ if __name__ == "__main__":
 # # =============================================================================
 # #  Préparation des Fcovers
 # # =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            print("pas pret")
-        elif bv == "PARCELLE_CESBIO":
-            # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
-            df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
-            df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            # df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
-            df.set_index('date',inplace=True)
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=1
-            FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
+#     for bv in ZONE:
+#         if bv =="Fusion":
+#             print("pas pret")
+#         elif bv == "PARCELLE_CESBIO":
+#             # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv")
+#             df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
+#             df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+#             # df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
+#             df.set_index('date',inplace=True)
+#             df=df.resample("D").interpolate()
+#             df.reset_index(inplace=True)
+#             FCOVER=df
+#             FCOVER.columns=["date","FCov"]
+#             FCOVER["id"]=1
+#             FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
         # elif bv =="PARCELLE_GRIGNON":
         #     df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
         #     df.date=pd.to_datetime(df.date,format="%Y-%m-%d")

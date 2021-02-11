@@ -45,13 +45,13 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr/"
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    years=["2008",'2010','2012','2014','2015','2019']
+    years=['2008','2010','2012','2014','2015']
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -64,6 +64,7 @@ if __name__ == '__main__':
             d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             # if lc == "maize_irri":
             #     SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
             #     SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 # =============================================================================
 #             Utilisation des flux corrigées
 # =============================================================================
-            ETR=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
+            ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
             ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
             ETR_obs=ETR.loc[(ETR.date >= str(y)+"-04-01") &(ETR.date <= str(y)+"-09-30")]
             # flux non corrigés
@@ -85,7 +86,7 @@ if __name__ == '__main__':
             # ETR_nn["date"]=pd.to_datetime(ETR_nn["date"],format="%Y-%m-%d")
             # ETR_obs_nn=ETR_nn.loc[(ETR_nn.date >= str(y)+"-04-01") &(ETR_nn.date <= str(y)+"-09-30")]
             # Flux non corrigés
-            ETR_mod=pd.read_csv(d["Output_model_PC_labo_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1,2])
+            ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1,2])
             ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
             ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
             #  Moyenne tout les 5 jours 
@@ -113,7 +114,7 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
+            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
 
             # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             #### plot dyna cum
@@ -128,7 +129,7 @@ if __name__ == '__main__':
             plt.ylim(0,700)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
+            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
            # Modification récuper max et min 
             # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(500.0,level=1).min().cumsum(),ETR_mod.xs(2500.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
@@ -137,7 +138,8 @@ if __name__ == '__main__':
         # =============================================================================
             ETR_rolling=ETR_obs.rolling(5).mean()
             ETR_rolling["date"]=ETR_obs.date
-            ETR_mod_rolling=ETR_mod.rolling(5).mean()
+            ETR_mod_rolling=ETR_mod.T.rolling(5).mean()
+            ETR_mod_rolling=ETR_mod_rolling.T
             plt.figure(figsize=(7,7))
             plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
             plt.plot(ETR_mod_rolling.T.index,ETR_mod_rolling.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
@@ -149,7 +151,7 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
 
             # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             #### plot dyna cum
@@ -176,8 +178,8 @@ if __name__ == '__main__':
             coup_parm=ETR_mod_rolling.T.loc[ETR_mod_rolling.columns==datefor].T.idxmax() # récupération couple param max 
             coup_parm_min=ETR_mod_rolling.T.loc[ETR_mod_rolling.columns==datefor].T.idxmin()
             #  lecture des output_LUT
-            dfmax=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/"+str(y)+"/Output/REWmaxZr/output_test.df_maize_irri_"+str(coup_parm.iloc[0][0]),"rb"))
-            dfmin=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/"+str(y)+"/Output/REWmaxZr/output_test.df_maize_irri_"+str(coup_parm_min.iloc[0][0]),"rb"))
+            dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/"+str(y)+"/Output/REWmaxZr/output_test.df_maize_irri_"+str(coup_parm.iloc[0][0]),"rb"))
+            dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_test_incertitude/test_incertitude_Fcover_v3/"+str(y)+"/Output/REWmaxZr/output_test.df_maize_irri_"+str(coup_parm_min.iloc[0][0]),"rb"))
             print(y)
             print(dfmax.loc[dfmax['Ir_auto']> 0.0]["date"])
             print(dfmin.loc[dfmin['Ir_auto']> 0.0]["date"])
@@ -192,7 +194,7 @@ if __name__ == '__main__':
             plt.ylim(0,10)
             plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
             plt.legend()
-            plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling__irrigation%s_%s.png"%(lc,y),dpi=330)
+            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling__irrigation%s_%s.png"%(lc,y),dpi=330)
 # =============================================================================
 # Moyenne glissante
 # =============================================================================

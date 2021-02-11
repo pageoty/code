@@ -49,9 +49,12 @@ if __name__ == "__main__":
     parser.add_argument('-REW2',dest='REW2',nargs='+',help='source meteo data')
     parser.add_argument('-A_kcb',dest='akcb',nargs='+',help='slope_relation_NDVI/Kcb')
     parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
+    parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
-    years=["2014"]
+    years=["2008","2010","2012","2014","2015"]
     
+    
+    #  Add args User PC home/ PC labo
     result=[]
     for y in years:# 
         print (y)
@@ -68,6 +71,11 @@ if __name__ == "__main__":
         print(optimis_val)
         print(r'===============')
         d={}
+        print(args.Pc)
+        if args.Pc == ["home"] :
+            d["data"]='/mnt/d/THESE_TMP/'
+        else:
+            d["data"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
@@ -84,9 +92,9 @@ if __name__ == "__main__":
             os.mkdir ('%s/%s/%s'%(str(args.path).strip("['']"),str(args.name_run).strip("['']"),str(y)))
         #  Déplacement all file 
         if str(args.meteo).strip("['']")=="SAFRAN":
-            os.system("scp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y)+"/* %s"%(d['SAMIR_run']))
+            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y)+"/* %s"%(d['SAMIR_run']))
         else:
-            os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y)+"/* %s"%(d['SAMIR_run']))
+            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y)+"/* %s"%(d['SAMIR_run']))
 
 # =============================================================================
 #       # Calcule REW allen 2005 
@@ -106,13 +114,13 @@ if __name__ == "__main__":
 
         if str(args.meteo).strip("['']")=="SAFRAN":
             # print("scp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/* %s"%(d['SAMIR_run']))
-            os.system("scp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/ %s"%(d["SAMIR_run"]))
+            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/ %s"%(d["SAMIR_run"]))
         else:
-            os.system("scp -r /mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
+            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
         d['SAMIR_run_RU']=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"+str(y1)+"/"
         params_update(d['SAMIR_run_RU']+"/Inputdata/param_SAMIR12_13.csv",
                       d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0101'),date_end=str(y1)+str('1231'),
-                      Ze=150,REW=REW,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")),m=1, Koffset=float(str(args.bkcb).strip("['']")))
+                      Ze=150,REW=REW,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=1.50,m=1, Koffset=-0.23)
         if "Output" in os.listdir(d['SAMIR_run_RU']):
             print ("existing file")
         else :
@@ -123,9 +131,9 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
 
         if "LAI" in name_run :
-            os.system('python /home/pageot/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
         else:
-            os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  ')
+            os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  ')
            
         #  Extraction du résultat
         df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
@@ -242,9 +250,9 @@ if __name__ == "__main__":
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                             d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
+                             d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
+                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=1,Irrig_man=0,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                    params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
             else:
                 print('two optimisation')
                 timestart=str(y)+"-05-01"
@@ -294,23 +302,23 @@ if __name__ == "__main__":
             os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
         else:
             if "Fcover" in name_run :
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET ')
+                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
             else:
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET')
+                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
         for classe in classes:
             if len(optimis_val) > 5:
-                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
+                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
                 param.set_index(0,inplace=True)
             else:
-                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
+                param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
                 param.set_index(0,inplace=True)
             #  Récuparation data_validation ETR
             if classe =='maize_irri':
-                # ETR_lam=pd.read_csv("/mnt/d/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
-                ETR_lam=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
+                # ETR_lam=pd.read_csv("D:/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
+                ETR_lam=pd.read_csv(d["data"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.') # flux corrigées a mettre 
                 ETR_lam.date=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
             else:
-                ETR_gri=pd.read_csv("/mnt/d/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv",decimal='.')
+                ETR_gri=pd.read_csv(d["data"]+"/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv",decimal='.')
                 ETR_gri.date=pd.to_datetime(ETR_gri["date"],format='%Y-%m-%d')
                 # Récupération des output de la simulation 
             concat_ETR=[]
@@ -318,7 +326,7 @@ if __name__ == "__main__":
             for run in os.listdir(d["SAMIR_run"]+"Output/"+optimis_val+"/"):
                 print(run)
                 if classe in run and "txt" not in run:
-                    num_run=run[26:]
+                    num_run=run[23:-3]
                     a=open(d["SAMIR_run"]+"Output/"+optimis_val+"/"+run,"rb")
                     output_sim=pickle.load(a)
                     ETRmod=output_sim[["ET","date"]]
@@ -326,7 +334,6 @@ if __name__ == "__main__":
                     #  Récuper le couple de paramètre que je vais varier
                     if len(optimis_val) < 6:
                         parametre=param.iloc[int(num_run)]
-                        print (parametre)
                         parametre1=parametre[1]
                         # print (r'para %s;'%(parametre1)) 
                     else: 
@@ -384,11 +391,16 @@ if __name__ == "__main__":
                             params.append([num_run,parametre1,parametre2])
             if len(optimis_val) < 6:
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years','OS'])
+                # conca=pd.DataFrame(concat_ETR)
+                # para=pd.DataFrame(params)
+                # conca.columns=ETRmod.date
+                # conca=conca.T
+                # conca.columns=para[1].values
                 conca=pd.DataFrame(concat_ETR)
                 para=pd.DataFrame(params)
-                conca.columns=ETRmod.date
-                conca=conca.T
-                conca.columns=para[1].values
+                a=pd.MultiIndex.from_frame(para,names=['num_run',"maxZr"])
+                RESU=pd.DataFrame(conca.values,index=a,columns=ETRmod.date)
+                RESU.sort_index(inplace=True)
             else:
                 resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
                 # Utiliser le multi_index de pandas avec Date en columns et params1 /2/3 en index 
