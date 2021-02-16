@@ -131,9 +131,9 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
 
         if "LAI" in name_run :
-            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+            os.system('python /home/pageot/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
         else:
-            os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  ')
+            os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  ')
            
         #  Extraction du résultat
         df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
@@ -299,13 +299,13 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s/CSV"%(d['SAMIR_run'],optimis_val)) 
         # os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         if "LAI" in name_run :
-            os.system('python /home/yann/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
+            os.system('python /home/pageot/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
         else:
             if "Fcover" in name_run and "Merlin" in name_run :
-                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
             else:
                 print("ici")
-                os.system('python /home/yann/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
+                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
 
         for classe in classes:
             if len(optimis_val) > 5:

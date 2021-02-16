@@ -41,15 +41,24 @@ def select_color_NDVI(x):
             couleurs.append("b")
     return couleurs
 
+def select_color_date(x):
+    couleurs=[]
+    for i in range(len(x)):
+        if x.date[i].strftime('%m-%d')<= "05-01" : 
+            couleurs.append("r")
+        else : 
+            couleurs.append("b")
+    return couleurs
+
 if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/FAO_init_ru_optim_Fcover_REWmaxzr_irri_man/"
-    d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_lame_30/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     years=['2008','2010','2012','2014','2015']
 # =============================================================================
@@ -62,9 +71,9 @@ if __name__ == '__main__':
             # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
             # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             # if lc == "maize_irri":
             #     SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
             #     SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
@@ -129,6 +138,7 @@ if __name__ == '__main__':
             plt.ylim(0,700)
             plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
             plt.legend()
+            
             plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
            # Modification récuper max et min 
@@ -168,6 +178,31 @@ if __name__ == '__main__':
             # plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
             # plt.legend()
             # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_mean_rolling_%s_%s.png"%(lc,y))
+# =============================================================================
+#             Scatter plot
+# =============================================================================
+            tmp=ETR_rolling.LE_Bowen.dropna()        
+            tmp_mod=ETR_mod_rolling.mean().dropna()
+            slope, intercept, r_value, p_value, std_err = stats.linregress(tmp.to_list(),tmp_mod.to_list())
+            bias=1/tmp.shape[0]*sum(np.mean(tmp_mod)-tmp) 
+            fitLine = predict(tmp_mod)
+            # Creation plot
+            plt.figure(figsize=(7,7))
+            plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
+            plt.xlabel("ETR OBS")
+            plt.ylabel("ETR model")
+            plt.xlim(0,10)
+            plt.ylim(0,10)
+            plt.scatter(ETR_rolling.LE_Bowen, ETR_mod_rolling.mean(), zorder = 2)
+            plt.errorbar(ETR_rolling.LE_Bowen, ETR_mod_rolling.mean(), xerr = None,yerr = ETR_mod_rolling.std(),
+                            fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
+            plt.title("Scatter ETR %s"%y)
+            rms = mean_squared_error(tmp,tmp_mod)
+            plt.text(8,min(tmp)+0.1,"RMSE = "+str(round(rms,2))) 
+            plt.text(8,min(tmp)+0.4,"R² = "+str(round(r_value,2)))
+            plt.text(8,min(tmp)+0.7,"Pente = "+str(round(slope,2)))
+            plt.text(8,min(tmp)+1,"Biais = "+str(round(bias,2)))
+            plt.savefig(d["Output_model_PC_home_disk"]+"/scatter_Incertitude_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
             
             
 #    hypothèse irrigation validation 
@@ -178,8 +213,8 @@ if __name__ == '__main__':
             coup_parm=ETR_mod_rolling.T.loc[ETR_mod_rolling.columns==datefor].T.idxmax() # récupération couple param max 
             coup_parm_min=ETR_mod_rolling.T.loc[ETR_mod_rolling.columns==datefor].T.idxmin()
             #  lecture des output_LUT
-            dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/REWmaxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-            dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/REWmaxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+            dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+            dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
             print(y)
             if "irri_man" in name_run:
                 print(dfmax.loc[dfmax['Irrig']> 0.0][["date","Irrig"]])
