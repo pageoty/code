@@ -74,8 +74,10 @@ if __name__ == "__main__":
         print(args.Pc)
         if args.Pc == ["home"] :
             d["data"]='/mnt/d/THESE_TMP/'
+            user="yann"
         else:
             d["data"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
+            user="pageot"
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
@@ -95,9 +97,11 @@ if __name__ == "__main__":
             os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN_Irri_man/"+str(y)+"/* %s"%(d['SAMIR_run']))
         else:
             os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y)+"/* %s"%(d['SAMIR_run']))
-
 # =============================================================================
-#       # Calcule REW allen 2005 
+#   PFT burand estimation PF-CC .df  
+# =============================================================================
+# =============================================================================
+      # Calcule REW allen 2005 
 # =============================================================================
         Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
         Clay = 0.5026
@@ -131,9 +135,9 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
 
         if "LAI" in name_run :
-            os.system('python /home/pageot/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+            os.system('python /home/'+user+'/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
         else:
-            os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  ')
+            os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv --formaREW Merlin -soiltext Soil_texture.df ')
            
         #  Extraction du résultat
         df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
@@ -299,13 +303,13 @@ if __name__ == "__main__":
             os.mkdir ("%s/Output/%s/CSV"%(d['SAMIR_run'],optimis_val)) 
         # os.environ["PYTHONPATH"] = "/home/pageot/sources/modspa2/Code/models/main/:$PYTHONPATH"
         if "LAI" in name_run :
-            os.system('python /home/pageot/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
+            os.system('python /home/'+user+'/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
         else:
             if "Fcover" in name_run and "Merlin" in name_run :
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+                os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
             else:
                 print("ici")
-                os.system('python /home/pageot/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
+                os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
 
         for classe in classes:
             if len(optimis_val) > 5:

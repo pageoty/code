@@ -136,10 +136,11 @@ if __name__ == '__main__':
         # a.plot(figsize=(10,10),column='bes',legend=True)
         # plt.savefig(d["PC_home_Wind"]+"carte_ADOUR_mais_irr_2017_"+dates+".png")
 
-    data_bes_spa=pd.read_csv("D:/THESE_TMP/RESULT/PLOT/CARTE_Single_crops_ADOUR/DATA_BES_EAU/csv_bes_eau_mais_irri_2017.csv")
-    geometry = data_bes_spa['geometry'].map(shapely.wkt.loads)
+    data_bes_spa=pd.read_csv("F:/shp/2020-11-13_Export géométries parcelles_2018.csv",sep=";")
+    geometry = data_bes_spa['geom'].map(shapely.wkt.loads)
     data_bes_spa_tes=geo.GeoDataFrame(data_bes_spa, crs="EPSG:2154", geometry=geometry)
-
+    data_bes_spa_tes.to_file("F:/shp/2020-11-13_Export géométries parcelles_2018.shp")
+ 
 #   Clum mensuel
     # id_month=data_bes_spa["ID"][data_bes_spa.month=='10']
     for m in ["3","4","5","6","7","8","9"]:

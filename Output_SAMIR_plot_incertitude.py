@@ -54,13 +54,13 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_lame_30/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_Fcover_maxzr_new_irri_man/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    years=['2008','2010','2012','2014','2015']
+    years=['2008','2010','2012','2014','2015',"2019"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -71,9 +71,9 @@ if __name__ == '__main__':
             # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
             # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
-            # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             # if lc == "maize_irri":
             #     SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
             #     SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
@@ -98,21 +98,7 @@ if __name__ == '__main__':
             ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1,2])
             ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
             ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
-            #  Moyenne tout les 5 jours 
-            # jours5m=[]
-            # date_moy=[]
-            # for j in zip(np.arange(0,ETR_mod.shape[0],5),np.arange(4,ETR_mod.shape[0],5)):
-            #     datea=ETR_mod.columns.iloc[j[0]]
-            #     moy5day=dfETR_obs[["LE_Bowen",'ET']].iloc[j[0]:j[1]].mean()
-            #     jours5m.append(moy5day.values)
-            #     date_moy.append(datea)
-            # date_ETR_moy=pd.DataFrame(date_moy)
-            # ETR_week_moye=pd.DataFrame(jours5m)
-            # ETR_week=pd.concat([date_ETR_moy,ETR_week_moye],axis=1)
-            # ETR_week.columns=["date","LE_Bowen","ET"]
-            # slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR_obs.LE_Bowen.to_list(),dfETR_obs.ET.to_list())
-            # bias=1/dfETR_obs.shape[0]*sum(np.mean(dfETR_obs.ET)-dfETR_obs.LE_Bowen) 
-            # fitLine = predict(dfETR_obs.LE_Bowen)
+
             # Creation plot
             ### plot dynamique 
             plt.figure(figsize=(7,7))
@@ -125,11 +111,9 @@ if __name__ == '__main__':
             plt.legend()
             plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
 
-            # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             #### plot dyna cum
             plt.figure(figsize=(7,7))
             plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-            # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(800.0,level=1).min().cumsum(),ETR_mod.xs(1200.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
             plt.fill_between(ETR_mod.T.index, ETR_mod.min().cumsum(),ETR_mod.max().cumsum(),alpha=0.2,facecolor="red")
             plt.plot(ETR_mod.T.index,ETR_mod.mean().cumsum(),label='ETR_mod',color='red')
             plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
@@ -153,9 +137,7 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
             plt.plot(ETR_mod_rolling.T.index,ETR_mod_rolling.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
-            # for REW in np.arange(0,16,1):
-            #     print(float(REW))
-            #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].values,ETR_mod.T[float(REW),2500.0].values,alpha=0.2,facecolor="red")
+
             plt.fill_between(ETR_mod_rolling.T.index, ETR_mod_rolling.min(),ETR_mod_rolling.max(),alpha=0.5,facecolor="red")
             plt.ylabel("ETR")
             plt.ylim(0,10)
@@ -229,6 +211,10 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
                 plt.legend()
+                ax2=plt.twinx(ax=None)
+                ax2.plot(dfmax.loc[(dfmax.date >= str(y)+'-04-01')&(dfmax.date<=str(y)+"-09-30")]["date"],dfmax.loc[(dfmax.date >= str(y)+'-04-01')&(dfmax.date<=str(y)+"-09-30")]["NDVI"],color="darkgreen",linestyle="--")
+                ax2.set_ylabel("NDVI")
+                ax2.set_ylim(0,1)
                 plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling__irrigation%s_%s.png"%(lc,y),dpi=330)
             else:
                 print("ici")
@@ -245,6 +231,10 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
                 plt.legend()
+                ax2=plt.twinx(ax=None)
+                ax2.plot(dfmax.loc[(dfmax.date >= str(y)+'-04-01')&(dfmax.date<=str(y)+"-09-30")]["date"],dfmax.loc[(dfmax.date >= str(y)+'-04-01')&(dfmax.date<=str(y)+"-09-30")]["NDVI"],color="darkgreen",linestyle="--")
+                ax2.set_ylabel("NDVI")
+                ax2.set_ylim(0,1)
                 plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling__irrigation%s_%s.png"%(lc,y),dpi=330)
 
  # =============================================================================

@@ -66,9 +66,9 @@ if __name__ == "__main__":
     Ta_cum=pd.DataFrame()
     Ta_seas=pd.DataFrame()
     Ta_soil=pd.DataFrame()
-    for y in ['2008','2010','2012','2014','2015','2019']:
+    for y in ['2015']:
         d["PC_disk_home"]="D:/THESE_TMP/"
-        ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",")
+        ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",",sep=";")
         ITK["TIMESTAMP"]=ITK["TIMESTAMP"].apply(lambda x:x[0:10])
         ITK["TIMESTAMP"]=pd.to_datetime(ITK["TIMESTAMP"],format="%d/%m/%Y")
         NDVI=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(y)+".csv",decimal=".")
