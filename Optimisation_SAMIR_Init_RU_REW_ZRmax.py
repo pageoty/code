@@ -58,7 +58,7 @@ if __name__ == "__main__":
     result=[]
     for y in years:# 
         print (y)
-        # name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Test_annee_2014"
+        name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Merlin_init_ru_optim_Fcover_maxzr_test_2019"
         name_run=str(args.name_run).strip("['']")
         print(name_run)
         # optimis_val="REW"
@@ -82,7 +82,8 @@ if __name__ == "__main__":
         d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
         d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/"
-        # d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+        d["SAMIR_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
+        d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["SAMIR_run"]=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"
         print(d["SAMIR_run"])
         print(str(args.meteo))
@@ -100,6 +101,28 @@ if __name__ == "__main__":
 # =============================================================================
 #   PFT burand estimation PF-CC .df  
 # =============================================================================
+        #  Lecture file PF_CC
+        PF_CC=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0])
+        FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
+        WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
+        Sand_Ainse=float(PF_CC.Lamothe_mod["Sable"])
+        Clay_Ainse=float(PF_CC.Lamothe_mod["Argile"])
+        # modification df soil FC et WP 
+        for p in ["WP_Bru","FC_Bru"]:
+            tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+            data=pickle.load(tmp)
+            tmp.close()
+            valeur=globals()['%s'%p]
+            data[p[:-4]]=valeur
+            data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
+        #  Modifcation Soil texture 
+        tmp1=open(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df","rb")
+        data_tex=pickle.load(tmp1)
+        tmp1.close()
+        for tex in ["Sand_Ainse",'Clay_Ainse']:
+            val=globals()['%s'%tex]
+            data_tex[tex[:-6]]=val
+        data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
 # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
