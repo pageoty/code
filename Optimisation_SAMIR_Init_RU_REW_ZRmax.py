@@ -74,10 +74,12 @@ if __name__ == "__main__":
         print(args.Pc)
         if args.Pc == ["home"] :
             d["data"]='/mnt/d/THESE_TMP/'
+            d["disk"]="/mnt/h/"
             user="yann"
         else:
             d["data"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
             user="pageot"
+            d["disk"]="/run/media/pageot/Transcend/"
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
@@ -101,28 +103,53 @@ if __name__ == "__main__":
 # =============================================================================
 #   PFT burand estimation PF-CC .df  
 # =============================================================================
+        if "Bruand" in name_run:
         #  Lecture file PF_CC
-        PF_CC=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0])
-        FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
-        WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
-        Sand_Ainse=float(PF_CC.Lamothe_mod["Sable"])
-        Clay_Ainse=float(PF_CC.Lamothe_mod["Argile"])
-        # modification df soil FC et WP 
-        for p in ["WP_Bru","FC_Bru"]:
-            tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
-            data=pickle.load(tmp)
-            tmp.close()
-            valeur=globals()['%s'%p]
-            data[p[:-4]]=valeur
-            data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
-        #  Modifcation Soil texture 
-        tmp1=open(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df","rb")
-        data_tex=pickle.load(tmp1)
-        tmp1.close()
-        for tex in ["Sand_Ainse",'Clay_Ainse']:
-            val=globals()['%s'%tex]
-            data_tex[tex[:-6]]=val
-        data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0])
+            if "max" in name_run:
+                FC_Bru=float(PF_CC.Lamothe_max["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_max["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_max["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_max["Argile"])
+            elif "min" in name_run:
+                FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_min["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_min["Argile"])
+            else:
+                FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_mod["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_mod["Argile"])
+            # modification df soil FC et WP 
+            for p in ["WP_Bru","FC_Bru"]:
+                tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+                data=pickle.load(tmp)
+                tmp.close()
+                valeur=globals()['%s'%p]
+                data[p[:-4]]=valeur
+                data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
+            #  Modifcation Soil texture 
+            tmp1=open(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df","rb")
+            data_tex=pickle.load(tmp1)
+            tmp1.close()
+            for tex in ["Sand_Ainse",'Clay_Ainse']:
+                val=globals()['%s'%tex]
+                data_tex[tex[:-6]]=val
+            data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
+        
+# =============================================================================
+#         Incertitude sur le Fcover
+# =============================================================================
+        # Lecture du Fcover 
+        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df","rb")
+        Fcover=pickle.load(Fco)
+        Fco.close()
+        if "Fcover_pl20" in name_run:
+            Fcover.FCov=Fcover.FCov+(20*Fcover.FCov/100)
+        elif "Fcover_m20" in name_run:
+            Fcover.FCov=Fcover.FCov-(20*Fcover.FCov/100)
+        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df")
 # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
@@ -163,7 +190,7 @@ if __name__ == "__main__":
             os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv --formaREW Merlin -soiltext Soil_texture.df ')
            
         #  Extraction du résultat
-        df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test','rb'))
+        df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test.df','rb'))
         result_init_cops=df.groupby("LC")
         result_init=result_init_cops.get_group("maize_irri")
         result_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]]
@@ -328,12 +355,17 @@ if __name__ == "__main__":
         if "LAI" in name_run :
             os.system('python /home/'+user+'/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv  -optim test_optim.csv --cal ET ')
         else:
-            if "Fcover" in name_run and "Merlin" in name_run :
-                os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
-            else:
-                print("ici")
-                os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
-
+            if "Merlin" in name_run :
+                if "Fcover" in name_run:
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+                else:
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+            elif "FAO" in name_run:
+                print("FAO use")
+                if "Fcover" in name_run:
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df --fc_input -fcover FCOVER.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
+                else:
+                 os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
         for classe in classes:
             if len(optimis_val) > 5:
                 param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
