@@ -105,22 +105,22 @@ if __name__ == "__main__":
 # =============================================================================
         if "Bruand" in name_run:
         #  Lecture file PF_CC
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0])
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=';')
             if "max" in name_run:
-                FC_Bru=float(PF_CC.Lamothe_max["CC_Bruand"])
-                WP_Bru=float(PF_CC.Lamothe_max["PF_Bruand"])
-                Sand_Ainse=float(PF_CC.Lamothe_max["Sable"])
-                Clay_Ainse=float(PF_CC.Lamothe_max["Argile"])
+                FC_Bru=float(PF_CC.Lamothe_pond_max["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_max["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_pond_max["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_pond_max["Argile"])
             elif "min" in name_run:
-                FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
-                WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
-                Sand_Ainse=float(PF_CC.Lamothe_min["Sable"])
-                Clay_Ainse=float(PF_CC.Lamothe_min["Argile"])
+                FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_pond_min["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_pond_min["Argile"])
             else:
-                FC_Bru=float(PF_CC.Lamothe_mod["CC_Bruand"])
-                WP_Bru=float(PF_CC.Lamothe_mod["PF_Bruand"])
-                Sand_Ainse=float(PF_CC.Lamothe_mod["Sable"])
-                Clay_Ainse=float(PF_CC.Lamothe_mod["Argile"])
+                FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+                Sand_Ainse=float(PF_CC.Lamothe_pond_mod["Sable"])
+                Clay_Ainse=float(PF_CC.Lamothe_pond_mod["Argile"])
             # modification df soil FC et WP 
             for p in ["WP_Bru","FC_Bru"]:
                 tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
@@ -153,8 +153,34 @@ if __name__ == "__main__":
 # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
-        Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
-        Clay = 0.5026
+        # Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
+        # Clay = 0.5026
+        PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=';')
+        #  Lecture file PF_CC
+        if "max" in name_run:
+            FC_Bru=float(PF_CC.Lamothe_pond_max["CC_Bruand"])
+            WP_Bru=float(PF_CC.Lamothe_pond_max["PF_Bruand"])
+            Sand=float(PF_CC.Lamothe_pond_max["Sable"])
+            Clay=float(PF_CC.Lamothe_pond_max["Argile"])
+        elif "min" in name_run:
+            FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+            WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+            Sand=float(PF_CC.Lamothe_pond_min["Sable"])
+            Clay=float(PF_CC.Lamothe_pond_min["Argile"])
+        else:
+            FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+            WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+            Sand=float(PF_CC.Lamothe_pond_mod["Sable"])
+            Clay=float(PF_CC.Lamothe_pond_mod["Argile"])
+            
+        for p in ["WP_Bru","FC_Bru"]:
+            tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+            data=pickle.load(tmp)
+            tmp.close()
+            valeur=globals()['%s'%p]
+            data[p[:-4]]=valeur
+            data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
+
         if Sand >= 0.80 :
             REW = 20 - 0.15 * Sand
         elif Clay >= 0.50 : 
@@ -305,7 +331,7 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=1,Irrig_man=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
             else:
                 print('two optimisation')
