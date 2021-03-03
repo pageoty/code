@@ -51,14 +51,14 @@ if __name__ == "__main__":
     parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
-    years=["2008","2010","2012","2014","2015","2019"]
+    years=["2008","2010",'2012','2014','2015','2019']
     
     
     #  Add args User PC home/ PC labo
     result=[]
     for y in years:# 
         print (y)
-        name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Merlin_init_ru_optim_Fcover_maxzr_test_2019"
+        # name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Merlin_init_ru_optim_Fcover_maxzr_test_2019"
         name_run=str(args.name_run).strip("['']")
         print(name_run)
         # optimis_val="REW"
@@ -80,6 +80,7 @@ if __name__ == "__main__":
             d["data"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
             user="pageot"
             d["disk"]="/run/media/pageot/Transcend/"
+            
         d['SAMIR_run']="/mnt/d/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d['SAMIR_run_Wind']="D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/"+name_run+"/"+str(y)+"/"
         d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
@@ -142,14 +143,14 @@ if __name__ == "__main__":
 #         Incertitude sur le Fcover
 # =============================================================================
         # Lecture du Fcover 
-        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df","rb")
+        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/FCOVER.df","rb")
         Fcover=pickle.load(Fco)
         Fco.close()
         if "Fcover_pl20" in name_run:
             Fcover.FCov=Fcover.FCov+(20*Fcover.FCov/100)
         elif "Fcover_m20" in name_run:
             Fcover.FCov=Fcover.FCov-(20*Fcover.FCov/100)
-        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df")
+        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/FCOVER.df")
 # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
@@ -331,7 +332,7 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                             Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=1,Irrig_man=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
             else:
                 print('two optimisation')
@@ -383,15 +384,15 @@ if __name__ == "__main__":
         else:
             if "Merlin" in name_run :
                 if "Fcover" in name_run:
-                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 6 --formaREW Merlin -soiltext Soil_texture.df')
                 else:
-                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5 --formaREW Merlin -soiltext Soil_texture.df')
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 6 --formaREW Merlin -soiltext Soil_texture.df')
             elif "FAO" in name_run:
                 print("FAO use")
                 if "Fcover" in name_run:
-                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df --fc_input -fcover FCOVER.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df --fc_input -fcover FCOVER.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 6')
                 else:
-                 os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 5')
+                 os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig --cpu 6')
         for classe in classes:
             if len(optimis_val) > 5:
                 param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=2,sep=";")

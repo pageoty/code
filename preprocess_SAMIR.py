@@ -35,15 +35,15 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2015"
-    ZONE =["PARCELLE_CESBIO"] # Fusion PARCELLE_CESBIO
+    years="2018"
+    ZONE =["CACG"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN_Irri_man/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
     d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    d["path_run_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"
+    # d["path_run_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
@@ -52,98 +52,99 @@ if __name__ == "__main__":
     d["PC_disk_home"]="D:/THESE_TMP/"
     
 
-#     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
-#     list_col_drop=['originfid',   'ogc_fid', ' n° sonde',' x',' y'] ;
-#     list_col_drop_cacg=[ '54787', 'originfid','ogc_fid']
-#     list_col_drop_tarn=['originfid','ogc_fid', 'num']
-#     list_col_drop_fus=['originfid', 'ogc_fid']
+    list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
+    list_col_drop=['originfid',   'ogc_fid', ' n° sonde',' x',' y'] ;
+    list_col_drop_cacg=[ '54787', 'originfid','ogc_fid']
+    list_col_drop_tarn=['originfid','ogc_fid', 'num']
+    list_col_drop_fus=['originfid', 'ogc_fid']
 
-#     dfnames=pd.read_csv(d["path_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
+    dfnames=pd.read_csv(d["path_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
     
-#     for bv in ZONE:
-#         NDVI=pd.DataFrame()
-#         if bv =="CACG":
-#             dfNDVI_interTYP=pd.DataFrame()
-#             dfNDVI_interTCJ=pd.DataFrame()
-#         elif bv == "TARN":
-#             dfNDVI_interTCJ=pd.DataFrame()
-#             dfNDVI_interTDJ=pd.DataFrame()
-#         elif bv == "labo":
-#             dfNDVI_interTCJ=pd.DataFrame()
-#         else:
-#             dfNDVI_interTYN=pd.DataFrame()
-#             dfNDVI_interTYP=pd.DataFrame()
-#             dfNDVI_interTCJ=pd.DataFrame()
-#             dfNDVI_interTDJ=pd.DataFrame()
-#         for n in os.listdir(d["path_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/"+str(bv)):
-#             if "SampleExtractionNDVI" in n and years in n: 
-#                 df=pd.read_csv(d["path_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/"+str(bv)+"/"+str(n))
-#                 tuile=n[-16:-13]
-#                 #  gestion des colonnes du tableau
-#                 if bv == "CACG":
-#                     df.columns=list(df.columns[0:4])+list(dfnames[0])
-#                     df.set_index("id",inplace=True)
-#                     dataN=df.drop(columns=list_col_drop_cacg)
-#                 elif bv == "TARN":
-#                     df.columns=list(df.columns[0:4])+list(dfnames[0])
-#                     df.set_index("id",inplace=True)
-#                     dataN=df.drop(columns=list_col_drop_tarn)
-#                 elif bv == "PARCELLE_CESBIO":
-#                     df.columns=list(df.columns[0:7])+list(dfnames[0])
-#                     df.set_index("id",inplace=True)
-#                     dataN=df.drop(columns=list_bd_drop)
-#                 elif bv=='Fusion':
-#                     df.columns=list(df.columns[0:3])+list(dfnames[0])
-#                     df.set_index("id",inplace=True)
-#                     dataN=df.drop(columns=list_col_drop_fus)
-#                 dataN.columns=pd.to_datetime(dataN.T.index,format="%Y%m%d")
-#                 globals()["dfNDVI_inter%s"%tuile]=dataN.where(dataN!=0.0)
-#                 globals()["dfNDVI_inter%s"%tuile].dropna(inplace=True)
+    for bv in ZONE:
+        NDVI=pd.DataFrame()
+        if bv =="CACG":
+            dfNDVI_interTYP=pd.DataFrame()
+            dfNDVI_interTCJ=pd.DataFrame()
+        elif bv == "TARN":
+            dfNDVI_interTCJ=pd.DataFrame()
+            dfNDVI_interTDJ=pd.DataFrame()
+        elif bv == "labo":
+            dfNDVI_interTCJ=pd.DataFrame()
+        else:
+            dfNDVI_interTYN=pd.DataFrame()
+            dfNDVI_interTYP=pd.DataFrame()
+            dfNDVI_interTCJ=pd.DataFrame()
+            dfNDVI_interTDJ=pd.DataFrame()
+        for n in os.listdir(d["path_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/"+str(bv)):
+            if "SampleExtractionNDVI" in n and years in n and ".csv" in n: 
+                df=pd.read_csv(d["path_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/"+str(bv)+"/"+str(n),sep=',')
+                tuile=n[-16:-13]
+                #  gestion des colonnes du tableau
+                if bv == "CACG":
+                    df.columns=list(df.columns[0:4])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_cacg)
+                elif bv == "TARN":
+                    df.columns=list(df.columns[0:4])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_tarn)
+                elif bv == "PARCELLE_CESBIO":
+                    df.columns=list(df.columns[0:7])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_bd_drop)
+                elif bv=='Fusion':
+                    df.columns=list(df.columns[0:3])+list(dfnames[0])
+                    df.set_index("id",inplace=True)
+                    dataN=df.drop(columns=list_col_drop_fus)
+                dataN.columns=pd.to_datetime(dataN.T.index,format="%Y%m%d")
+                globals()["dfNDVI_inter%s"%tuile]=dataN.where(dataN!=0.0)
+                globals()["dfNDVI_inter%s"%tuile].dropna(inplace=True)
                 
                 
-#         if bv == "CACG":
-#             id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
-#             non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
-#             all_NDVI=pd.concat([dfNDVI_interTYP,non_traiter])
-#             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
-#             tar=tatar.T.sort_index(ascending=True)
-#         elif bv == "TARN" :
-#             id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index) # non traiter par la tuile TDJ
-#             non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
-#             all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter])
-#             # all_NDVI.drop([5,7,11],inplace=True)
-#             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
-#             tar=tatar.T.sort_index(ascending=True)
+        if bv == "CACG":
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTYP,non_traiter])
+            all_NDVI=all_NDVI.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+            tatar=all_NDVI.interpolate(method='time',limit_direction='both')
+            tar=tatar.T.sort_index(ascending=True)
+        elif bv == "TARN" :
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index) # non traiter par la tuile TDJ
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter])
+            # all_NDVI.drop([5,7,11],inplace=True)
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
             
-#         elif bv == "Fusion" :
-#             id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)-set(dfNDVI_interTYP.index)
-# #            in_nn_trai_2=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)
-#             non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
-#             all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter,dfNDVI_interTYP])
-#             # all_NDVI.drop([5,7,11,26,27],inplace=True) # verifier suppression parcelle
-#             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
-#             tar=tatar.T.sort_index(ascending=True)
-#         elif bv == "PARCELLE_LABO":
-#             tatar=dfNDVI_interTCJ.T.resample("D").asfreq().interpolate()
-#             tar=tatar.T.sort_index(ascending=True)
-#         else:
-#             test=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
-#             non=dfNDVI_interTCJ.loc[test]
-#             all_NDVI=pd.concat([dfNDVI_interTYP,non])
-#             tatar=all_NDVI.T.resample("D").asfreq().interpolate()
-#             tar=tatar.T.sort_index(ascending=True)
-#         for i in list(tar.index):
-#             print(i)
-#             t=tar[tar.T.columns==[i]]/1000
-#             NDVI=NDVI.append(t.T.values.tolist(),ignore_index=True)
-#         identity=list(np.repeat(tar.index,tar.shape[1]))
-#         date=list(tar.columns)*len(tar.index)
+        elif bv == "Fusion" :
+            id_nn_trai=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)-set(dfNDVI_interTYP.index)
+#            in_nn_trai_2=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTDJ.index)
+            non_traiter=dfNDVI_interTCJ.loc[id_nn_trai]
+            all_NDVI=pd.concat([dfNDVI_interTDJ,non_traiter,dfNDVI_interTYP])
+            # all_NDVI.drop([5,7,11,26,27],inplace=True) # verifier suppression parcelle
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        elif bv == "PARCELLE_LABO":
+            tatar=dfNDVI_interTCJ.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        else:
+            test=set(dfNDVI_interTCJ.index)-set(dfNDVI_interTYP.index)
+            non=dfNDVI_interTCJ.loc[test]
+            all_NDVI=pd.concat([dfNDVI_interTYP,non])
+            tatar=all_NDVI.T.resample("D").asfreq().interpolate()
+            tar=tatar.T.sort_index(ascending=True)
+        for i in list(tar.index):
+            print(i)
+            t=tar[tar.T.columns==[i]]/1000
+            NDVI=NDVI.append(t.T.values.tolist(),ignore_index=True)
+        identity=list(np.repeat(tar.index,tar.shape[1]))
+        date=list(tar.columns)*len(tar.index)
                     
-#         NDVI["id"]=identity
-#         NDVI["date"]=date
-#         NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
-#         NDVI.columns=["NDVI","id","date"]
-#         # NDVI.to_pickle(d["path_run"]+'/maize/'+str(i)+'.df')
+        NDVI["id"]=identity
+        NDVI["date"]=date
+        NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
+        NDVI.columns=["NDVI","id","date"]
+        NDVI.to_pickle(d["path_run"]+'/maize_irri/NDVI'+str(years)+'.df')
 # =============================================================================
 #   NDVI 
 # =============================================================================
@@ -339,20 +340,20 @@ if __name__ == "__main__":
 # # =============================================================================
 # #  Préparation des Fcovers
 # # =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            print("pas pret")
-        elif bv == "PARCELLE_CESBIO":
-            df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=";")
-            # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
-            # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
-            df.set_index('date',inplace=True)
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=1
+    # for bv in ZONE:
+    #     if bv =="Fusion":
+    #         print("pas pret")
+    #     elif bv == "PARCELLE_CESBIO":
+    #         df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=";")
+    #         # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
+    #         # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #         df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
+    #         df.set_index('date',inplace=True)
+    #         df=df.resample("D").interpolate()
+    #         df.reset_index(inplace=True)
+    #         FCOVER=df
+    #         FCOVER.columns=["date","FCov"]
+    #         FCOVER["id"]=1
             # FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
         # elif bv =="PARCELLE_GRIGNON":
         #     df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")

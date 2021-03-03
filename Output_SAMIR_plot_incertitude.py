@@ -54,13 +54,15 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_man_Bruand/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_optim_maxzr_irri_man_soil/"
+    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_optim_maxzr_irri_man_soil/"
+    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_maxzr_irri_man_Bruand/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    years=['2008','2010','2012','2014','2015',"2019"]
+    years=['2008','2010']
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -71,9 +73,9 @@ if __name__ == '__main__':
             # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
             # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
-            # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+            # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             # if lc == "maize_irri":
             #     SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
             #     SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
@@ -95,35 +97,35 @@ if __name__ == '__main__':
             # ETR_nn["date"]=pd.to_datetime(ETR_nn["date"],format="%Y-%m-%d")
             # ETR_obs_nn=ETR_nn.loc[(ETR_nn.date >= str(y)+"-04-01") &(ETR_nn.date <= str(y)+"-09-30")]
             # Flux non corrigés
-            ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
-            ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+            # ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+            # ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+            # ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
 
-            # Creation plot
-            ### plot dynamique 
-            plt.figure(figsize=(7,7))
-            plt.plot(ETR_obs.date,ETR_obs.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-            plt.plot(ETR_mod.T.index,ETR_mod.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
-            plt.fill_between(ETR_mod.T.index, ETR_mod.min(),ETR_mod.max(),alpha=0.5,facecolor="red")
-            plt.ylabel("ETR")
-            plt.ylim(0,10)
-            plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
-            plt.legend()
-            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
+            # # Creation plot
+            # ### plot dynamique 
+            # plt.figure(figsize=(7,7))
+            # plt.plot(ETR_obs.date,ETR_obs.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
+            # plt.plot(ETR_mod.T.index,ETR_mod.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
+            # plt.fill_between(ETR_mod.T.index, ETR_mod.min(),ETR_mod.max(),alpha=0.5,facecolor="red")
+            # plt.ylabel("ETR")
+            # plt.ylim(0,10)
+            # plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
+            # plt.legend()
+            # plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
 
-            #### plot dyna cum
-            plt.figure(figsize=(7,7))
-            plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-            plt.fill_between(ETR_mod.T.index, ETR_mod.min().cumsum(),ETR_mod.max().cumsum(),alpha=0.2,facecolor="red")
-            plt.plot(ETR_mod.T.index,ETR_mod.mean().cumsum(),label='ETR_mod',color='red')
-            plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
-            plt.text(ETR_mod.T.index[-1], ETR_mod.mean().cumsum().iloc[-1], s=round(ETR_mod.mean().cumsum().iloc[-1],2))
-            plt.ylabel("ETR")
-            plt.ylim(0,700)
-            plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
-            plt.legend()
+            # #### plot dyna cum
+            # plt.figure(figsize=(7,7))
+            # plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
+            # plt.fill_between(ETR_mod.T.index, ETR_mod.min().cumsum(),ETR_mod.max().cumsum(),alpha=0.2,facecolor="red")
+            # plt.plot(ETR_mod.T.index,ETR_mod.mean().cumsum(),label='ETR_mod',color='red')
+            # plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
+            # plt.text(ETR_mod.T.index[-1], ETR_mod.mean().cumsum().iloc[-1], s=round(ETR_mod.mean().cumsum().iloc[-1],2))
+            # plt.ylabel("ETR")
+            # plt.ylim(0,700)
+            # plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
+            # plt.legend()
             
-            plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
+            # plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
             ###########" Dynamique week #############
            # Modification récuper max et min 
             # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(500.0,level=1).min().cumsum(),ETR_mod.xs(2500.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
@@ -245,40 +247,74 @@ if __name__ == '__main__':
     print ("Incertitude plot")
     print("============")
 
-    d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_man_Bruand/"
+    d["Output_model_save_fig"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_maxzr_irri_man_Bruand/"
     ETR_test_m20=None
     ETR_test_pl20=None
     ETR_test=None
-    for y in ['2008','2010','2012','2014','2015',"2019"]:
-        for Fco in ["_pl20","_m20",""]:
+    for y in ['2008','2010',"2012","2014","2015","2019"]:
+        # for Fco in ["_pl20","_m20",""]:
         ####  récupération num_run max incertitude
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover"+Fco+"_new_irri_man_Bruand"
-            ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
-            ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
-            ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
-            ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
-            ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
-            ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
-            globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-            # ETR_test=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        ETR_test=pd.concat([ETR_test_pl20,ETR_test,ETR_test_m20])
+            # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_Fcover"+Fco+"_maxzr_irri_man_Bruand"
+        d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_maxzr_irri_man_Bruand"
+        ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+        ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+        ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+        ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+        ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+        ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+        # globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+    # ETR_test_merlin=pd.concat([ETR_test_pl20,ETR_test_m20,ETR_test])
+        ETR_test_merlin=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        # FAO
+        d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_optim_maxzr_irri_man_soil"
+        ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+        ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+        ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+        ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+        ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+        ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+        # globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        
+        
+        # ETR_test=pd.concat([ETR_test_pl20,ETR_test,ETR_test_m20]) # Ecrire en dur ce tableau (FAO / Merlin)
         ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv",decimal='.',sep=",")
         ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
         ETR_obs=ETR.loc[(ETR.date >= str(y)+"-04-01") &(ETR.date <= str(y)+"-09-30")]
         ETR_rolling=ETR_obs.rolling(5).mean()
         ETR_rolling["date"]=ETR_obs.date
-        ETR_test_rolling=ETR_test.T.rolling(5).mean()
+        # Merlin
+        ETR_test_rolling=ETR_test_merlin.T.rolling(5).mean()
         ETR_test_rolling=ETR_test_rolling.T
         diff=ETR_test_rolling.max()-ETR_test_rolling.min()
         datefor=diff.idxmax() # forte incertitude a cette date
         coup_parm=ETR_test_rolling.T.loc[ETR_test_rolling.columns==datefor].T.idxmax() # récupération couple param max 
         coup_parm_min=ETR_test_rolling.T.loc[ETR_test_rolling.columns==datefor].T.idxmin()
         #  lecture des output_LUT
-        dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+        dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_merlin+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+        dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_merlin+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+        dfmax.date=pd.to_datetime(dfmax.date,format="%Y-%m-%d")
+        dfmin.date=pd.to_datetime(dfmin.date,format="%Y-%m-%d")
+        dfmax=dfmax.loc[(dfmax.date>= str(y)+"-04-01") &(dfmax.date <= str(y)+"-09-30")]
+        dfmin=dfmin.loc[(dfmin.date>= str(y)+"-04-01") &(dfmin.date <= str(y)+"-09-30")]
+        KS=pd.concat([dfmax,dfmin])
+        coeff_ks=KS.groupby("date").mean()["Ks"]
+        # FAO 
+        ETR_test_FAO_rolling=ETR_test_FAO.T.rolling(5).mean()
+        ETR_test_FAO_rolling=ETR_test_FAO_rolling.T
+        diff=ETR_test_FAO_rolling.max()-ETR_test_FAO_rolling.min()
+        datefor=diff.idxmax() # forte incertitude a cette date
+        coup_parm=ETR_test_FAO_rolling.T.loc[ETR_test_FAO_rolling.columns==datefor].T.idxmax() # récupération couple param max 
+        coup_parm_min=ETR_test_FAO_rolling.T.loc[ETR_test_FAO_rolling.columns==datefor].T.idxmin()
+        #  lecture des output_LUT
+        dfmax=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+        dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
         dfmax.date=pd.to_datetime(dfmax.date,format="%Y-%m-%d")
         dfmin.date=pd.to_datetime(dfmin.date,format="%Y-%m-%d")
         dfmax=dfmax.loc[(dfmax.date>= str(y)+"-04-01") &(dfmax.date <= str(y)+"-09-30")]
@@ -288,62 +324,68 @@ if __name__ == '__main__':
         # plot
         plt.figure(figsize=(7,7))
         plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
-        plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.min(),ETR_test_rolling.max(),alpha=0.5,facecolor="red")
+        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR_mod_FcoverBvnet',linewidth=1,color='red')# récupération mode 
+        plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.min(),ETR_test_rolling.max(),alpha=0.2,facecolor="red")
+        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR_mod_FcoverSamir',linewidth=1,color="Blue")# récupération mode 
+        plt.fill_between(ETR_test_FAO_rolling.T.index, ETR_test_FAO_rolling.min(),ETR_test_FAO_rolling.max(),alpha=0.2,facecolor="Blue")
         plt.ylabel("ETR")
         plt.ylim(0,10)
         plt.legend()
-        ax2 = plt.twinx()
-        ax2.plot(coeff_ks.index,coeff_ks,color='r',linestyle="--",label="Ks")
-        ax2.set_ylim(-5,1)
-        ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+        # ax2 = plt.twinx()
+        # ax2.plot(coeff_ks.index,coeff_ks,color='r',linestyle="--",label="Ks")
+        # ax2.set_ylim(-5,1)
+        # ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
         plt.title("Dynamique ETR moyenne PFCC incertitude %s en %s"%(lc,y))
-        plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_PFCC_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+        plt.savefig(d["Output_model_save_fig"]+"/plt_Incertitude_PFCC_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
         
         # Cumul
         plt.figure(figsize=(7,7))
         plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-        plt.fill_between(ETR_test.T.index, ETR_test.min().cumsum(),ETR_test.max().cumsum(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test.T.index,ETR_test.mean().cumsum(),label='ETR_mod',color='red')
+        plt.fill_between(ETR_test_merlin.T.index, ETR_test_merlin.min().cumsum(),ETR_test_merlin.max().cumsum(),alpha=0.2,facecolor="red")
+        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR_mod',color='red')
         plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
-        plt.text(ETR_test.T.index[-1], ETR_test.mean().cumsum().iloc[-1], s=round(ETR_test.mean().cumsum().iloc[-1],2))
+        plt.text(ETR_test_merlin.T.index[-1], ETR_test_merlin.mean().cumsum().iloc[-1], s=round(ETR_test_merlin.mean().cumsum().iloc[-1],2))
+        plt.fill_between(ETR_test_FAO.T.index, ETR_test_FAO.min().cumsum(),ETR_test_FAO.max().cumsum(),alpha=0.2,facecolor="red")
+        plt.plot(ETR_test_FAO.T.index,ETR_test_FAO.mean().cumsum(),label='ETR_mod',color='red')
+        plt.text(ETR_test_FAO.T.index[-1], ETR_test_FAO.mean().cumsum().iloc[-1], s=round(ETR_test_FAO.mean().cumsum().iloc[-1],2))
         plt.ylabel("ETR")
         plt.ylim(0,700)
         plt.title("Dynamique ETR cumul incertitude %s en %s"%(lc,y))
         plt.legend()
-        plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_ETR_cumul_incertitude_PFCC_%s_%s.png"%(lc,y))
+        plt.savefig(d["Output_model_save_fig"]+"/plt_Dynamique_ETR_ETR_cumul_incertitude_PFCC_%s_%s.png"%(lc,y))
         
         
         # Scatter
         tmp=ETR_rolling.LE_Bowen.dropna()        
         tmp_mod=ETR_test_rolling.mean().dropna()
-        slope, intercept, r_value, p_value, std_err = stats.linregress(tmp.to_list(),tmp_mod.to_list())
-        bias=1/tmp.shape[0]*sum(np.mean(tmp_mod)-tmp) 
+        tmp_mod_FAO=ETR_test_FAO_rolling.mean().dropna()
+        slope, intercept, r_value, p_value, std_err = stats.linregress(tmp_mod_FAO.to_list(),tmp_mod.to_list())
+        bias=1/tmp_mod_FAO.shape[0]*sum(np.mean(tmp_mod)-tmp_mod_FAO) 
         fitLine = predict(tmp_mod)
         # Creation plot
         plt.figure(figsize=(7,7))
         plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-        plt.xlabel("ETR OBS")
-        plt.ylabel("ETR model")
+        plt.xlabel("ETR Fcov Samir")
+        plt.ylabel("ETR Fcov BVNet")
         plt.xlim(0,10)
         plt.ylim(0,10)
-        plt.scatter(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), zorder = 2)
-        plt.errorbar(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), xerr = None,yerr = ETR_test_rolling.std(),
+        plt.scatter(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), zorder = 2)
+        plt.errorbar(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), xerr = ETR_test_FAO_rolling.std(),yerr = ETR_test_rolling.std(),
                         fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
         plt.title("Scatter ETR %s"%y)
         rms = mean_squared_error(tmp,tmp_mod)
-        plt.text(8,min(tmp)+0.1,"RMSE = "+str(round(rms,2))) 
-        plt.text(8,min(tmp)+0.4,"R² = "+str(round(r_value,2)))
-        plt.text(8,min(tmp)+0.7,"Pente = "+str(round(slope,2)))
-        plt.text(8,min(tmp)+1,"Biais = "+str(round(bias,2)))
-        plt.savefig(d["Output_model_PC_home_disk"]+"/scatter_Incertitude_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+        plt.text(8,min(tmp_mod_FAO)+0.1,"RMSE = "+str(round(rms,2))) 
+        plt.text(8,min(tmp_mod_FAO)+0.4,"R² = "+str(round(r_value,2)))
+        plt.text(8,min(tmp_mod_FAO)+0.7,"Pente = "+str(round(slope,2)))
+        plt.text(8,min(tmp_mod_FAO)+1,"Biais = "+str(round(bias,2)))
+        plt.savefig(d["Output_model_save_fig"]+"/scatter_Incertitude_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
     
         
         
 # =============================================================================
 #         Kei merlin vs Kei FAO 
 # =============================================================================
-        # name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/FAO_init_ru_optim_maxzr_new_irri_man_soil/"
+        # name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/FAO_init_ru_optim_maxzr_irri_man"
         # name_run_Merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_new_irri_man_Bruand/"
         # dfmax_FAO=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
         # dfmin_FAO=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
@@ -365,41 +407,43 @@ if __name__ == '__main__':
 # =============================================================================
 #         Irrigation_auto vs man
 # =============================================================================
-        name_run_auto_max="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_pl20_new_irri_auto_Bruand_max/"
-        name_run_auto_min="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_m20_new_irri_auto_Bruand_min/"
-        name_run_man="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_man_Bruand/"
-        # name_run_auto_max2="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_auto_Bruand_max/"
-        # name_run_auto_min2="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_auto_Bruand_min/"
-        # name_run_auto_max3="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_m20_new_irri_auto_Bruand_max/"
-        # name_run_auto_min3="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_pl20_new_irri_auto_Bruand_min/"
-        
-        # dfmax_2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max2+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        # dfmax_3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min2+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        # dfmax_4=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max3+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        # dfmax_5=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max3+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        
-        
-
-        dfmax_Man=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_man+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        dfmax_Max=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        dfmin_Max=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
-        dfmax_Min=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        dfmin_Min=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
-        Irr_max=pd.concat([dfmax_Max,dfmin_Max])
-        coeff_ke_FAO=Irr_max.groupby("date").mean()[["Ir_auto","NDVI"]]
-        Irr_min=pd.concat([dfmax_Min,dfmin_Min])
-        coeff_ke_Merlin=Irr_min.groupby("date").mean()[["Ir_auto","NDVI"]]
-        
-        # test=pd.concat([dfmax_Max,dfmax_2,dfmax_3,dfmax_4,dfmax_5,dfmin_Max,dfmax_Min,dfmin_Min])
-        # a=test.groupby("date").mean()[["NDVI","Ir_auto"]].sum()
-        print(y)
-        # print(a)
-        print(coeff_ke_FAO["Ir_auto"].sum())
-        print(coeff_ke_Merlin["Ir_auto"].sum())
-        print("mean => %s"%(mean([coeff_ke_FAO["Ir_auto"].sum(),coeff_ke_Merlin["Ir_auto"].sum()])))
-        print("std => %s"%(std([coeff_ke_FAO["Ir_auto"].sum(),coeff_ke_Merlin["Ir_auto"].sum()])))
-        print(dfmax_Man["Irrig"].sum())
-        
+# =============================================================================
+#         # name_run_auto_max="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_pl20_new_irri_auto_Bruand_max/"
+#         # name_run_auto_min="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_m20_new_irri_auto_Bruand_min/"
+#         # name_run_man="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_man_Bruand/"
+#         # # name_run_auto_max2="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_auto_Bruand_max/"
+#         # # name_run_auto_min2="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_new_irri_auto_Bruand_min/"
+#         # # name_run_auto_max3="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_m20_new_irri_auto_Bruand_max/"
+#         # # name_run_auto_min3="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/Merlin_init_ru_optim_maxzr_Fcover_pl20_new_irri_auto_Bruand_min/"
+#         
+#         # # dfmax_2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max2+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # # dfmax_3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min2+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # # dfmax_4=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max3+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # # dfmax_5=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max3+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         
+#         
+# 
+#         # dfmax_Man=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_man+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # dfmax_Max=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # dfmin_Max=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_max+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+#         # dfmax_Min=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
+#         # dfmin_Min=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_auto_min+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+#         # Irr_max=pd.concat([dfmax_Max,dfmin_Max])
+#         # coeff_ke_FAO=Irr_max.groupby("date").mean()[["Ir_auto","NDVI"]]
+#         # Irr_min=pd.concat([dfmax_Min,dfmin_Min])
+#         # coeff_ke_Merlin=Irr_min.groupby("date").mean()[["Ir_auto","NDVI"]]
+#         
+#         # # test=pd.concat([dfmax_Max,dfmax_2,dfmax_3,dfmax_4,dfmax_5,dfmin_Max,dfmax_Min,dfmin_Min])
+#         # # a=test.groupby("date").mean()[["NDVI","Ir_auto"]].sum()
+#         # print(y)
+#         # # print(a)
+#         # print(coeff_ke_FAO["Ir_auto"].sum())
+#         # print(coeff_ke_Merlin["Ir_auto"].sum())
+#         # print("mean => %s"%(mean([coeff_ke_FAO["Ir_auto"].sum(),coeff_ke_Merlin["Ir_auto"].sum()])))
+#         # print("std => %s"%(std([coeff_ke_FAO["Ir_auto"].sum(),coeff_ke_Merlin["Ir_auto"].sum()])))
+#         # print(dfmax_Man["Irrig"].sum())
+#         
+# =============================================================================
         
         # plt.figure(figsize=(7,7))
         # plt.bar(coeff_ke_FAO.index,coeff_ke_FAO.Ir_auto,label='Irrigation',color="black")

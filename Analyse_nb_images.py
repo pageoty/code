@@ -78,7 +78,7 @@ if __name__ == "__main__":
 # =============================================================================
     for i in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/CloudPercent_tile/"):
         print (i)
-        if "T30TYN" in i :
+        if "T30TYP" in i :
             df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/CloudPercent_tile/{}".format(i),sep=":",header=None)
             date=pd.DataFrame(df[0].apply(lambda x: x[11:19]))
             tile=pd.DataFrame(df[0].apply(lambda x: x[35:41]))
@@ -96,6 +96,7 @@ if __name__ == "__main__":
                 dfCloudseason2018.loc[(dfCloudseason2018.CloudPercent >= 25) & (dfCloudseason2018.CloudPercent <= 49),'classe']= "25-49"
                 dfCloudseason2018.loc[(dfCloudseason2018.CloudPercent >= 50) & (dfCloudseason2018.CloudPercent <= 74),'classe']= "50-74"
                 globals()["df%s" % i[13:-4]]=dfCloudseason2018.groupby(["classe","Month"]).count()
+                globals()["data%s" % i[13:-4]]=dfCloudseason2018[["Month",'classe','date']].groupby(["Month"]).count()
                 Classe2018=dfCloudseason2018[["Month",'classe','date']].groupby(["Month","classe"]).count()
                 print (dfCloudseason2018.count())
     #            img_clair=Classe.loc(axis=0)[:, ['0-24']]
@@ -111,17 +112,40 @@ if __name__ == "__main__":
                 dfCloudseason.loc[(dfCloudseason.CloudPercent >= 50) & (dfCloudseason.CloudPercent <= 74),'classe']= "50-74"
                 MonthPercent=dfCloudseason.groupby(["Month","CloudPercent"]).count()
                 globals()["df%s" %  i[13:-4]]=dfCloudseason.groupby(["classe","Month"]).count()
+                globals()["data%s" % i[13:-4]]=dfCloudseason[["Month",'classe','date']].groupby(["Month"]).count()
                 Classe=dfCloudseason[["Month",'classe','date']].groupby(["Month","classe"]).count()
                 print( "2017")
                 print (dfCloudseason.count())
     #            img_clair=Classe.loc(axis=0)[:, ['0-24']]
     #            print (r"  years : {} tile : {} : result : {}".format(i[13:17],list(tile.iloc[1]),img_clair))
-                Acqui_claire_2018_TCJ=dfCloudseason[dfCloudseason.classe=="0-24"]
-                Acqui_claire_2018_TCJ["nb"]=1
-# =============================================================================
+#                 Acqui_claire_2018_TCJ=dfCloudseason[dfCloudseason.classe=="0-24"]
+#                 Acqui_claire_2018_TCJ["nb"]=1
+# # =============================================================================
 #  Plot acquisitions claire by tuiles 
-    for tile in ["2018_T30TYN","2018_T30TYP","2017_T30TYN","2017_T30TYP"]:
-         sns.set(style="darkgrid")
-         sns.set_context('paper')
-#         globals()["df%s"% tile].unstack(level=0).date.plot(kind='bar')
+    # for tile in ["2018_T30TYN","2018_T30TYP","2017_T30TYN","2017_T30TYP"]:
+
+    #       globals()["df%s"% tile].unstack(level=0).date.plot(kind='bar')
 #         plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_{}.png".format(tile))
+    plt.figure(figsize=(7,5))
+    plt.bar(data2018_T30TYN.index,data2018_T30TYN.date,label='TYN')
+    plt.bar(data2018_T30TYP.index,data2018_T30TYP.date,bottom=data2018_T30TYN.date,label="TYP")
+    plt.bar(data2018_T31TCJ.index,data2018_T31TCJ.date,bottom=np.add(data2018_T30TYN.date,data2018_T30TYP.date).tolist(),label="TCJ")
+    plt.bar(data2018_T31TDJ.index,data2018_T31TDJ.date,bottom=np.add(data2018_T30TYN.date,data2018_T30TYP.date).to_list()+data2018_T31TCJ.date,label='TDJ')
+    plt.legend()
+    plt.xlabel("mois")
+    plt.ylabel("Nombre d'acquisitions")
+    plt.title("2018")
+    plt.ylim(0,50)
+    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2018.png")
+
+    plt.figure(figsize=(7,5))
+    plt.bar(data2017_T30TYN.index,data2017_T30TYN.date,label='TYN')
+    plt.bar(data2017_T30TYP.index,data2017_T30TYP.date,bottom=data2017_T30TYN.date,label="TYP")
+    plt.bar(data2017_T31TCJ.index,data2017_T31TCJ.date,bottom=np.add(data2017_T30TYN.date,data2017_T30TYP.date).tolist(),label="TCJ")
+    plt.bar(data2017_T31TDJ.index,data2017_T31TDJ.date,bottom=np.add(data2017_T30TYN.date,data2017_T30TYP.date).to_list()+data2017_T31TCJ.date,label='TDJ')
+    plt.legend()
+    plt.xlabel("mois")
+    plt.ylabel("Nombre d'acquisitions")
+    plt.title("2017")
+    plt.ylim(0,50)
+    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2017.png")

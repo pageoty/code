@@ -20,28 +20,33 @@ if __name__ == '__main__':
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    years="2018"
+    # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(years)+"/Inputdata/"
+    # mode="CSV"
+    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
 # =============================================================================
 # Conversion csv en shp (geopandas)
 # =============================================================================
-    df=pd.read_csv(/file/meteo.csv)
-    LAMBX=df.LAMBX*100
-    LAMBY=df.LAMBY*100
-    df["lambX"]=LAMBX
-    df['lambY']=LAMBY
-    df=df.loc[(df.DATE >= 20090101) &(df.DATE <= 20091231)]
-    geometry = df['geometry'].map(shapely.wkt.loads)
-    meteo_spa=geo.df(df, crs="EPSG:", geometry=geometry)
+    # df=pd.read_csv(/file/meteo.csv)
+    # LAMBX=df.LAMBX*100
+    # LAMBY=df.LAMBY*100
+    # df["lambX"]=LAMBX
+    # df['lambY']=LAMBY
+    # df=df.loc[(df.DATE >= 20090101) &(df.DATE <= 20091231)]
+    # geometry = df['geometry'].map(shapely.wkt.loads)
+    # meteo_spa=geo.df(df, crs="EPSG:", geometry=geometry)
     
     #  Pour le reprojection pas encore regarder
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/SAFRAN_extrat_test_large.shp")
-    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/tmp/SHAPE_test_SAFRAN_EXTART.shp")
-    meteo.DATE=meteo.DATE.astype(int)
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
+    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
+    # meteo.DATE=meteo.DATE.astype(int)
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
     meteo.set_index("field_1",inplace=True)
-    parcelle.set_index("idparcelle",inplace=True)
+    parcelle.set_index("ID",inplace=True)
     resu=pd.DataFrame()
     idgeom=[]
 
@@ -50,14 +55,14 @@ if __name__ == '__main__':
          idgeom.append(np.repeat(par,extart_meteo.shape[0]))
          resu=resu.append(extart_meteo)
     idpar=pd.DataFrame(idgeom).stack().to_list()
-    resu["idparcelle"]=idpar
-    test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'idparcelle']],on="idparcelle")
+    resu["ID"]=idpar
+    test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'ID']],on="ID")
 
 # mettre cela en df SAMIR    
-    meteo=test.filter(['idparcelle',"DATE","ETP_Q", 'PRELIQ_Q'])
+    meteo=test.filter(['ID',"DATE","ETP_Q", 'PRELIQ_Q'])
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
-    
+    meteo.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
 # =============================================================================
 #     Ancienne version avec intersection 
 # =============================================================================
