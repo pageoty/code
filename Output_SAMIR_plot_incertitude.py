@@ -324,9 +324,9 @@ if __name__ == '__main__':
         # plot
         plt.figure(figsize=(7,7))
         plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR_mod_FcoverBvnet',linewidth=1,color='red')# récupération mode 
+        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR_mod_Merlin',linewidth=1,color='red')# récupération mode 
         plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.min(),ETR_test_rolling.max(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR_mod_FcoverSamir',linewidth=1,color="Blue")# récupération mode 
+        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR_mod_FAO',linewidth=1,color="Blue")# récupération mode 
         plt.fill_between(ETR_test_FAO_rolling.T.index, ETR_test_FAO_rolling.min(),ETR_test_FAO_rolling.max(),alpha=0.2,facecolor="Blue")
         plt.ylabel("ETR")
         plt.ylim(0,10)
@@ -342,11 +342,11 @@ if __name__ == '__main__':
         plt.figure(figsize=(7,7))
         plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
         plt.fill_between(ETR_test_merlin.T.index, ETR_test_merlin.min().cumsum(),ETR_test_merlin.max().cumsum(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR_mod',color='red')
+        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR_mod_merlin',color='red')
         plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
         plt.text(ETR_test_merlin.T.index[-1], ETR_test_merlin.mean().cumsum().iloc[-1], s=round(ETR_test_merlin.mean().cumsum().iloc[-1],2))
-        plt.fill_between(ETR_test_FAO.T.index, ETR_test_FAO.min().cumsum(),ETR_test_FAO.max().cumsum(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test_FAO.T.index,ETR_test_FAO.mean().cumsum(),label='ETR_mod',color='red')
+        plt.fill_between(ETR_test_FAO.T.index, ETR_test_FAO.min().cumsum(),ETR_test_FAO.max().cumsum(),alpha=0.2,facecolor="Blue")
+        plt.plot(ETR_test_FAO.T.index,ETR_test_FAO.mean().cumsum(),label='ETR_mod_FAO',color='Blue')
         plt.text(ETR_test_FAO.T.index[-1], ETR_test_FAO.mean().cumsum().iloc[-1], s=round(ETR_test_FAO.mean().cumsum().iloc[-1],2))
         plt.ylabel("ETR")
         plt.ylim(0,700)
@@ -365,8 +365,8 @@ if __name__ == '__main__':
         # Creation plot
         plt.figure(figsize=(7,7))
         plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-        plt.xlabel("ETR Fcov Samir")
-        plt.ylabel("ETR Fcov BVNet")
+        plt.xlabel("ETR FAO")
+        plt.ylabel("ETR Merlin")
         plt.xlim(0,10)
         plt.ylim(0,10)
         plt.scatter(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), zorder = 2)
