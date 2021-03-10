@@ -55,7 +55,7 @@ if __name__ == '__main__':
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     sites=['GRIGNON']
     flux="Bowen"
-    years=["2008"]
+    years=["2010"]
 # =============================================================================
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
@@ -71,8 +71,9 @@ if __name__ == '__main__':
             if lc == "maize_irri":
                 SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
                 SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
-                meteo=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
-                meteo.date=pd.to_datetime(meteo.date,format="%Y-%m-%d")
+                meteo=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".",sep=';')
+                # meteo.date=pd.to_datetime(meteo.date,format="%Y%m-%d")
+                meteo.date=pd.to_datetime(meteo.date,format="%d/%m/%Y")
             else:
                 SWC=pd.read_csv(d["PC_labo_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_GRI/SWC_GRI_2019.csv")
                 SWC["date"]=pd.to_datetime(SWC["date"],format="%Y-%m-%d")
@@ -96,6 +97,7 @@ if __name__ == '__main__':
                 ETR_mod=ETR_mod.loc[(ETR_mod.date >= str(y)+"-03-02") &(ETR_mod.date <= str(y)+"-10-31")]
                 dfETR_obs=pd.merge(ETR_obs,ETR_mod[["date",'ET',"NDVI"]],on=['date'])
                 dfETR_obs.dropna(inplace=True)
+                ETR_mod.FCov.plot()
                 #  moyenne glissante sur 5 jorus 
                 ETR_week=dfETR_obs[["LE_Bowen","ET"]].rolling(5).mean()
                 ETR_week["date"]=dfETR_obs["date"]
@@ -173,7 +175,7 @@ if __name__ == '__main__':
                 plt.ylabel("ETR")
                 plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
                 ###########" Dynamique week #############
                 plt.figure(figsize=(7,7))
                 plt.plot(ETR_week.date,ETR_week.LE_Bowen,label='ETR_obs',color="black")
@@ -182,7 +184,7 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR week obs et ETR week mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
             else:
                 ETR=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.',sep=",")
                 ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
@@ -224,7 +226,7 @@ if __name__ == '__main__':
                 plt.text(8,min(dfETR_obs.ET)+0.4,"R² = "+str(round(r_value,2)))
                 plt.text(8,min(dfETR_obs.ET)+0.7,"Pente = "+str(round(slope,2)))
                 plt.text(8,min(dfETR_obs.ET)+1,"Biais = "+str(round(bias,2)))
-                plt.savefig(d["Output_model_PC_home"]+"/plt_scatter_ETR_flux_nn_corr_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_scatter_ETR_flux_nn_corr_%s_%s.png"%(lc,y))
                 ###### SCATTER moyenne semaine ######
                 slope, intercept, r_value, p_value, std_err = stats.linregress(ETR_week.LE.to_list(),ETR_week.ET.to_list())
                 bias=1/ETR_week.shape[0]*sum(np.mean(ETR_week.ET)-ETR_week.LE) 
@@ -244,7 +246,7 @@ if __name__ == '__main__':
                 plt.text(8,min(ETR_week.ET)+0.4,"R² = "+str(round(r_value,2)))
                 plt.text(8,min(ETR_week.ET)+0.7,"Pente = "+str(round(slope,2)))
                 plt.text(8,min(ETR_week.ET)+1,"Biais = "+str(round(bias,2)))
-                plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_nn_corr_week_%s_%s.png"%(lc,y))
+                # plt.savefig( d["Output_model_PC_home"]+"/plt_scatter_ETR_nn_corr_week_%s_%s.png"%(lc,y))
                 ### plot dynamique 
                 plt.figure(figsize=(7,7))
                 plt.plot(dfETR_obs.date,dfETR_obs.LE,label='ETR_obs',color="black")
@@ -253,7 +255,7 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_nn_corr_ETR_mod_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_nn_corr_ETR_mod_%s_%s.png"%(lc,y))
                 #### plot dyna cum
                 plt.figure(figsize=(7,7))
                 plt.plot(dfETR_obs.date,dfETR_obs.LE.cumsum(),label='ETR_obs',color="black")
@@ -263,7 +265,7 @@ if __name__ == '__main__':
                 plt.ylabel("ETR")
                 plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_nn_corr_ETR_mod_cumul_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_ETR_obs_nn_corr_ETR_mod_cumul_%s_%s.png"%(lc,y))
                 ###########" Dynamique week #############
                 plt.figure(figsize=(7,7))
                 plt.plot(ETR_week.date,ETR_week.LE,label='ETR_obs',color="black")
@@ -272,7 +274,7 @@ if __name__ == '__main__':
                 plt.ylim(0,10)
                 plt.title("Dynamique ETR week obs et ETR week mod %s en %s"%(lc,y))
                 plt.legend()
-                plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_nn_corr_ETR_mod_%s_%s.png"%(lc,y))
+                # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_week_ETR_obs_nn_corr_ETR_mod_%s_%s.png"%(lc,y))
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
             # # plt.plot(ETR_mod.date,ETR_mod.Dr,label='Dep racinaire')
@@ -288,7 +290,7 @@ if __name__ == '__main__':
             ax2.set_ylim(-5,1)
             ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
             plt.legend()
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TEW_De_%s_%s.png"%(lc,y))
+            # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TEW_De_%s_%s.png"%(lc,y))
 
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
@@ -304,7 +306,7 @@ if __name__ == '__main__':
             ax2.set_ylim(-5,1.1)
             ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
             plt.legend()
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TAW_Dr_%s_%s.png"%(lc,y))
+            # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_coeff_TAW_Dr_%s_%s.png"%(lc,y))
             
             plt.figure(figsize=(7,7))
             plt.title("Dynamique Dr, Irri et Ks %s en %s"%(lc,y))
@@ -323,7 +325,7 @@ if __name__ == '__main__':
             ax2.set_ylim(-5,1.1)
             ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
             plt.legend(loc="upper right")
-            plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_Tr_Kcb_Eva_%s_%s.png"%(lc,y))
+            # plt.savefig(d["Output_model_PC_home"]+"/plt_Dynamique_Tr_Kcb_Eva_%s_%s.png"%(lc,y))
             
             
             

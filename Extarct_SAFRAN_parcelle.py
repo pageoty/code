@@ -20,7 +20,7 @@ if __name__ == '__main__':
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-    years="2018"
+    years="2017"
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(years)+"/Inputdata/"
     # mode="CSV"
@@ -41,28 +41,32 @@ if __name__ == '__main__':
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
-    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
-    # meteo.DATE=meteo.DATE.astype(int)
-    meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
-    meteo.set_index("field_1",inplace=True)
-    parcelle.set_index("ID",inplace=True)
-    resu=pd.DataFrame()
-    idgeom=[]
+#     meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
+#     parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
+#     # meteo.DATE=meteo.DATE.astype(int)
+#     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
+#     meteo.set_index("field_1",inplace=True)
+#     parcelle.set_index("ID",inplace=True)
+#     resu=pd.DataFrame()
+#     idgeom=[]
 
-    for par in parcelle.index:
-         extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[0])==meteo["geometry"].distance(parcelle["geometry"].iloc[0]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
-         idgeom.append(np.repeat(par,extart_meteo.shape[0]))
-         resu=resu.append(extart_meteo)
-    idpar=pd.DataFrame(idgeom).stack().to_list()
-    resu["ID"]=idpar
-    test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'ID']],on="ID")
+#     for par in parcelle.index:
+#          extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[0])==meteo["geometry"].distance(parcelle["geometry"].iloc[0]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
+#          idgeom.append(np.repeat(par,extart_meteo.shape[0]))
+#          resu=resu.append(extart_meteo)
+#     idpar=pd.DataFrame(idgeom).stack().to_list()
+#     resu["ID"]=idpar
+#     test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'ID']],on="ID")
 
-# mettre cela en df SAMIR    
-    meteo=test.filter(['ID',"DATE","ETP_Q", 'PRELIQ_Q'])
-    meteo.columns=["id",'date',"ET0",'Prec']
-    meteo["Irrig"]=0.0
-    meteo.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
+# # mettre cela en df SAMIR    
+#     meteo=test.filter(['ID',"DATE","ETP_Q", 'PRELIQ_Q'])
+#     meteo.columns=["id",'date',"ET0",'Prec']
+#     meteo["Irrig"]=0.0
+#     meteo.to_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
+    meteo2=pd.read_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
+    meteo2.drop(columns=["Unnamed: 0"],inplace=True)
+    meteo2=meteo2.loc[(meteo2.id<14) & (meteo2.id!=7)]
+    meteo2.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
 # =============================================================================
 #     Ancienne version avec intersection 
 # =============================================================================
