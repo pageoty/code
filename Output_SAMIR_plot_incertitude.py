@@ -54,14 +54,16 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_man_soil/"
-    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_man_soil/"
-    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_auto_soil/"
+    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_man_soil/"
+    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
+    label_ref="FAO irri_man"
+    label_test="FAO Irri_auto"
     years=['2008','2010']
 # =============================================================================
 
@@ -249,7 +251,7 @@ if __name__ == '__main__':
     print("============")
 
     # d["Output_model_save_fig"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_maxzr_irri_man_Bruand/"
-    d["Output_model_save_fig"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_auto_soil/"
+    d["Output_model_save_fig"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_auto_soil/"
 
     ETR_test_m20=None
     ETR_test_pl20=None
@@ -258,44 +260,44 @@ if __name__ == '__main__':
     ETR_test_FAO_m20=None
     ETR_test_FAO_pl20=None
     ETR_test_FAO=None
-    for y in ['2008','2010',"2012","2014","2015","2019"]:
+    for y in ["2008","2010","2012","2014","2015","2019"]:
         ET0=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover_irri_man_Bruand/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         data_E=ET0[["date",'ET0',"Prec"]]
         data_meteo=data_E.loc[(data_E.date>= str(y)+"-04-01") &(data_E.date <= str(y)+"-09-30")]
-        for Fco in ["_pl20","_m20",""]:
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_auto_soil"
+        # for Fco in ["_pl20","_m20",""]:
+        d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_auto_soil"
         ####  récupération num_run max incertitude
             # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_Fcover"+Fco+"_maxzr_irri_man_Bruand"
             # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_fewi_De_Kr_Fcover"+Fco+"_irri_man_Bruand"
-            ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
-            ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
-            ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
-            ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
-            ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
-            ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
-        globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        ETR_test_merlin=pd.concat([ETR_test_pl20,ETR_test_m20,ETR_test])
-        # ETR_test_merlin=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        # FAO
-        for Fco in ["_pl20","_m20",""]:
-        # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover"+Fco+"_irri_man_Bruand"
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_Fcover_irri_man_soil"
-            ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
-            ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
-            ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
-            ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
-            ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
-            ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+        ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+        ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+        ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+        ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+        ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+        ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
         # globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        # ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        globals()["ETR_test_FAO%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        ETR_test_FAO=pd.concat([ETR_test_FAO_pl20,ETR_test_FAO_m20,ETR_test_FAO])
+        # ETR_test_merlin=pd.concat([ETR_test_pl20,ETR_test_m20,ETR_test])
+        ETR_test_merlin=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        # FAO
+        # for Fco in ["_pl20","_m20",""]:
+        # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover"+Fco+"_irri_man_Bruand"
+        d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/FAO_init_ru_fewi_De_Kr_irri_man_soil"
+        ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+        ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+        ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+        ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+        ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+        ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+        ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+
+        ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        # globals()["ETR_test_FAO%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+        # ETR_test_FAO=pd.concat([ETR_test_FAO_pl20,ETR_test_FAO_m20,ETR_test_FAO])
         
         # ETR_test=pd.concat([ETR_test_pl20,ETR_test,ETR_test_m20]) # Ecrire en dur ce tableau (FAO / Merlin)
         ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv",decimal='.',sep=",")
@@ -320,7 +322,7 @@ if __name__ == '__main__':
         dfmax=dfmax.loc[(dfmax.date>= str(y)+"-04-01") &(dfmax.date <= str(y)+"-09-30")]
         dfmin=dfmin.loc[(dfmin.date>= str(y)+"-04-01") &(dfmin.date <= str(y)+"-09-30")]
         KS=pd.concat([dfmax,dfmin])
-        coeff_ks=KS.groupby("date").mean()[["Ks","Kei",'Kep',"fewi",'Kri',"SWC1",'Ir_auto']]
+        coeff_ks=KS.groupby("date").mean()[["Ks","Kei",'Kep',"fewi",'Kri',"SWC1",'Ir_auto','Dei']]
         # coeff_ks_std=KS.groupby("date").std()[["Ks2","Ir_auto"]]
         # FAO 
         ETR_test_FAO_rolling=ETR_test_FAO.T.rolling(5).mean()
@@ -337,14 +339,14 @@ if __name__ == '__main__':
         dfmax=dfmax.loc[(dfmax.date>= str(y)+"-04-01") &(dfmax.date <= str(y)+"-09-30")]
         dfmin=dfmin.loc[(dfmin.date>= str(y)+"-04-01") &(dfmin.date <= str(y)+"-09-30")]
         KS_man=pd.concat([dfmax,dfmin])
-        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov','Kri',"SWC1",'Irrig']]
+        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov','Kri',"SWC1",'Irrig','Dei']]
         # plot
         plt.figure(figsize=(7,7))
         plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
         plt.fill_between(ETR_rolling.date, ETR_obs_rolling_m20,ETR_obs_rolling_pl20,alpha=0.2,facecolor="black")
-        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR_FAO_auto',linewidth=1,color='red')
+        plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR '+label_test,linewidth=1,color='red')
         plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.min(),ETR_test_rolling.max(),alpha=0.2,facecolor="red") # revoir pour mettre l'écart types et non min et max
-        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR_FAO_man',linewidth=1,color="Blue")
+        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR' +label_ref,linewidth=1,color="Blue")
         plt.fill_between(ETR_test_FAO_rolling.T.index, ETR_test_FAO_rolling.min(),ETR_test_FAO_rolling.max(),alpha=0.2,facecolor="Blue")
         plt.plot(coeff_ks.loc[coeff_ks.Ir_auto>0.0].index,coeff_ks.Ir_auto.loc[coeff_ks.Ir_auto>0.0]/10,color='darkgreen',label="Irri_auto",linestyle="",marker="<")
         plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation_man",linestyle="",marker=">")
@@ -352,9 +354,13 @@ if __name__ == '__main__':
         plt.ylim(0,10)
         plt.legend()
         ax2 = plt.twinx()
-        ax2.plot(coeff_ks.index,coeff_ks.Ks,color='r',linestyle="--",label="Ks")
-        ax2.set_ylim(-5,1)
+        ax2.bar(data_meteo.date,data_meteo.Prec)
+        ax2.set_ylim(0,50)
         ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+        plt.ylabel("Pluviométrie")
+        # ax2.plot(coeff_ks.index,coeff_ks.Ks,color='r',linestyle="--",label="Ks")
+        ax2.set_ylim(0,50)
+        # ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
         plt.title("Dynamique ETR moyenne PFCC incertitude %s en %s"%(lc,y))
         plt.savefig(d["Output_model_save_fig"]+"/plt_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
         
@@ -363,11 +369,11 @@ if __name__ == '__main__':
         plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
         plt.fill_between(ETR_obs.date, ETR_obs.LE_Bowen.cumsum()-(20*ETR_obs.LE_Bowen/100),ETR_obs.LE_Bowen.cumsum()+(20*ETR_obs.LE_Bowen/100),alpha=0.2,facecolor="black")
         plt.fill_between(ETR_test_merlin.T.index, ETR_test_merlin.min().cumsum(),ETR_test_merlin.max().cumsum(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR_FAO_auto',color='red')
+        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR'+ label_test,color='red')
         plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
         plt.text(ETR_test_merlin.T.index[-1], ETR_test_merlin.mean().cumsum().iloc[-1], s=round(ETR_test_merlin.mean().cumsum().iloc[-1],2))
         plt.fill_between(ETR_test_FAO.T.index, ETR_test_FAO.min().cumsum(),ETR_test_FAO.max().cumsum(),alpha=0.2,facecolor="Blue")
-        plt.plot(ETR_test_FAO.T.index,ETR_test_FAO.mean().cumsum(),label='ETR_FAO_man',color='Blue')
+        plt.plot(ETR_test_FAO.T.index,ETR_test_FAO.mean().cumsum(),label='ETR '+label_ref,color='Blue')
         plt.text(ETR_test_FAO.T.index[-1], ETR_test_FAO.mean().cumsum().iloc[-1], s=round(ETR_test_FAO.mean().cumsum().iloc[-1],2))
         plt.ylabel("ETR")
         plt.ylim(0,700)
@@ -386,8 +392,8 @@ if __name__ == '__main__':
         # Creation plot
         plt.figure(figsize=(7,7))
         plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-        plt.xlabel("ETR FAO irri_man")
-        plt.ylabel("ETR_FAO auto ")
+        plt.xlabel("ETR "+label_ref)
+        plt.ylabel("ETR "+label_test)
         plt.xlim(0,10)
         plt.ylim(0,10)
         plt.scatter(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), zorder = 2)
@@ -409,7 +415,7 @@ if __name__ == '__main__':
         plt.figure(figsize=(7,7))
         plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
         plt.xlabel("ETR Obs")
-        plt.ylabel("ETR FAO auto")
+        plt.ylabel("ETR "+label_test)
         plt.xlim(0,10)
         plt.ylim(0,10)
         plt.scatter(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), zorder = 2)
@@ -432,7 +438,7 @@ if __name__ == '__main__':
         plt.figure(figsize=(7,7))
         plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
         plt.xlabel("ETR Obs")
-        plt.ylabel("ETR_FAO man")
+        plt.ylabel("ETR "+label_ref)
         plt.xlim(0,10)
         plt.ylim(0,10)
         plt.scatter(ETR_rolling.LE_Bowen, ETR_test_FAO_rolling.mean(), zorder = 2)
@@ -458,9 +464,11 @@ if __name__ == '__main__':
         fluxE_avec_Fcover=np.maximum((data_merge.Kei+data_merge.Kep)*data_merge.ET0,0)
         fluxE_sans_Fcover=np.maximum((data_merge_ss_Fcover.Kei+data_merge_ss_Fcover.Kep)*data_merge.ET0,0)
         plt.figure(figsize=(7,7))
-        plt.plot(Fcov.date,fluxE_avec_Fcover,label="Eva FAO auto")
-        plt.plot(Fcov.date,fluxE_sans_Fcover,label="Eva FAO man")
+        plt.plot(Fcov.date,fluxE_avec_Fcover,label="Eva" +label_test)
+        plt.plot(Fcov.date,fluxE_sans_Fcover,label="Eva "+label_ref)
         plt.plot(Fcov.date,coeff_ks_man.FCov,label="Fcover_samir")
+        plt.plot(coeff_ks.loc[coeff_ks.Ir_auto>0.0].index,coeff_ks.Ir_auto.loc[coeff_ks.Ir_auto>0.0]/10,color='darkgreen',label="Irri_auto",linestyle="",marker="<")
+        plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation_man",linestyle="",marker=">")
         # plt.plot(Fcov.date,Fcov.FCov,label='Fcover_BVNet',linewidth=1)
         plt.legend()
         plt.ylim(0,5)
@@ -474,8 +482,8 @@ if __name__ == '__main__':
         plt.savefig(d["Output_model_save_fig"]+"/dynamique_flux E_Fcover_%s_%s.png"%(lc,y),dpi=330)
         
         plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.index,coeff_ks.fewi,label="fewi FAo auto")
-        plt.plot(coeff_ks_man.index,coeff_ks_man.fewi,label="fewi FAO Man")
+        plt.plot(coeff_ks.index,coeff_ks.fewi,label="fewi "+label_test)
+        plt.plot(coeff_ks_man.index,coeff_ks_man.fewi,label="fewi "+label_ref)
         plt.plot(Fcov.date,coeff_ks_man.FCov,label="Fcover_samir")
         # plt.plot(Fcov.date,Fcov.FCov,label='Fcover_BVNet',linewidth=1)
         plt.legend()
@@ -486,8 +494,8 @@ if __name__ == '__main__':
         
         
         plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.index,coeff_ks.Kri,label="Kri FAO auto")
-        plt.plot(coeff_ks_man.index,coeff_ks_man.Kri,label="Kri FAO man")
+        plt.plot(coeff_ks.index,coeff_ks.Kri,label="Kri" +label_test)
+        plt.plot(coeff_ks_man.index,coeff_ks_man.Kri,label="Kri "+label_ref)
         plt.legend()
         plt.ylim(0,2)
         plt.ylabel("Kr")
@@ -495,16 +503,38 @@ if __name__ == '__main__':
         plt.savefig(d["Output_model_save_fig"]+"/dynamique_Kr_%s_%s.png"%(lc,y),dpi=330)
         
         plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.SWC1,coeff_ks.Kri,label="Kri FAO auto",marker='o',linestyle="")
-        plt.plot(coeff_ks_man.SWC1,coeff_ks_man.Kri,label="Kri FAO man",marker='o',linestyle="")
+        plt.plot(coeff_ks.Dei,coeff_ks.Kri,label="Kri "+label_test,marker='o',linestyle="")
+        plt.plot(coeff_ks_man.Dei,coeff_ks_man.Kri,label="Kri "+label_ref,marker='o',linestyle="")
         plt.legend()
         plt.ylim(0,1.5)
         plt.ylabel("Kr")
-        plt.xlabel("SWC")
+        plt.xlabel("De")
         plt.title(str(y))
-        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Kr_SWC_%s_%s.png"%(lc,y),dpi=330)
+        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Kr_Dei_%s_%s.png"%(lc,y),dpi=330)
 
-        
+# =============================================================================
+#          SWC 2012 et 2014 
+# =============================================================================
+        if "2014" in y or "2012" in y:
+            print('ici')
+            plt.figure(figsize=(7,7))    
+            SWC=pd.read_csv(d["PC_home_Wind"]+"/TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
+            SWC["Date"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
+            SWC=SWC.loc[(SWC.Date>= str(y)+"-04-01") &(SWC.Date <= str(y)+"-09-30")]
+            plt.plot(SWC["Date"],SWC.SWC_0_moy/100,label="0 cm")
+            plt.plot(SWC["Date"],SWC.SWC_5_moy/100,label="5 cm")
+            plt.plot(SWC["Date"],SWC.SWC_10_moy/100,label="10 cm")
+            plt.plot(SWC["Date"],SWC.SWC_30_moy/100,label="30 cm")
+            plt.ylim(0,1)
+            plt.legend()
+            ax2 = plt.twinx()
+            ax2.bar(data_meteo.date,data_meteo.Prec)
+            ax2.plot(coeff_ks.loc[coeff_ks.Ir_auto>0.0].index,coeff_ks.Ir_auto.loc[coeff_ks.Ir_auto>0.0],color='darkgreen',label="Irri_auto",linestyle="",marker="<")
+            ax2.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0],color='Blue',label="Irrigation_man",linestyle="",marker=">")
+            ax2.set_ylim(0,50)
+            ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+            plt.ylabel("Pluviométrie")
+            plt.savefig(d["Output_model_save_fig"]+"/dynamique_SWC_sonde_Irrigation_%s_%s.png"%(lc,y),dpi=330)
 # =============================================================================
 #         Kei merlin vs Kei FAO 
 # =============================================================================
@@ -630,6 +660,8 @@ if __name__ == '__main__':
 #     ETR_test.idxmin()
     
 # =============================================================================
+
+
 # =============================================================================
 #  Validation Irri_ préparation data 
 # =============================================================================
