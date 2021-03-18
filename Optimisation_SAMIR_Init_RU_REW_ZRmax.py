@@ -104,9 +104,10 @@ if __name__ == "__main__":
 # =============================================================================
 #   PFT burand estimation PF-CC .df  
 # =============================================================================
-        if "Bruand" in name_run:
+        if "Merlin" in name_run:
+            print('ici')
         #  Lecture file PF_CC
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=';')
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=',')
             if "max" in name_run:
                 FC_Bru=float(PF_CC.Lamothe_pond_max["CC_Bruand"])
                 WP_Bru=float(PF_CC.Lamothe_pond_max["PF_Bruand"])
@@ -139,6 +140,12 @@ if __name__ == "__main__":
                 data_tex[tex[:-6]]=val
             data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
         
+            if Sand_Ainse >= 0.80 :
+                REW = 20 - 0.15 * Sand_Ainse
+            elif Clay_Ainse >= 0.50 : 
+                REW = 11 - 0.06 * Clay_Ainse 
+            elif (Sand_Ainse < 0.80) and (Clay_Ainse < 0.50):
+                REW = 8 + 0.008 * Clay_Ainse
 # =============================================================================
 #         Incertitude sur le Fcover
 # =============================================================================
@@ -156,38 +163,39 @@ if __name__ == "__main__":
 # =============================================================================
         # Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
         # Clay = 0.5026
-        PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=';')
-        #  Lecture file PF_CC
-        if "max" in name_run:
-            FC_Bru=float(PF_CC.Lamothe_pond_max["CC_Bruand"])
-            WP_Bru=float(PF_CC.Lamothe_pond_max["PF_Bruand"])
-            Sand=float(PF_CC.Lamothe_pond_max["Sable"])
-            Clay=float(PF_CC.Lamothe_pond_max["Argile"])
-        elif "min" in name_run:
-            FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
-            WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
-            Sand=float(PF_CC.Lamothe_pond_min["Sable"])
-            Clay=float(PF_CC.Lamothe_pond_min["Argile"])
-        else:
-            FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
-            WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
-            Sand=float(PF_CC.Lamothe_pond_mod["Sable"])
-            Clay=float(PF_CC.Lamothe_pond_mod["Argile"])
-            
-        for p in ["WP_Bru","FC_Bru"]:
-            tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
-            data=pickle.load(tmp)
-            tmp.close()
-            valeur=globals()['%s'%p]
-            data[p[:-4]]=valeur
-            data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
-
-        if Sand >= 0.80 :
-            REW = 20 - 0.15 * Sand
-        elif Clay >= 0.50 : 
-            REW = 11 - 0.06 * Clay 
-        elif (Sand < 0.80) and (Clay < 0.50):
-            REW = 8 + 0.008 * Clay
+        if "FAO" in name_run:
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/PF_CC_Bruand_parcelle.csv",index_col=[0],sep=',')
+            #  Lecture file PF_CC
+            if "max" in name_run:
+                FC_Bru=float(PF_CC.Lamothe_pond_max["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_max["PF_Bruand"])
+                Sand=float(PF_CC.Lamothe_pond_max["Sable"])
+                Clay=float(PF_CC.Lamothe_pond_max["Argile"])
+            elif "min" in name_run:
+                FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+                Sand=float(PF_CC.Lamothe_pond_min["Sable"])
+                Clay=float(PF_CC.Lamothe_pond_min["Argile"])
+            else:
+                FC_Bru=float(PF_CC.Lamothe_pond_mod["CC_Bruand"])
+                WP_Bru=float(PF_CC.Lamothe_pond_mod["PF_Bruand"])
+                Sand=float(PF_CC.Lamothe_pond_mod["Sable"])
+                Clay=float(PF_CC.Lamothe_pond_mod["Argile"])
+                
+            for p in ["WP_Bru","FC_Bru"]:
+                tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+                data=pickle.load(tmp)
+                tmp.close()
+                valeur=globals()['%s'%p]
+                data[p[:-4]]=valeur
+                data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
+    
+            if Sand >= 0.80 :
+                REW = 20 - 0.15 * Sand
+            elif Clay >= 0.50 : 
+                REW = 11 - 0.06 * Clay 
+            elif (Sand < 0.80) and (Clay < 0.50):
+                REW = 8 + 0.008 * Clay
 # =============================================================================
 #         # Calibration Init_Ru, année n-1
 # =============================================================================
@@ -222,10 +230,10 @@ if __name__ == "__main__":
         result_init=result_init_cops.get_group("maize_irri")
         result_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]]
         ru_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-12-31"]
-        RUn1=ru_init.SWC2.values
-        print(r'===============')
-        print(RUn1)
-        print(r'===============')
+        # RUn1=ru_init.SWC2.values
+        # print(r'===============')
+        # print(RUn1)
+        # print(r'===============')
         RUNsoln1 = ru_init[["SWC1i","SWC1p","SWC2","SWC3"]].values.mean()
         # moyenne pondére à l'épaisseur 
         # print(ru_init["SWC1i"].values[0]) # probleme SWC1p ou SWC1i si irrigation ou non
@@ -272,7 +280,7 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=1,plateau=30,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0,Irrig_auto=1,plateau=30,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/100/lin")
             else:
                 print('two optimisation')
@@ -305,16 +313,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['PC_labo']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                              Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(lastdate),
-                               ligne_OS=7,Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                               ligne_OS=7,Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin",ligne_OS=2)
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0302'),date_end=str(y)+str(1026),
-                              Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=150,REW='optim',minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")),m=0.15, Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="REW",value_P1="-50/40/10/lin")
             elif optimis_val =="maxZr" :
                 timestart=str(y)+"-05-01"
@@ -333,13 +341,13 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0,Irrig_auto=0,Irrig_man=1,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
 
             else:
@@ -350,16 +358,16 @@ if __name__ == "__main__":
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                               d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                              Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
                                   d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                                  ligne_OS=7,Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  ligne_OS=7,Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",param2="REW",value_P2="-50/40/10/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2900/250/lin",ligne_OS=2,param2="REW",value_P2="-50/40/10/lin")
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,m=1,Lame_max=30,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,m=1,Lame_max=30,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin",param2="REW",value_P2="5/15/1/lin")
         #  Lancement du code
         if "Output" in os.listdir(d['SAMIR_run']):
