@@ -54,32 +54,33 @@ if __name__ == '__main__':
     d={}
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
-    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
-    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil"
-    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
-    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
+    name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_irri_auto_soil"
+    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/FAO_init_ru_fewi_De_Kr_irri_auto_soil"
+    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_auto_soil"
+    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_auto_soil"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    label_ref="Merlin Irri_man"
-    label_test="Merlin Irri_auto"
-    years=['2008','2010']
+    label_ref="FAO formalisme Irrigation auto"
+    label_test="Merlin formalisme Irrigation auto"
+    years=["2008","2010","2012","2014","2015"]
+    lc="maize_irri"
 # =============================================================================
 
 # Validation Flux ETR ICOS non Multi_sie run
 # =============================================================================
 # modif pour groupby lc
 
-    for y in years:
-        for lc in ["maize_irri"]: # maize_rain
-            # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
-            # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
-            d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
-            # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+    # for y in years:
+    #     for lc in ["maize_irri"]: # maize_rain
+    #         # d['Output_model_PC_labo']='/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/'+name_run+"/"+y+"/"
+    #         # d["Output_model_PC_home"]="/mnt/d/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
+    #         d["Output_model_PC_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"+y+"/"
+    #         d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+    #         d["Output_model_PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
+    #         # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"+y+"/"
             # if lc == "maize_irri":
             #     SWC=pd.read_csv(d["PC_labo"]+"TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
             #     SWC["Date/Time"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
@@ -93,105 +94,10 @@ if __name__ == '__main__':
 # =============================================================================
 #             Utilisation des flux corrigées
 # =============================================================================
-            ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
-            ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
-            ETR_obs=ETR.loc[(ETR.date >= str(y)+"-04-01") &(ETR.date <= str(y)+"-09-30")]
-            # flux non corrigés
-            # ETR_nn=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_"+str(lc)+"/ETR_"+str(lc)+"_"+str(y)+".csv",decimal='.',sep=",")
-            # ETR_nn["date"]=pd.to_datetime(ETR_nn["date"],format="%Y-%m-%d")
-            # ETR_obs_nn=ETR_nn.loc[(ETR_nn.date >= str(y)+"-04-01") &(ETR_nn.date <= str(y)+"-09-30")]
-            # Flux non corrigés
-            # ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"][:-5]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
-            # ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
-            # ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+            # ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_"+str(lc)+"/ETR_"+str(lc)+str(y)+".csv",decimal='.',sep=",")
+            # ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
+            # ETR_obs=ETR.loc[(ETR.date >= str(y)+"-04-01") &(ETR.date <= str(y)+"-09-30")]
 
-            # # Creation plot
-            # ### plot dynamique 
-            # plt.figure(figsize=(7,7))
-            # plt.plot(ETR_obs.date,ETR_obs.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-            # plt.plot(ETR_mod.T.index,ETR_mod.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
-            # plt.fill_between(ETR_mod.T.index, ETR_mod.min(),ETR_mod.max(),alpha=0.5,facecolor="red")
-            # plt.ylabel("ETR")
-            # plt.ylim(0,10)
-            # plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
-            # plt.legend()
-            # plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_%s_%s.png"%(lc,y),dpi=330)
-
-            # #### plot dyna cum
-            # plt.figure(figsize=(7,7))
-            # plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-            # plt.fill_between(ETR_mod.T.index, ETR_mod.min().cumsum(),ETR_mod.max().cumsum(),alpha=0.2,facecolor="red")
-            # plt.plot(ETR_mod.T.index,ETR_mod.mean().cumsum(),label='ETR_mod',color='red')
-            # plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
-            # plt.text(ETR_mod.T.index[-1], ETR_mod.mean().cumsum().iloc[-1], s=round(ETR_mod.mean().cumsum().iloc[-1],2))
-            # plt.ylabel("ETR")
-            # plt.ylim(0,700)
-            # plt.title("Dynamique ETR obs et ETR mod %s en %s"%(lc,y))
-            # plt.legend()
-            
-            # plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_%s_%s.png"%(lc,y))
-            ###########" Dynamique week #############
-           # Modification récuper max et min 
-            # plt.fill_between(ETR_mod.T.index, ETR_mod.xs(500.0,level=1).min().cumsum(),ETR_mod.xs(2500.0,level=1).max().cumsum(),alpha=0.2,facecolor="red")
-            # =============================================================================
-        # Moyenne glissante
-        # =============================================================================
-            # ETR_rolling=ETR_obs.rolling(5).mean()
-            # ETR_rolling["date"]=ETR_obs.date
-            # ETR_mod_rolling=ETR_mod.T.rolling(5).mean()
-            # ETR_mod_rolling=ETR_mod_rolling.T
-            # plt.figure(figsize=(7,7))
-            # plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-            # plt.plot(ETR_mod_rolling.T.index,ETR_mod_rolling.mean(),label='ETR_mod_moyenne',linewidth=1)# récupération mode 
-
-            # plt.fill_between(ETR_mod_rolling.T.index, ETR_mod_rolling.min(),ETR_mod_rolling.max(),alpha=0.5,facecolor="red")
-            # plt.ylabel("ETR")
-            # plt.ylim(0,10)
-            # plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
-            # plt.legend()
-            # plt.savefig(d["Output_model_PC_home_disk"]+"/plt_Incertitude_REW_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
-
-            # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_%s_%s.png"%(lc,y))
-            #### plot dyna cum
-            # plt.figure(figsize=(7,7))
-            # plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-            # plt.fill_between(ETR_mod_rolling.T.index, ETR_mod_rolling.min().cumsum(),ETR_mod_rolling.max().cumsum(),alpha=0.2,facecolor="red")
-            # # for REW in np.arange(0,16,1):
-            # #     print(float(REW))
-            # #     plt.fill_between(ETR_mod.T.index, ETR_mod.T[float(REW),500.0].cumsum(),ETR_mod.T[float(REW),2500.0].cumsum(),alpha=0.2,facecolor="red")
-            # plt.plot(ETR_mod_rolling.T.index,ETR_mod_rolling.mean().cumsum(),label='ETR_mod',color='red')
-            # plt.text(ETR_rolling.date.iloc[-1], ETR_rolling.LE_Bowen.cumsum().iloc[-1], s=round(ETR_rolling.LE_Bowen.cumsum().iloc[-1],2))
-            # plt.text(ETR_mod_rolling.T.index[-1], ETR_mod_rolling.mean().cumsum().iloc[-1], s=round(ETR_mod_rolling.mean().cumsum().iloc[-1],2))
-            # plt.ylabel("ETR")
-            # plt.title("Dynamique ETR obs et ETR mod moyenne glissante %s en %s"%(lc,y))
-            # plt.legend()
-            # plt.savefig(d["Output_model_PC_labo_disk"]+"/plt_Dynamique_ETR_obs_ETR_mod_cumul_mean_rolling_%s_%s.png"%(lc,y))
-# =============================================================================
-#             Scatter plot
-# =============================================================================
-            # tmp=ETR_rolling.LE_Bowen.dropna()        
-            # tmp_mod=ETR_mod_rolling.mean().dropna()
-            # slope, intercept, r_value, p_value, std_err = stats.linregress(tmp.to_list(),tmp_mod.to_list())
-            # bias=1/tmp.shape[0]*sum(np.mean(tmp_mod)-tmp) 
-            # fitLine = predict(tmp_mod)
-            # # Creation plot
-            # plt.figure(figsize=(7,7))
-            # plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-            # plt.xlabel("ETR OBS")
-            # plt.ylabel("ETR model")
-            # plt.xlim(0,10)
-            # plt.ylim(0,10)
-            # plt.scatter(ETR_rolling.LE_Bowen, ETR_mod_rolling.mean(), zorder = 2)
-            # plt.errorbar(ETR_rolling.LE_Bowen, ETR_mod_rolling.mean(), xerr = None,yerr = ETR_mod_rolling.std(),
-            #                 fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
-            # plt.title("Scatter ETR %s"%y)
-            # rms = mean_squared_error(tmp,tmp_mod)
-            # plt.text(8,min(tmp)+0.1,"RMSE = "+str(round(rms,2))) 
-            # plt.text(8,min(tmp)+0.4,"R² = "+str(round(r_value,2)))
-            # plt.text(8,min(tmp)+0.7,"Pente = "+str(round(slope,2)))
-            # plt.text(8,min(tmp)+1,"Biais = "+str(round(bias,2)))
-            # plt.savefig(d["Output_model_PC_home_disk"]+"/scatter_Incertitude_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
-            
             
 #    hypothèse irrigation validation 
 # =============================================================================
@@ -245,7 +151,7 @@ if __name__ == '__main__':
 
 
 # =============================================================================
-# Test incertitude PF_cc et Fcover
+# Plot incertitude PF_cc et Fcover
 # =============================================================================
     print("============")
     print ("Incertitude plot")
@@ -261,15 +167,28 @@ if __name__ == '__main__':
     ETR_test_FAO_m20=None
     ETR_test_FAO_pl20=None
     ETR_test_FAO=None
-    for y in ["2008","2010","2012","2014","2015","2019"]:
-        ET0=pickle.load(open("/run/media/pageot/Transcend//Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_Fcover_irri_man_soil/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
+    for y in years:
+        ET0=pickle.load(open("/run/media/pageot/Transcend//Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         data_E=ET0[["date",'ET0',"Prec"]]
         data_meteo=data_E.loc[(data_E.date>= str(y)+"-04-01") &(data_E.date <= str(y)+"-09-30")]
-        for Fco in ["_pl20","_m20",""]:
+        if "Fcover" in name_run_merlin:
+            for Fco in ["_pl20","_m20",""]:
+                d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin
+                ####  récupération num_run max incertitude
+                ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+                ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+                ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+                ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+                ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+                ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+            globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+            ETR_test_merlin=pd.concat([ETR_test_pl20,ETR_test_m20,ETR_test])
+        else:
             d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin
             ####  récupération num_run max incertitude
-                # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_optim_Fcover"+Fco+"_maxzr_irri_man_Bruand"
-                # d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_fewi_De_Kr_Fcover"+Fco+"_irri_man_Bruand"
             ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
             ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
             ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
@@ -279,14 +198,23 @@ if __name__ == '__main__':
             ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
             ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
             ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
-        globals()["ETR_test%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        ETR_test_merlin=pd.concat([ETR_test_pl20,ETR_test_m20,ETR_test])
-        # ETR_test_merlin=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        
+            ETR_test_merlin=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
         ###### run de ref en X
-        
-        for Fco in ["_pl20","_m20",""]:
-        # d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover"+Fco+"_irri_man_Bruand"
+        if "Fcover" in name_run_FAO:
+            for Fco in ["_pl20","_m20",""]:
+                d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend//Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO
+                ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
+                ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
+                ETR_mod_max=pd.read_csv(d["Output_model_PC_home_disk"]+"_max"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod_max.columns=pd.to_datetime(ETR_mod_max.columns,format="%Y-%m-%d")
+                ETR_mod_max=ETR_mod_max.loc[:,(ETR_mod_max.columns >= str(y)+"-04-01") &(ETR_mod_max.columns <= str(y)+"-09-30")]
+                ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
+                ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
+                ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+            globals()["ETR_test_FAO%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
+            ETR_test_FAO=pd.concat([ETR_test_FAO_pl20,ETR_test_FAO_m20,ETR_test_FAO])
+        else:
             d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend//Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO
             ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
             ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
@@ -297,19 +225,21 @@ if __name__ == '__main__':
             ETR_mod_min=pd.read_csv(d["Output_model_PC_home_disk"]+"_min"+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
             ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
             ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
+            ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
 
-        # ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        globals()["ETR_test_FAO%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-        ETR_test_FAO=pd.concat([ETR_test_FAO_pl20,ETR_test_FAO_m20,ETR_test_FAO])
-        
-        # ETR_test=pd.concat([ETR_test_pl20,ETR_test,ETR_test_m20]) # Ecrire en dur ce tableau (FAO / Merlin)
+# =============================================================================
+#         Utilisation des données ETR obs 
+# =============================================================================
         ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/ETR_maize_irri"+str(y)+".csv",decimal='.',sep=",")
         ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
         ETR_obs=ETR.loc[(ETR.date >= str(y)+"-04-01") &(ETR.date <= str(y)+"-09-30")]
+        #  Calcule de la moyenne glissante
         ETR_rolling=ETR_obs.rolling(5).mean()
         ETR_rolling["date"]=ETR_obs.date
         ETR_obs_rolling_pl20=ETR_rolling.LE_Bowen+(20*ETR_rolling.LE_Bowen/100)
         ETR_obs_rolling_m20=ETR_rolling.LE_Bowen-(20*ETR_rolling.LE_Bowen/100)
+        ETR_obs_m20=ETR_obs.LE_Bowen-(20*ETR_obs.LE_Bowen/100)
+        ETR_obs_p20=ETR_obs.LE_Bowen+(20*ETR_obs.LE_Bowen/100)
         # Merlin
         ETR_test_rolling=ETR_test_merlin.T.rolling(5).mean()
         ETR_test_rolling=ETR_test_rolling.T
@@ -336,24 +266,29 @@ if __name__ == '__main__':
         coup_parm_min=ETR_test_FAO_rolling.T.loc[ETR_test_FAO_rolling.columns==datefor].T.idxmin()
         #  lecture des output_LUT
         dfmax2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm.iloc[0][0])+".df","rb"))
-        dfmin=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
+        dfmin2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run_FAO+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_"+str(coup_parm_min.iloc[0][0])+".df","rb"))
         dfmax2.date=pd.to_datetime(dfmax2.date,format="%Y-%m-%d")
-        dfmin.date=pd.to_datetime(dfmin.date,format="%Y-%m-%d")
+        dfmin2.date=pd.to_datetime(dfmin2.date,format="%Y-%m-%d")
         dfmax2=dfmax2.loc[(dfmax2.date>= str(y)+"-04-01") &(dfmax2.date <= str(y)+"-09-30")]
-        dfmin=dfmin.loc[(dfmin.date>= str(y)+"-04-01") &(dfmin.date <= str(y)+"-09-30")]
-        KS_man=pd.concat([dfmax2,dfmin])
+        dfmin2=dfmin2.loc[(dfmin2.date>= str(y)+"-04-01") &(dfmin2.date <= str(y)+"-09-30")]
+        KS_man=pd.concat([dfmax2,dfmin2])
         coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov','Kri',"SWC1",'Irrig','Dei']]
-        # plot
+# =============================================================================
+#         # plot dynamique 
+# =============================================================================
         plt.figure(figsize=(7,7))
-        plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR_obs',color="black",linewidth=1)
-        plt.fill_between(ETR_rolling.date, ETR_obs_rolling_m20,ETR_obs_rolling_pl20,alpha=0.2,facecolor="None",ec='black',linestyle="--")
+        plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR obs',color="black",linewidth=1)
+        plt.fill_between(ETR_rolling.date, ETR_obs_rolling_m20,ETR_obs_rolling_pl20,alpha=0.5,facecolor="None",ec='black',linestyle="--")
         plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR '+label_test,linewidth=1,color='red')
         plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.min(),ETR_test_rolling.max(),alpha=0.2,facecolor="red") # revoir pour mettre l'écart types et non min et max
         # plt.fill_between(ETR_test_rolling.T.index, ETR_test_rolling.mean()-ETR_test_rolling.std(),ETR_test_rolling.mean()+ETR_test_rolling.std(),alpha=0.2,facecolor="green") # avec std
-        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR' +label_ref,linewidth=1,color="Blue")
+        plt.plot(ETR_test_FAO_rolling.T.index,ETR_test_FAO_rolling.mean(),label='ETR ' +label_ref,linewidth=1,color="Blue")
         plt.fill_between(ETR_test_FAO_rolling.T.index, ETR_test_FAO_rolling.min(),ETR_test_FAO_rolling.max(),alpha=0.2,facecolor="Blue")
-        plt.plot(dfmax.loc[dfmax.Ir_auto>0.0].date,dfmax.Ir_auto.loc[dfmax.Ir_auto>0.0]/10,color='darkgreen',label="Irri_auto",linestyle="",marker="x")
-        plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation_man",linestyle="",marker="+")
+        if "Irrigation" in label_ref:
+            plt.plot(dfmax.loc[dfmax.Ir_auto>0.0].date,dfmax.Ir_auto.loc[dfmax.Ir_auto>0.0]/10,color='darkgreen',label="Irrigation auto",linestyle="",marker="x")
+            plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation forcée",linestyle="",marker="+")
+        else:
+            plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation forcée",linestyle="",marker="+")
         plt.ylabel("ETR")
         plt.ylim(0,10)
         plt.legend()
@@ -370,12 +305,14 @@ if __name__ == '__main__':
         
         
         
-        # Cumul
+# =============================================================================
+#         # Cumul
+# =============================================================================
         plt.figure(figsize=(7,7))
-        plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR_obs',color="black")
-        plt.fill_between(ETR_obs.date, ETR_obs.LE_Bowen.cumsum()-(20*ETR_obs.LE_Bowen/100),ETR_obs.LE_Bowen.cumsum()+(20*ETR_obs.LE_Bowen/100),alpha=0.2,facecolor="black")
+        plt.plot(ETR_obs.date,ETR_obs.LE_Bowen.cumsum(),label='ETR obs',color="black")
+        plt.fill_between(ETR_obs.date, ETR_obs_m20.cumsum(),ETR_obs_p20.cumsum(),alpha=0.5,facecolor="None",ec='black',linestyle="--")
         plt.fill_between(ETR_test_merlin.T.index, ETR_test_merlin.min().cumsum(),ETR_test_merlin.max().cumsum(),alpha=0.2,facecolor="red")
-        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR'+ label_test,color='red')
+        plt.plot(ETR_test_merlin.T.index,ETR_test_merlin.mean().cumsum(),label='ETR '+ label_test,color='red')
         plt.text(ETR_obs.date.iloc[-1], ETR_obs.LE_Bowen.cumsum().iloc[-1], s=round(ETR_obs.LE_Bowen.cumsum().iloc[-1],2))
         plt.text(ETR_test_merlin.T.index[-1], ETR_test_merlin.mean().cumsum().iloc[-1], s=round(ETR_test_merlin.mean().cumsum().iloc[-1],2))
         plt.fill_between(ETR_test_FAO.T.index, ETR_test_FAO.min().cumsum(),ETR_test_FAO.max().cumsum(),alpha=0.2,facecolor="Blue")
@@ -384,80 +321,10 @@ if __name__ == '__main__':
         plt.ylabel("ETR")
         plt.ylim(0,700)
         plt.title("Dynamique ETR cumul incertitude %s en %s"%(lc,y))
-        plt.legend()
+        plt.legend(loc="upper left")
         plt.savefig(d["Output_model_save_fig"]+"/plt_Dynamique_ETR_ETR_cumul_incertitude_%s_%s.png"%(lc,y))
         
-        
-    #     # Scatter
-    #     tmp=ETR_rolling.LE_Bowen.dropna()        
-    #     tmp_mod=ETR_test_rolling.mean().dropna()
-    #     tmp_mod_FAO=ETR_test_FAO_rolling.mean().dropna()
-    #     slope, intercept, r_value, p_value, std_err = stats.linregress(tmp_mod_FAO.to_list(),tmp_mod.to_list())
-    #     bias=1/tmp_mod_FAO.shape[0]*sum(np.mean(tmp_mod)-tmp_mod_FAO) 
-    #     fitLine = predict(tmp_mod)
-    #     # Creation plot
-    #     plt.figure(figsize=(7,7))
-    #     plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-    #     plt.xlabel("ETR "+label_ref)
-    #     plt.ylabel("ETR "+label_test)
-    #     plt.xlim(0,10)
-    #     plt.ylim(0,10)
-    #     plt.scatter(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), zorder = 2)
-    #     plt.errorbar(ETR_test_FAO_rolling.mean(), ETR_test_rolling.mean(), xerr = ETR_test_FAO_rolling.std(),yerr = ETR_test_rolling.std(),
-    #                     fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
-    #     plt.title("Scatter ETR %s"%y)
-    #     rms = mean_squared_error(tmp_mod,tmp_mod_FAO)
-    #     plt.text(8,min(tmp_mod_FAO)+0.1,"RMSE = "+str(round(rms,2))) 
-    #     plt.text(8,min(tmp_mod_FAO)+0.4,"R² = "+str(round(r_value,2)))
-    #     plt.text(8,min(tmp_mod_FAO)+0.7,"Pente = "+str(round(slope,2)))
-    #     plt.text(8,min(tmp_mod_FAO)+1,"Biais = "+str(round(bias,2)))
-    #     plt.savefig(d["Output_model_save_fig"]+"/scatter_Incertitude_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
-    
-    # #  Merlin vs obs
-    #     slope, intercept, r_value, p_value, std_err = stats.linregress(tmp.to_list(),tmp_mod.to_list())
-    #     bias=1/tmp.shape[0]*sum(np.mean(tmp)-tmp_mod) 
-    #     fitLine = predict(tmp_mod)
-    #     # Creation plot
-    #     plt.figure(figsize=(7,7))
-    #     plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-    #     plt.xlabel("ETR Obs")
-    #     plt.ylabel("ETR "+label_test)
-    #     plt.xlim(0,10)
-    #     plt.ylim(0,10)
-    #     plt.scatter(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), zorder = 2)
-    #     plt.errorbar(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), xerr = None ,yerr = ETR_test_rolling.std(),
-    #                     fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
-    #     plt.title("Scatter ETR %s"%y)
-    #     rms = mean_squared_error(tmp,tmp_mod)
-    #     plt.text(8,min(tmp)+0.1,"RMSE = "+str(round(rms,2))) 
-    #     plt.text(8,min(tmp)+0.4,"R² = "+str(round(r_value,2)))
-    #     plt.text(8,min(tmp)+0.7,"Pente = "+str(round(slope,2)))
-    #     plt.text(8,min(tmp)+1,"Biais = "+str(round(bias,2)))
-    #     plt.savefig(d["Output_model_save_fig"]+"scatter_Incertitude_ETR_mod_obs_Fcover_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
-        
-        
-    #         #  FAo vs obs
-    #     slope, intercept, r_value, p_value, std_err = stats.linregress(tmp.to_list(),tmp_mod_FAO.to_list())
-    #     bias=1/tmp.shape[0]*sum(np.mean(tmp)-tmp_mod_FAO) 
-    #     fitLine = predict(tmp_mod_FAO)
-    #     # Creation plot
-    #     plt.figure(figsize=(7,7))
-    #     plt.plot([0.0, 10], [0.0,10], 'black', lw=1,linestyle='--')
-    #     plt.xlabel("ETR Obs")
-    #     plt.ylabel("ETR "+label_ref)
-    #     plt.xlim(0,10)
-    #     plt.ylim(0,10)
-    #     plt.scatter(ETR_rolling.LE_Bowen, ETR_test_FAO_rolling.mean(), zorder = 2)
-    #     plt.errorbar(ETR_rolling.LE_Bowen, ETR_test_FAO_rolling.mean(), xerr = None,yerr = ETR_test_FAO_rolling.std(),
-    #                     fmt = 'none', capsize = 0, ecolor = 'red', zorder = 1)
-    #     plt.title("Scatter ETR %s"%y)
-    #     rms = mean_squared_error(tmp,tmp_mod_FAO)
-    #     plt.text(8,min(tmp)+0.1,"RMSE = "+str(round(rms,2))) 
-    #     plt.text(8,min(tmp)+0.4,"R² = "+str(round(r_value,2)))
-    #     plt.text(8,min(tmp)+0.7,"Pente = "+str(round(slope,2)))
-    #     plt.text(8,min(tmp)+1,"Biais = "+str(round(bias,2)))
-    #     plt.savefig(d["Output_model_save_fig"]+"/scatter_Incertitude_ETR_mod_obs_mean_Fcover_rolling_%s_%s.png"%(lc,y),dpi=330)
-        
+
 # =============================================================================
 #         Scatter 3 datas
 # =============================================================================
@@ -476,7 +343,7 @@ if __name__ == '__main__':
         plt.ylabel("ETR simulée")
         plt.xlim(0,10)
         plt.ylim(0,10)
-        plt.scatter(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), zorder = 2,color="r",label="Obs/"+label_test)
+        plt.scatter(ETR_rolling.LE_Bowen, ETR_test_rolling.mean(), zorder = 2,color="r",label="Obs / "+label_test)
         plt.title("Scatter ETR %s"%y)
         rms = mean_squared_error(tmp,tmp_mod)
         rectangle = plt.Rectangle((0.9, 8.6),1.8,1.3, ec='red',fc='red',alpha=0.1)
@@ -490,7 +357,7 @@ if __name__ == '__main__':
         bias=1/tmp.shape[0]*sum(np.mean(tmp)-tmp_mod_FAO) 
         fitLine = predict(tmp_mod_FAO)
         # Creation plot
-        plt.scatter(ETR_rolling.LE_Bowen, ETR_test_FAO_rolling.mean(), zorder = 2,color='b',label="Obs/"+label_ref)
+        plt.scatter(ETR_rolling.LE_Bowen, ETR_test_FAO_rolling.mean(), zorder = 2,color='b',label="Obs / "+label_ref)
         rms = mean_squared_error(tmp,tmp_mod_FAO)
         rectangle = plt.Rectangle((7.9, 1),1.8,1.4, ec='blue',fc='blue',alpha=0.1)
         plt.gca().add_patch(rectangle)
@@ -512,11 +379,14 @@ if __name__ == '__main__':
         fluxE_avec_Fcover=np.maximum((data_merge.Kei+data_merge.Kep)*data_merge.ET0,0)
         fluxE_sans_Fcover=np.maximum((data_merge_ss_Fcover.Kei+data_merge_ss_Fcover.Kep)*data_merge.ET0,0)
         plt.figure(figsize=(7,7))
-        plt.plot(Fcov.date,fluxE_avec_Fcover,label="Eva" +label_test)
+        plt.plot(Fcov.date,fluxE_avec_Fcover,label="Eva " +label_test)
         plt.plot(Fcov.date,fluxE_sans_Fcover,label="Eva "+label_ref)
-        plt.plot(Fcov.date,coeff_ks_man.FCov,label="Fcover_samir")
-        plt.plot(dfmax.loc[dfmax.Ir_auto>0.0].date,dfmax.Ir_auto.loc[dfmax.Ir_auto>0.0]/10,color='darkgreen',label="Irri_auto",linestyle="",marker="x")
-        plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation_man",linestyle="",marker="+")
+        plt.plot(Fcov.date,coeff_ks_man.FCov,label="Fcover Samir")
+        if "Irrigation" in label_ref:
+            plt.plot(dfmax.loc[dfmax.Ir_auto>0.0].date,dfmax.Ir_auto.loc[dfmax.Ir_auto>0.0]/10,color='darkgreen',label="Irrigation auto",linestyle="",marker="x")
+            plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation forcée",linestyle="",marker="+")
+        else:
+            plt.plot(coeff_ks_man.loc[coeff_ks_man.Irrig>0.0].index,coeff_ks_man.Irrig.loc[coeff_ks_man.Irrig>0.0]/10,color='Blue',label="Irrigation forcée",linestyle="",marker="+")
         # plt.plot(Fcov.date,Fcov.FCov,label='Fcover_BVNet',linewidth=1)
         plt.legend()
         plt.ylim(0,5)
@@ -542,20 +412,20 @@ if __name__ == '__main__':
         
         
         plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.index,coeff_ks.Kei,label="Kei" +label_test,color='red')
+        plt.plot(coeff_ks.index,coeff_ks.Kei,label="Kei " +label_test,color='red')
         plt.plot(coeff_ks_man.index,coeff_ks_man.Kei,label="Kei "+label_ref,color='blue')
         plt.legend()
         plt.ylim(0,2)
-        plt.ylabel("Kr et Ks")
+        plt.ylabel("Kr")
         plt.title(str(y))
         ax2 = plt.twinx()
-        ax2.plot(coeff_ks.index,coeff_ks.Ks,label="Ks" +label_test,linestyle="--",color='red')
+        ax2.plot(coeff_ks.index,coeff_ks.Ks,label="Ks " +label_test,linestyle="--",color='red')
         ax2.plot(coeff_ks_man.index,coeff_ks_man.Ks,label="Ks "+label_ref,linestyle="--",color='blue')
         ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
         ax2.set_ylim(-1,1.5)
+        ax2.set_ylabel("Ks")
         ax2.legend(loc="upper left")
         plt.savefig(d["Output_model_save_fig"]+"/dynamique_Ke_Ks_%s_%s.png"%(lc,y),dpi=330)
-        
         plt.figure(figsize=(7,7))
         plt.plot(coeff_ks.Dei,coeff_ks.Kri,label="Kri "+label_test,marker='o',linestyle="")
         plt.plot(coeff_ks_man.Dei,coeff_ks_man.Kri,label="Kri "+label_ref,marker='o',linestyle="")
