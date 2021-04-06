@@ -63,9 +63,9 @@ if __name__ == '__main__':
 #     meteo.columns=["id",'date',"ET0",'Prec']
 #     meteo["Irrig"]=0.0
 #     meteo.to_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
-    meteo2=pd.read_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
+    meteo2=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
     meteo2.drop(columns=["Unnamed: 0"],inplace=True)
-    meteo2=meteo2.loc[(meteo2.id<14) & (meteo2.id!=7)]
+    meteo2=meteo2.loc[(meteo2.id<14)]# & (meteo2.id!=7)]
     meteo2.to_pickle(d["path_run"]+"/maize_irri/meteo.df")
 # =============================================================================
 #     Ancienne version avec intersection 

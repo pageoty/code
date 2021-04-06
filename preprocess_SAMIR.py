@@ -42,8 +42,8 @@ if __name__ == "__main__":
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
-    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    # d["path_run_home"]="D:/THESE_TMP/TRAITEMENT/"+name_run+"/"
+    # d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
@@ -195,26 +195,29 @@ if __name__ == "__main__":
     # for bv in ZONE:
     #     if bv =="Fusion":
     #         Parcellaire=geo.read_file(d["PC_disk"]+"TRAITEMENT/DONNEES_VALIDATION_SAMIR/Parcelle_"+str(years)+".shp")
-    #         for i in ["WP",'FC']:
-    #             soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
-    #             soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
-    #         'min_0', 'max_0', 'geometry'],inplace=True)
-    #             soil.columns=["id",str(i),str(i+'std')]
-    #             soil.to_pickle(d["path_run"]+str(i)+'.df')
+            # for i in ["WP",'FC']:
+            #     soil=geo.read_file(d["PC_disk"]+'TRAITEMENT/'+str(i)+'_0_2m_all_data.shp')
+            #     soil.drop(columns=[ 'NOM', 'CULTURE', 'CULTURES','NUM', 'count',
+            # 'min_0', 'max_0', 'geometry'],inplace=True)
+            #     soil.columns=["id",str(i),str(i+'std')]
+            #     soil.to_pickle(d["path_run"]+str(i)+'.df')
     
     # # =============================================================================
     # #  SOIL data Lamothe
     # # =============================================================================
     #     elif bv =="PARCELLE_CESBIO":
-    #         for i in ["WP",'FC']:
-    #             soil=pd.DataFrame({"id": [1], i: [np.nan],i+"std":[np.nan]})
-    #             if i=="FC":
-    #                 soil[str(i)].loc[0]=0.3635
-    #                 soil[str(i)].loc[1]=np.mean([0.310,0.392])
-    #             else:
-    #                 soil[str(i)].loc[0]=np.mean([0.175,0.169])
-    #                 soil[str(i)].loc[1]=np.mean([0.131,0.185])
-    #             soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
+            # for i in ["WP",'FC']:
+            #     soil=pd.DataFrame()
+            #     for j in np.arange(1,14):
+            #         a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
+            #         soil=soil.append(a)
+            #     # if i=="FC":
+            #     #     soil[str(i)].loc[0]=0.3635
+            #     #     soil[str(i)].loc[1]=np.mean([0.310,0.392])
+            #     # else:
+            #     #     soil[str(i)].loc[0]=np.mean([0.175,0.169])
+            #     #     soil[str(i)].loc[1]=np.mean([0.131,0.185])
+            #     soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
     # # =============================================================================
     # #     Soil Grignon 
     # # =============================================================================
@@ -243,16 +246,20 @@ if __name__ == "__main__":
 #     # =============================================================================
 #     #  SOIL data Lamothe
 #     # =============================================================================
-#         elif bv =="PARCELLE_CESBIO":
-#             soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
-#             for i in ["Clay",'Sand']:
-#                 if i=="Clay":
-#                     soil[str(i)].loc[0]=0.5026
-#                     soil[str(i)].loc[1]=np.mean([0,0])
-#                 else:
-#                     soil[str(i)].loc[0]=0.5585
-#                     soil[str(i)].loc[1]=np.mean([0,0])
-#             soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
+# #         elif bv =="PARCELLE_CESBIO":
+#                 soil=pd.DataFrame()
+#                 for j in np.arange(1,14):
+#                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+#                     soil=soil.append(a)
+#                     # soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+# # #             for i in ["Clay",'Sand']:
+# # #                 if i=="Clay":
+# # #                     soil[str(i)].loc[0]=0.5026
+# # #                     soil[str(i)].loc[1]=np.mean([0,0])
+# # #                 else:
+# # #                     soil[str(i)].loc[0]=0.5585
+# # #                     soil[str(i)].loc[1]=np.mean([0,0])
+#                 soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
 #     # =============================================================================
 #     #     Soil Grignon 
 #     # =============================================================================
@@ -340,80 +347,80 @@ if __name__ == "__main__":
 # # =============================================================================
 # #  Préparation des Fcovers
 # # =============================================================================
-    for bv in ZONE:
-        if bv =="Fusion":
-            print("pas pret")
-        elif bv == "PARCELLE_CESBIO":
-            df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=";")
-            # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
-            # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
-            df.set_index('date',inplace=True)
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=1
-            FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
-        elif bv =="PARCELLE_GRIGNON":
-            df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
-            df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
-            df.set_index('date',inplace=True)
-            df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
-            df=df.resample("D").interpolate()
-            df.reset_index(inplace=True)
-            FCOVER=df
-            FCOVER.columns=["date","FCov"]
-            FCOVER["id"]=2
-            FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
-        elif bv=="CACG":
-            dfnames=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TYP.txt",sep=',', header=None)
-            dates=dfnames[0].apply(lambda x:x[11:19])
-            dates=pd.to_datetime(dates,format="%Y%m%d")
-            df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/PARCELLE_CACG_TYN_2017.csv",decimal=".")
-            tmp=df[["ID"]]
-            tmp1=pd.DataFrame()
-            for i in np.arange(0,41,2):
-                a=df["mean_"+str(i)]
-                tmp1=tmp1.append(a)
-            Fcover=tmp1.T
-            Fcover.columns=list(dates)
-            # Fcover=Fcover.T
-            Fcover.T.sort_index(inplace=True)
-            Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
-            Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
-            Fcover=Fcover.append(df.ID)
-            Fcover=Fcover.T
-            Fcover.set_index("ID",inplace=True)
-            FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
-            FCOVER.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
-            FCOVER=FCOVER.loc[(FCOVER.ID<14.0)&(FCOVER.ID!=7.0)]
-            #  Manque ID 2 et 3
-            dfnamesTCJ=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TCJ.txt",sep=',', header=None)
-            dates=dfnamesTCJ[0].apply(lambda x:x[0:8])
-            dates=pd.to_datetime(dates,format="%Y%m%d")
-            df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/PARCELLE_CACG_TCJ_2017.csv",decimal=".")
-            df=df.loc[df.ID<4]
-            tmp=df[["ID"]]
-            tmp1=pd.DataFrame()
-            for i in np.arange(0,int(df.columns[-1][-3:]),2):
-                a=df["mean_"+str(i)]
-                tmp1=tmp1.append(a)
-            Fcover=tmp1.T
-            Fcover.columns=list(dates)
-            Fcover.T.sort_index(inplace=True)
-            # Fcover=Fcover.T
-            Fcover=Fcover.T[~Fcover.T.index.duplicated(keep='last')]
-            Fcover=Fcover.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
-            Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
-            Fcover=Fcover.append(df.ID)
-            Fcover=Fcover.T
-            Fcover.set_index("ID",inplace=True)
-            FCOVERTCJ=pd.DataFrame(Fcover.T.unstack()).reset_index()
-            FCOVERTCJ.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
+    # for bv in ZONE:
+    #     if bv =="Fusion":
+    #         print("pas pret")
+    #     elif bv == "PARCELLE_CESBIO":
+    #         df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=";")
+    #         # df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/FCOVER_parcelles_"+str(years)+".csv",sep=",")
+    #         # df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #         df.date=pd.to_datetime(df.date,format="%d/%m/%Y")
+    #         df.set_index('date',inplace=True)
+    #         df=df.resample("D").interpolate()
+    #         df.reset_index(inplace=True)
+    #         FCOVER=df
+    #         FCOVER.columns=["date","FCov"]
+    #         FCOVER["id"]=1
+    #         FCOVER.to_pickle(d["path_run"]+"/maize_irri/FCOVER.df")
+    #     elif bv =="PARCELLE_GRIGNON":
+    #         df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_Grignon/FCOVER_Grignon_"+str(years)+".csv")
+    #         df.date=pd.to_datetime(df.date,format="%Y-%m-%d")
+    #         df.set_index('date',inplace=True)
+    #         df=df[df.index !='2019-08-24'] # data nuageuse sur la parcelle de Grignon
+    #         df=df.resample("D").interpolate()
+    #         df.reset_index(inplace=True)
+    #         FCOVER=df
+    #         FCOVER.columns=["date","FCov"]
+    #         FCOVER["id"]=2
+    #         FCOVER.to_pickle(d["path_run"]+"/maize_rain/FCOVER.df")
+    #     elif bv=="CACG":
+    #         dfnames=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TYP.txt",sep=',', header=None)
+    #         dates=dfnames[0].apply(lambda x:x[11:19])
+    #         dates=pd.to_datetime(dates,format="%Y%m%d")
+    #         df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/PARCELLE_CACG_TYN_2017.csv",decimal=".")
+    #         tmp=df[["ID"]]
+    #         tmp1=pd.DataFrame()
+    #         for i in np.arange(0,41,2):
+    #             a=df["mean_"+str(i)]
+    #             tmp1=tmp1.append(a)
+    #         Fcover=tmp1.T
+    #         Fcover.columns=list(dates)
+    #         # Fcover=Fcover.T
+    #         Fcover.T.sort_index(inplace=True)
+    #         Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+    #         Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+    #         Fcover=Fcover.append(df.ID)
+    #         Fcover=Fcover.T
+    #         Fcover.set_index("ID",inplace=True)
+    #         FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+    #         FCOVER.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
+    #         FCOVER=FCOVER.loc[(FCOVER.ID<14.0)&(FCOVER.ID!=7.0)]
+    #         #  Manque ID 2 et 3
+    #         dfnamesTCJ=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TCJ.txt",sep=',', header=None)
+    #         dates=dfnamesTCJ[0].apply(lambda x:x[0:8])
+    #         dates=pd.to_datetime(dates,format="%Y%m%d")
+    #         df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/PARCELLE_CACG_TCJ_2017.csv",decimal=".")
+    #         df=df.loc[df.ID<4]
+    #         tmp=df[["ID"]]
+    #         tmp1=pd.DataFrame()
+    #         for i in np.arange(0,int(df.columns[-1][-3:]),2):
+    #             a=df["mean_"+str(i)]
+    #             tmp1=tmp1.append(a)
+    #         Fcover=tmp1.T
+    #         Fcover.columns=list(dates)
+    #         Fcover.T.sort_index(inplace=True)
+    #         # Fcover=Fcover.T
+    #         Fcover=Fcover.T[~Fcover.T.index.duplicated(keep='last')]
+    #         Fcover=Fcover.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+    #         Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+    #         Fcover=Fcover.append(df.ID)
+    #         Fcover=Fcover.T
+    #         Fcover.set_index("ID",inplace=True)
+    #         FCOVERTCJ=pd.DataFrame(Fcover.T.unstack()).reset_index()
+    #         FCOVERTCJ.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
 
-            Fcover_all=pd.concat([FCOVER,FCOVERTCJ])
-            FCOVER.to_pickle(d["path_run"]+"/maize_irri/Fcover.df")
+    #         Fcover_all=pd.concat([FCOVER,FCOVERTCJ])
+    #         FCOVER.to_pickle(d["path_run"]+"/maize_irri/Fcover.df")
 
 
            
