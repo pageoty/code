@@ -376,7 +376,7 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
                     else:
                         print("Irri manuel activé")
@@ -442,7 +442,7 @@ if __name__ == "__main__":
                 if "Fcover" in name_run:
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri --cpu 3 --formaREW Merlin -soiltext Soil_texture.df')
                 else:
-                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri --cpu 1 --formaREW Merlin -soiltext Soil_texture.df')
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri --cpu 3 --formaREW Merlin -soiltext Soil_texture.df')
             elif "FAO" in name_run:
                 print("FAO use")
                 if "Fcover" in name_run:
@@ -558,160 +558,27 @@ if __name__ == "__main__":
                     # RESU.[-50.0][1000.0] # selection les ET REW -50 et maxZr = 1000
                 RESU.to_csv(d["SAMIR_run"][:-5]+"LUT_ETR%s.csv"%(y))
                 resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%(optimis_val))
-            
-# =============================================================================
-#              Ancienne version 
-# =============================================================================
-    #     for classe in classes:
-    #         if len(optimis_val) > 5:
-    #             param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=2,sep=";")
-    #             param.set_index(0,inplace=True)
-    #         else:
-    #             param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test.df_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
-    #             param.set_index(0,inplace=True)
-    #         #  Récuparation data_validation ETR
-    #         if classe =='maize_irri':
-    #             ETR_lam=pd.read_csv("/mnt/d/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
-    #             ETR_lam.date=pd.to_datetime(ETR_lam["date"],format='%Y-%m-%d')
-    #         else:
-    #             ETR_gri=pd.read_csv("/mnt/d/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_GRIGNON/DATA_ETR_GRIGNON_ICOS/ETR_GRIGNON"+str(y)+".csv",decimal='.')
-    #             ETR_gri.date=pd.to_datetime(ETR_gri["date"],format='%Y-%m-%d')
-    #             # Récupération des output de la simulation 
-    #         for run in os.listdir(d["SAMIR_run"]+"Output/"+optimis_val+"/"):
-    #             print(run)
-    #             if classe in run and "txt" not in run:
-    #                 num_run=run[23:]
-    #                 a=open(d["SAMIR_run"]+"Output/"+optimis_val+"/"+run,"rb")
-    #                 output_sim=pickle.load(a)
-    #                 ETRmod=output_sim[["ET","date"]]
-    #                 a.close()
-    #                 #  Récuper le couple de paramètre que je vais varier
-    #                 if len(optimis_val) < 6:
-    #                     parametre=param.iloc[int(num_run)]
-    #                     print (parametre)
-    #                     parametre1=parametre[1]
-    #                     # print (r'para %s;'%(parametre1)) 
-    #                 else: 
-    #                     parametre=param.iloc[int(num_run)]
-    #                     parametre1=parametre[1]
-    #                     parametre2=parametre[2]
-    #                     # print (r'para %s; para2 %s'%(parametre1,parametre2))    
-    #                 # localiser les nan dans ETR, les supprimer ainsi que les dates pour ensuite comparer 
-    #                 if classe =='maize_irri':
-    #                     # dfETR=pd.concat([ETR_lam,ETRmod],axis=1)
-    #                     dfETR=pd.merge(ETR_lam,ETRmod,on=["date"])
-    #                 else:
-    #                     # dfETR=pd.concat([ETR_gri,ETRmod],axis=1)
-    #                     dfETR=pd.merge(ETR_gri,ETRmod,on=["date"])
-    #                 dfETR.columns=["date",'LE','ET']
-    #                 dfETR_day=dfETR.set_index('date').resample("D").asfreq()
-    #                 dfETR=dfETR.set_index('date').resample("W").asfreq()
-    #                 # dfETR.to_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/CSV/ETR_%s_%s.csv"%(classe,num_run))
-    #                 dfETR.dropna(inplace=True)
-    #                 dfETR_day.dropna(inplace=True)
-    #                 if dfETR.shape[0]==0:
-    #                     print("%s non utilisable " %y) # pas de date similaire entre modélisation et ETRobs
-    #                     continue
-    #                 else:
-    #                     slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
-    #                     bias=1/dfETR_day.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
-    #                     fitLine = predict(dfETR.LE)
-    #                 #     plt.figure(figsize=(7,7))
-    #                 #     plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
-    #                 #     plt.plot(dfETR.LE,fitLine,linestyle="-")
-    #                 #     plt.scatter(dfETR.LE,dfETR.ET,c=select_color_date(dfETR),s=9)
-    #                 #     plt.legend(('bare_soil', 'Vege'))
-    #                 #     plt.xlabel("ETR OBS")
-    #                 #     plt.ylabel("ETR model")
-    #                 #     plt.xlim(0,10)
-    #                 #     plt.ylim(0,10)
-    #                     rms = mean_squared_error(dfETR.LE,dfETR.ET,squared=False)
-    #                 #     plt.text(8,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
-    #                 #     plt.text(8,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
-    #                 #     plt.text(8,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
-    #                 #     plt.text(8,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
-    #                 #     plt.savefig(d["SAMIR_run"]+"Output/"+optimis_val+"/Plot/plt_scatter_ETR_%s_%s_%s.png"%(classe,optimis_val,str(int(parametre1))))
-    #                 #     plt.figure(figsize=(7,7))
-    #                 #     plt.plot(dfETR.index,dfETR.LE,label='ETR_obs',color="black")
-    #                 #     plt.plot(dfETR.index,dfETR.ET,label='ETR_mod',color='red')
-    #                 #     plt.ylabel("ETR")
-    #                 #     plt.ylim(0,10)
-    #                 #     plt.legend()
-    #                 #     plt.savefig(d["SAMIR_run"]+"Output/"+optimis_val+"/Plot/Plot_dyna/plt_dynamique_ETR_%s_%s_%s.png"%(classe,optimis_val,str(int(parametre1))))
-    #                     if len(optimis_val) < 6:
-    #                         result.append([num_run,parametre1,rms,bias,r_value,y,classe])
-    #                     else: 
-    #                         result.append([num_run,parametre1,parametre2,rms,bias,r_value,y,classe])
-    #         if len(optimis_val) < 6:
-    #             resultat=pd.DataFrame(result,columns=["Num_run","Param1","RMSE",'bias','R','years','OS'])
-    #         else:
-    #             resultat=pd.DataFrame(result,columns=["Num_run","Param1","Param2","RMSE",'bias','R','years','OS'])
-    #         resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%(optimis_val))
-    # plt.figure(figsize=(7,7))
-    # for y in years: 
-    #     # all_min=[]
-    #     df=pd.read_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%optimis_val)
-    #     class_OS=df.groupby("OS")
-    #     for Os in classes:
-    #         # if len(optimis_val) < 6:
-    #             data=class_OS.get_group(Os)
-    #             a=data.groupby("years")
-    #             b=a.get_group(int(y))
-    #             b.sort_values("Param1",ascending=True,inplace=True)
-    #             minval=b.loc[b["RMSE"].idxmin()]
-    #             print(minval)
-    #             # all_min.append(minval)
-    #             x=[]
-    #             y=[]
-    #             # for p in sorted(list(set(b.Param1))):
-    #             #     test=b[b.Param1==p]
-    #             #     a=b[b.Param1==p]["RMSE"].idxmin()
-    #             #     x.append(b.loc[a].Param1)
-    #             #     y.append(b.loc[a].RMSE)
-    #             # plt.plot(x,y,label=str(years))
-    #             plt.plot(b.Param1,b.RMSE,label=str(set(b.years)).strip("{}"))
-    #             plt.plot(minval.Param1,minval.RMSE,marker="*",color="Black")
-    #             plt.text(minval.Param1,minval.RMSE,s="min: %s"%(minval.Param1))
-    #             plt.legend()
-    #             plt.xlabel(optimis_val)
-    #             plt.title(optimis_val)
-    #             plt.ylabel("RMSE ETRobs/ETRmod")
-    #     plt.savefig(d["SAMIR_run"][:-5]+"min_value_optimi_%s.png"%(optimis_val))
-# test plot
-    # x=[]
-    # y=[]
-    # c=[]
-    # minva=pd.DataFrame()
-    # plt.figure(figsize=(7,7))
-    # for p in sorted(list(set(b.Param1))):
-    #     test=b[b.Param1==p]
-    #     minval=test.loc[test["RMSE"].idxmin()]
-    #     a=b[b.Param1==p]["RMSE"].idxmin()
-    #     x.append(b.loc[a].Param1)
-    #     y.append(b.loc[a].RMSE)
-    #     c.append(b.loc[a].Param2)
-    #     minva=minva.append(minval)
-    # plt.plot(x,y)
-    # plt.plot(minva.Param1,minva.RMSE,marker="*",color="Black")
-    # plt.text(minva.Param1,minva.RMSE,s=c)
-        
-        
-        
-        # minall=pd.DataFrame(all_min)
-        # minall["Param1"].mean()
-    #     # minall.to_csv( d["Output_PC_home"]+"Sans_Spin/min_value_Zrmax"+name_run[-10:]+".csv")
-    # df=pd.read_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%optimis_val)
-    # for y in ["2006","2008","2010",'2012','2014','2019']:
-    #     plt.figure(figsize=(10,10))
-    #     g=test.groupby("years")
-    #     test1=g.get_group(int(y))
-    #     test1=test1[["Param1","Param2","RMSE"]]
-    #     test1.columns=["REW","zrmax",'RMSE']
-    #     test2=test1.pivot("REW",'zrmax','RMSE')
-    #     sns.heatmap(test2,annot=True)
-    #     plt.title(y)
-    #     plt.savefig("D:/THESE_TMP/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/bin/OPTI_ICOS_MULTI_SITE_pluvio_stat_two_param/plot_test"+y+".png")
-    #     # nump_data=np.array(test2)
-    #     # plt.imshow(nump_data)
-        # plt.colorbar()
-
+            else:
+                 params=[]
+                 concat_ir=[]
+                 for run in os.listdir(d["SAMIR_run"]+"Output/"+optimis_val+"/"):
+                    print(run)
+                    if classe in run and "txt" not in run:
+                        num_run=run[23:-3]
+                        print(num_run)
+                        a=open(d["SAMIR_run"]+"Output/"+optimis_val+"/"+run,"rb")
+                        output_sim=pickle.load(a)
+                        a.close()
+                        Irrigation_mod=output_sim[["Ir_auto","date","id"]]
+                        parametre=param.iloc[int(num_run)]
+                        parametre1=parametre[1]
+                        params.append([num_run,parametre1])
+                        para=pd.DataFrame(params)
+                        a=pd.MultiIndex.from_frame(para,names=['num_run',"maxZr"])
+                        concat_ir.append(Irrigation_mod["Ir_auto"])
+                        conca=pd.DataFrame(concat_ir)
+                        RESU=pd.DataFrame(conca.values,index=a,columns=Irrigation_mod.date)
+                        RESU.sort_index(inplace=True)
+                        RESU=RESU.T
+                        RESU["ID"]=Irrigation_mod["id"].values
+                 RESU.to_csv(d["SAMIR_run"][:-5]+"LUT_%s.csv"%(y))
