@@ -53,8 +53,8 @@ def mergeVectors(outname, opath, files, ext="shp", out_Tbl_name=None):
 if __name__ == "__main__":
     
     years ="2017"
-    method="SHARK"# or "OPEN_CV" or "SEASON_TIME" or "SHARK"
-    bv="TARN" # or TARN
+    method="SEASON_TIME"# or "OPEN_CV" or "SEASON_TIME" or "SHARK"
+    bv="ADOUR" # or TARN
     d={}
     d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["data_tra"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
@@ -113,7 +113,7 @@ if __name__ == "__main__":
                         if BV[:-4] == bv :
                             print (True)
                             ConcatenateImages_CROPS = otbApplication.Registry.CreateApplication("ConcatenateImages") # Create Otb Application 
-                            ConcatenateImages_CROPS.SetParameterStringList("il",[d["data_tra_usb"]+'/RPG/MASk_'+years+'_RECAL_TARN_AVAL.tif']) # or MASK_RPG_2018_Er10.tif & MASK_MT_RPG2017.tif
+                            ConcatenateImages_CROPS.SetParameterStringList("il",[d["data_tra_usb"]+'/RPG/MASk_'+years+'_RECAL_ADOUR.tif']) # or MASK_RPG_2018_Er10.tif & MASK_MT_RPG2017.tif
                             ConcatenateImages_CROPS.SetParameterString("out", "mask_crops.tif")
                             ConcatenateImages_CROPS.Execute()
                             ConcatenateImages_MASK = otbApplication.Registry.CreateApplication("ConcatenateImages") # Create Otb Application 

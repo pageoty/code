@@ -144,9 +144,16 @@ if __name__ == "__main__":
         NDVI["id"]=identity
         NDVI["date"]=date
         NDVI["date"]=pd.to_datetime(NDVI.date,format="%Y%m%d")
-        NDVI=NDVI.loc[(NDVI.id<14.0)&(NDVI.id!=7.0) & (NDVI.id!=5.0) & (NDVI.id!=2) & (NDVI.id!=3)]
+        NDVI=NDVI.loc[(NDVI.id<14.0)&(NDVI.id!=6.0) & (NDVI.id!=8.0) & (NDVI.id!=2) & (NDVI.id!=3)]
         NDVI.columns=["NDVI","id","date"]
-        NDVI.to_pickle(d["path_run"]+'/maize_irri/NDVI'+str(years)+'.df')
+        # NDVI.to_pickle(d["path_run"]+'/maize_irri/NDVI'+str(years)+'.df')
+        
+        
+        # for i in list(set(NDVI.id)):
+        #     plt.figure(figsize=(10,10))
+        #     plt.plot(NDVI.loc[NDVI.id==i]["date"],NDVI.loc[NDVI.id==i]["NDVI"],label=i)
+        #     plt.legend()
+            
 # =============================================================================
 #   NDVI 
 # =============================================================================
@@ -219,8 +226,8 @@ if __name__ == "__main__":
                 # else:
                 #     soil[str(i)].loc[0]=np.mean([0.175,0.169])
                 #     soil[str(i)].loc[1]=np.mean([0.131,0.185])
-                soil=soil.loc[(soil.id!=7.0) & (soil.id!=5.0) & (soil.id!=2) & (soil.id!=3)]
-                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
+                soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
+                # soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df') 
     # # =============================================================================
     # #     Soil Grignon 
     # # =============================================================================
@@ -254,7 +261,7 @@ if __name__ == "__main__":
                 for j in np.arange(1,14):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
-                    soil=soil.loc[(soil.id!=7.0) & (soil.id!=5.0) & (soil.id!=2) & (soil.id!=3)]
+                    soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
 # #                     # soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
 # # # #             for i in ["Clay",'Sand']:
@@ -264,7 +271,7 @@ if __name__ == "__main__":
 # # # #                 else:
 # # # #                     soil[str(i)].loc[0]=0.5585
 # # # #                     soil[str(i)].loc[1]=np.mean([0,0])
-                soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
+                # soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
 # #     # =============================================================================
 #     #     Soil Grignon 
 #     # =============================================================================
@@ -385,7 +392,7 @@ if __name__ == "__main__":
             df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/PARCELLE_CACG_TYP_"+str(years)+".csv",decimal=".")
             tmp=df[["ID"]]
             tmp1=pd.DataFrame()
-            for i in np.arange(0,49,2):
+            for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
             Fcover=tmp1.T
@@ -398,8 +405,9 @@ if __name__ == "__main__":
             Fcover=Fcover.T
             Fcover.set_index("ID",inplace=True)
             FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
-            FCOVER.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
-            FCOVER=FCOVER.loc[(FCOVER.ID<14.0)&(FCOVER.ID!=7.0) & (FCOVER.ID!=5.0) & (FCOVER.ID!=2.0) & (FCOVER.ID!=3.0)]
+            FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
+            FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=6.0) & (FCOVER.id!=8.0) & (FCOVER.id!=2) & (FCOVER.id!=3)]
+            # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
             #  Manque ID 2 et 3
             # dfnamesTCJ=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TCJ.txt",sep=',', header=None)
             # dates=dfnamesTCJ[0].apply(lambda x:x[11:19])

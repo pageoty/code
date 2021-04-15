@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
-    years=["2017"]
+    years=["2017","2018"]
     
     
     #  Add args User PC home/ PC labo
@@ -152,7 +152,7 @@ if __name__ == "__main__":
         elif "CACG" in name_run : 
             print('CACG parcelle')
         #  Lecture file PF_CC
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ref_2017_NESTE_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ref_"+str(y)+"_NESTE_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
             # PF_CC.dropna(inplace=True)
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]

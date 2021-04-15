@@ -66,7 +66,7 @@ if __name__ == '__main__':
 #     meteo.to_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
     meteo2=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
     meteo2.drop(columns=["Unnamed: 0"],inplace=True)
-    meteo2=meteo2.loc[(meteo2.id<14) & (meteo2.id!=7) & (meteo2.id!=5.0) & (meteo2.id!=2) & (meteo2.id!=3)]
+    meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
     meteo2.date=pd.to_datetime(meteo2.date,format="%Y-%m-%d")
     meteo2.to_pickle(d["path_run_disk"]+"/maize_irri/meteo.df")
 # =============================================================================
