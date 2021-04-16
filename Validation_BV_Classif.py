@@ -59,11 +59,11 @@ if __name__ == "__main__":
     d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["data_tra"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
     d["output_file"]='/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
-    d["output_file_unix"]='/mnt/h/Yann_THESE/DATA_CLASSIFICATION/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
-    d["data_file_unix"]="/mnt/h/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["data_tra_unix"]="/mnt/h/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["data_tra_usb"]="/mnt/g/THESE/CLASSIFICATION/TRAITEMENT/"
-    d["data_tra_data"]="/mnt/g/THESE/CLASSIFICATION/"
+    d["output_file_unix"]='/run/media/pageot/Transcend/Yann_THESE/DATA_CLASSIFICATION/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
+    d["data_file_unix"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/RESULT/"
+    d["data_tra_unix"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
+    d["data_tra_usb"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/TRAITEMENT/"
+    d["data_tra_data"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/"
     ram=5000
     tuiles=["T31TCJ","T31TDJ","T30TYP","T30TYN"]
     grain=range(0,5)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
         
     for classif in os.listdir(d["data_file_unix"]+'/'+years+'/RUN_fixe_seed/'+method):
-        if "SAISON" in classif and "NESTE" not in classif and "DES" not in classif and "3ind" not in classif : 
+        if "ASC" in classif and "NESTE" not in classif and "DES" not in classif and "3ind" not in classif : 
             print ("=============")
             print (r" RUN : %s " %classif)
             print ("=============")
