@@ -47,17 +47,17 @@ if __name__ == "__main__":
     d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
     d["PC_disk_Wind"]="D:/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
     d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
-    d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU"
 # =============================================================================
 #  Plot NDVI & meteo
 # =============================================================================
     # Pluvio_all=pd.DataFrame()
     # Pluvio_cum=pd.DataFrame()
     # Pluvio_sais=pd.DataFrame()
-    ITK=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/DONNEES_VALIDATION_SAMIR/merge_parcelle_"+str(years)+".csv",decimal=",")
+    ITK=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAUTRAITEMENT/DONNEES_VALIDATION_SAMIR/merge_parcelle_"+str(years)+".csv",decimal=",")
     ITK["Date_irrigation"]=pd.to_datetime(ITK["Date_irrigation"],format="%d/%m/%Y")
     ITK["Date de semis"]=pd.to_datetime(ITK["Date de semis"],format="%d/%m/%Y")
-    NDVI=pd.read_csv("G:/Yann_THESE/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/Fusion/NDVI_raw/NDVI_ref_parcelle_"+str(years)+".csv",decimal=".")
+    NDVI=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/NDVI_parcelle/Parcelle_ref/Fusion/NDVI_raw/NDVI_ref_parcelle_"+str(years)+".csv",decimal=".")
     NDVI.date=pd.to_datetime(NDVI.date,format="%Y-%m-%d")
     meteo=pickle.load(open(d["SAMIR_run_Wind"]+"/Inputdata/meteo.df",'rb'))
     fig, ax = plt.subplots(figsize=(12, 10))
@@ -91,8 +91,6 @@ if __name__ == "__main__":
     Pluvio=Pluvio_cum.T
     x=Pluvio_all.date.dt.strftime('%m-%d')
     plt.figure(figsize=(10,7))
-    sns.set(style="darkgrid")
-    sns.set_context('paper')
     for y,i in zip(['2006','2008','2010','2012','2014','2015','2017','2019'],np.arange(Pluvio.shape[0])):
         plt.plot(x.iloc[0:365],Pluvio.Prec.iloc[:365,i],label=y)
         plt.xticks(rotation=90)
@@ -101,12 +99,10 @@ if __name__ == "__main__":
         plt.ylabel("Pluvio cumul")
         plt.title("Cumul pluvio")
         plt.text(x =x.iloc[-1] , y=Pluvio.Prec.iloc[-2,i],s = y,size=9)
-    plt.savefig("G:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_years_LAM_mais.png")
+    # plt.savefig("H:/Yann_THESE/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_years_LAM_mais.png")
     Pluvio_seas=Pluvio_sais.T
     x=Pluvio_all.date.dt.strftime('%m-%d')
     plt.figure(figsize=(10,7))
-    sns.set(style="darkgrid")
-    sns.set_context('paper')
     for y,i in zip(['2006','2008','2010','2012','2014','2015','2017','2019'],np.arange(Pluvio.shape[0])):
         plt.plot(x.iloc[120:273],Pluvio_seas.Prec.iloc[:,i],label=y)
         plt.xticks(rotation=90)
@@ -138,8 +134,6 @@ if __name__ == "__main__":
         SM_lam.date=pd.to_datetime(SM_lam.date,format="%Y%m%d")
         SM_lam.sort_values(by="date",ascending=True,inplace=True)
         plt.figure(figsize=(10,7))
-        sns.set(style="darkgrid")
-        sns.set_context('paper')
         plt.plot(SM_lam.date,SM_lam.value_0/5)
         plt.title(y)
     # df=pd.read_csv(d["PC_disk"]+"PARCELLE_LABO/FLUX_SWC/SWC_LAM_N2_final_2005-2018.csv",decimal=".")

@@ -48,7 +48,7 @@ if __name__ == "__main__":
     d['SAMIR_run_Wind']="D:/THESE_TMP/RUNS_SAMIR/"+name_run+"/"
     d["PC_disk_home"]="D:/THESE_TMP/"
     d['PC_disk_unix']="/mnt/d/THESE_TMP/RUNS_SAMIR/DATA_Validation/"
-    d["PC_disk"]="G:/Yann_THESE/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
 # =============================================================================
 #  Plot NDVI & meteo
@@ -66,9 +66,12 @@ if __name__ == "__main__":
     Ta_cum=pd.DataFrame()
     Ta_seas=pd.DataFrame()
     Ta_soil=pd.DataFrame()
-    for y in ['2015']:
+    for y in ["2012","2014",'2015']:
         d["PC_disk_home"]="D:/THESE_TMP/"
-        ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",",sep=";")
+        if y =="2014":
+            ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",",sep=",")
+        else:
+             ITK=pd.read_csv(d["PC_disk_home"]+"DONNEES_RAW/PARCELLE_LABO/ITK_LAM/ITK_LAM_"+y+".csv",decimal=",",sep=";")
         ITK["TIMESTAMP"]=ITK["TIMESTAMP"].apply(lambda x:x[0:10])
         ITK["TIMESTAMP"]=pd.to_datetime(ITK["TIMESTAMP"],format="%d/%m/%Y")
         NDVI=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_CESBIO/LAMOTHE_NDVI_"+str(y)+".csv",decimal=".")
@@ -93,7 +96,7 @@ if __name__ == "__main__":
         NDVI['real_Toureiro']=NDVI.eval("NDVI*1.46-0.25")
         ###### ADD FCOVER_SAMIR
         NDVI["rela_fcover"]=NDVI.eval("NDVI*1.25-0.13")
-        meteo_SAF=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".")
+        meteo_SAF=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/meteo_lam_"+str(y)+".csv",decimal=".",sep=";")
         meteo_temp=pd.read_csv(d["PC_disk_home"]+"TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_LAM/DATA_PREC_TEMP/meteo_prec_temp_"+y+".csv")
         meteo_temp.columns=["date","Ta","Prec"]
         SWC=pd.read_csv(d["PC_disk_home"]+"/TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_"+str(y)+".csv")
@@ -104,7 +107,7 @@ if __name__ == "__main__":
         Fcover_sigmo=pd.read_csv(d["PC_disk_home"]+"TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CESBIO/Fcover_sigmo_2019.csv")
         Fcover_sigmo.date=pd.to_datetime(Fcover_sigmo.date,format="%Y-%m-%d")
         ETR.date=pd.to_datetime(ETR.date,format="%Y-%m-%d")
-        meteo_SAF.date=pd.to_datetime(meteo_SAF.date,format="%Y-%m-%d")
+        meteo_SAF.date=pd.to_datetime(meteo_SAF.date,format="%d/%m/%Y")
         meteo_temp.date=pd.to_datetime(meteo_temp.date,format="%Y-%m-%d")
         SWC["Date"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
         # SWC.loc[SWC.SWC_50 == 0.000000]=np.nan
@@ -213,7 +216,6 @@ if __name__ == "__main__":
                 # plt.plot(SWC2017["Date/Time"],np.repeat(0.363-RU75,len(SWC2017["Date/Time"])),c="b",linestyle='--',label='RU 75 %')
                 plt.ylabel('SWC en surface')
                 ax1 = plt.twinx()
-                ax1.grid(axis='y')
                 ax1.bar(meteo_SAF.date,meteo_SAF.Prec,width=1,color="b")
                 ax1.plot(Irri.date,Irri.Irrig,color="red",marker="o",linestyle="None",label="Irrigation")
                 plt.ylim(0,50)
@@ -245,7 +247,6 @@ if __name__ == "__main__":
                 # plt.plot(SWC2017["Date/Time"],np.repeat(0.363-RU75,len(SWC2017["Date/Time"])),c="b",linestyle='--',label='RU 75 %')
                 plt.ylabel('SWC en profondeur 10 cm')
                 ax1 = plt.twinx()
-                ax1.grid(axis='y')
                 ax1.bar(meteo_SAF.date,meteo_SAF.Prec,width=1,color="b")
                 ax1.plot(Irri.date,Irri.Irrig,color="red",marker="o",linestyle="None",label="Irrigation")
                 plt.ylim(0,50)
@@ -297,6 +298,51 @@ if __name__ == "__main__":
             plt.legend()
             plt.ylabel('SWC en profondeur 50 cm')
             # plt.savefig(d["PC_labo"]+"RESULT/PLOT/Analyse_Flux_ICOS/plt_data_SWC_lam_"+str(y)+".png")
+            
+            
+# =============================================================================
+#   Cumul précipitation
+# =============================================================================
+        Pluvio_all=Pluvio_all.append(meteo_SAF)
+        Pluvio_cum=Pluvio_cum.append(meteo_SAF.Prec.cumsum())
+        Pluvio_sais=Pluvio_sais.append(meteo_SAF.Prec.iloc[120:273].cumsum())
+        Pluvio_bare_soil=Pluvio_bare_soil.append(meteo_SAF.Prec.iloc[60:120].cumsum())
+    Pluvio=Pluvio_cum.T
+    x=Pluvio_all.date.dt.strftime('%m-%d')
+    plt.figure(figsize=(7,5))
+    for y,i in zip(['2012','2014','2015'],np.arange(Pluvio.shape[0])):
+        plt.plot(x.iloc[0:365],Pluvio.Prec.iloc[:365,i],label=y)
+        plt.xticks(rotation=90)
+        plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(10))
+        plt.legend()
+        plt.ylabel("Pluvio cumul")
+        plt.title("Cumul pluvio")
+        plt.text(x =x.iloc[-1] , y=Pluvio.Prec.iloc[-2,i],s = round(Pluvio.Prec.iloc[-2,i],2),size=9)
+    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_years_LAM_mais.png")
+    Pluvio_seas=Pluvio_sais.T
+    x=Pluvio_all.date.dt.strftime('%m-%d')
+    plt.figure(figsize=(7,5))
+    for y,i in zip(['2012','2014','2015'],np.arange(Pluvio.shape[0])):
+        plt.plot(x.iloc[120:273],Pluvio_seas.Prec.iloc[:,i],label=y)
+        plt.xticks(rotation=90)
+        plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(10))
+        plt.legend()
+        plt.ylabel("Pluvio cumul végétation")
+        plt.title("Cumul pluvio période végétation")
+        plt.text(x =x.iloc[-1] , y=Pluvio_seas.Prec.iloc[-2,i],s = round(Pluvio_seas.Prec.iloc[-1,i],2),size=9)
+    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_sais_LAM_mais.png")
+    Pluvio_bare_soil=Pluvio_bare_soil.T
+    plt.figure(figsize=(7,5))
+    for y,i in zip(['2012','2014','2015'],np.arange(Pluvio.shape[0])):
+        plt.plot(x.iloc[60:120],Pluvio_bare_soil.Prec.iloc[:,i],label=y)
+        plt.xticks(rotation=90)
+        plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(10))
+        plt.legend()
+        plt.ylabel("Pluvio cumul sol nu")
+        plt.title("Cumul pluvio période sol un")
+        plt.text(x =x.iloc[120] , y=Pluvio_bare_soil.Prec.iloc[-2,i],s = round(Pluvio_bare_soil.Prec.iloc[-1,i],2),size=9)
+    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/Calibration_SAMIR/Analyse_data/plt_Pluvio_cumul_sol_nu_LAM_mais.png")
+
 # =============================================================================
 #       Comparaison flux SWC et polarisation VV
 # =============================================================================

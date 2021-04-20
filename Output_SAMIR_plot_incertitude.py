@@ -55,16 +55,16 @@ if __name__ == '__main__':
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
     # name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_Fcover_irri_auto_soil"
-    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_auto_soil"
-    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_irri_auto_soil"
-    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_auto_soil"
+    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_0_optim_fewi_De_Kr_irri_man_soil"
+    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_man_soil"
+    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_0_optim_fewi_De_Kr_irri_man_soil"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    label_ref="Init ru pleine + Irrigation auto"
-    label_test="Init ru année n-1 + Irrigation auto"
+    label_ref="Init ru vide"
+    label_test="Init ru pleine"
     years=["2008","2010","2012","2014","2015","2019"]
     lc="maize_irri"
 # =============================================================================
@@ -226,7 +226,7 @@ if __name__ == '__main__':
             ETR_mod_min.columns=pd.to_datetime(ETR_mod_min.columns,format="%Y-%m-%d")
             ETR_mod_min=ETR_mod_min.loc[:,(ETR_mod_min.columns >= str(y)+"-04-01") &(ETR_mod_min.columns <= str(y)+"-09-30")]
             ETR_test_FAO=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
-
+# df=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_man_soil_min/2015/Output/maxZr/output_test_maize_irri_0.df",'rb'))
 # =============================================================================
 #         Utilisation des données ETR obs 
 # =============================================================================
@@ -255,7 +255,7 @@ if __name__ == '__main__':
         dfmax=dfmax.loc[(dfmax.date>= str(y)+"-04-01") &(dfmax.date <= str(y)+"-09-30")]
         dfmin=dfmin.loc[(dfmin.date>= str(y)+"-04-01") &(dfmin.date <= str(y)+"-09-30")]
         KS=pd.concat([dfmax,dfmin])
-        coeff_ks=KS.groupby("date").mean()[["Ks","Kei",'Kep',"fewi",'Kri',"SWC1",'Ir_auto','Dei']]
+        coeff_ks=KS.groupby("date").mean()[["Ks","Kei",'Kep',"fewi","SWC1",'Ir_auto','Dei','Dr','TEW','TAW']]
         # coeff_ks_std=KS.groupby("date").std()[["Ks","Ir_auto"]]
         # FAO 
         ETR_test_FAO_rolling=ETR_test_FAO.T.rolling(5).mean()
@@ -272,7 +272,7 @@ if __name__ == '__main__':
         dfmax2=dfmax2.loc[(dfmax2.date>= str(y)+"-04-01") &(dfmax2.date <= str(y)+"-09-30")]
         dfmin2=dfmin2.loc[(dfmin2.date>= str(y)+"-04-01") &(dfmin2.date <= str(y)+"-09-30")]
         KS_man=pd.concat([dfmax2,dfmin2])
-        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov','Kri',"SWC1",'Irrig','Dei']]
+        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov',"SWC1",'Irrig','Dei','Dr','TEW','TAW']]
 # =============================================================================
 #         # plot dynamique 
 # =============================================================================
@@ -411,31 +411,47 @@ if __name__ == '__main__':
         # plt.savefig(d["Output_model_save_fig"]+"/dynamique_fewi_Fcover_%s_%s.png"%(lc,y),dpi=330)
         
         
+        # plt.figure(figsize=(7,7))
+        # plt.plot(coeff_ks.index,coeff_ks.Kei,label="Kei " +label_test,color='red')
+        # plt.plot(coeff_ks_man.index,coeff_ks_man.Kei,label="Kei "+label_ref,color='blue')
+        # plt.legend()
+        # plt.ylim(0,2)
+        # plt.ylabel("Kr")
+        # plt.title(str(y))
+        # ax2 = plt.twinx()
+        # ax2.plot(coeff_ks.index,coeff_ks.Ks,label="Ks " +label_test,linestyle="--",color='red')
+        # ax2.plot(coeff_ks_man.index,coeff_ks_man.Ks,label="Ks "+label_ref,linestyle="--",color='blue')
+        # ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+        # ax2.set_ylim(-1,1.5)
+        # ax2.set_ylabel("Ks")
+        # ax2.legend(loc="upper left")
+        # plt.savefig(d["Output_model_save_fig"]+"/dynamique_Ke_Ks_%s_%s.png"%(lc,y),dpi=330)
+        # plt.figure(figsize=(7,7))
+        # plt.plot(coeff_ks.Dei,coeff_ks.Kri,label="Kri "+label_test,marker='o',linestyle="")
+        # plt.plot(coeff_ks_man.Dei,coeff_ks_man.Kri,label="Kri "+label_ref,marker='o',linestyle="")
+        # plt.legend()
+        # plt.ylim(0,1.5)
+        # plt.ylabel("Kr")
+        # plt.xlabel("De")
+        # plt.title(str(y))
+        # plt.savefig(d["Output_model_save_fig"]+"/dynamique_Kr_Dei_%s_%s.png"%(lc,y),dpi=330)
+        
         plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.index,coeff_ks.Kei,label="Kei " +label_test,color='red')
-        plt.plot(coeff_ks_man.index,coeff_ks_man.Kei,label="Kei "+label_ref,color='blue')
-        plt.legend()
-        plt.ylim(0,2)
-        plt.ylabel("Kr")
+        plt.plot(coeff_ks.index,coeff_ks.Dr,label="Dr " +label_test,color='blue')
+        plt.plot(coeff_ks_man.index,coeff_ks_man.Dr,label="Dr "+label_ref,color='red')
+        plt.plot(coeff_ks.index,coeff_ks_man.TAW*0.55,label="RAW",color='black',linestyle="--")
+        plt.legend(loc="upper right")
+        plt.ylim(0,150)
+        plt.ylabel("Dr")
         plt.title(str(y))
         ax2 = plt.twinx()
-        ax2.plot(coeff_ks.index,coeff_ks.Ks,label="Ks " +label_test,linestyle="--",color='red')
-        ax2.plot(coeff_ks_man.index,coeff_ks_man.Ks,label="Ks "+label_ref,linestyle="--",color='blue')
+        ax2.plot(coeff_ks.index,coeff_ks.Ks,label="Ks " +label_test,linestyle="--",color='blue')
+        ax2.plot(coeff_ks_man.index,coeff_ks_man.Ks,label="Ks "+label_ref,linestyle="--",color='red')
         ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
-        ax2.set_ylim(-1,1.5)
+        ax2.set_ylim(1,-2)
         ax2.set_ylabel("Ks")
         ax2.legend(loc="upper left")
-        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Ke_Ks_%s_%s.png"%(lc,y),dpi=330)
-        plt.figure(figsize=(7,7))
-        plt.plot(coeff_ks.Dei,coeff_ks.Kri,label="Kri "+label_test,marker='o',linestyle="")
-        plt.plot(coeff_ks_man.Dei,coeff_ks_man.Kri,label="Kri "+label_ref,marker='o',linestyle="")
-        plt.legend()
-        plt.ylim(0,1.5)
-        plt.ylabel("Kr")
-        plt.xlabel("De")
-        plt.title(str(y))
-        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Kr_Dei_%s_%s.png"%(lc,y),dpi=330)
-
+        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Dr_RU_%s_%s.png"%(lc,y),dpi=330)
 # =============================================================================
 #          SWC 2012 et 2014 
 # =============================================================================
@@ -584,4 +600,15 @@ if __name__ == '__main__':
 #     ETR_test.idxmin()
     
 # =============================================================================
+# debug
+df1100=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_7.df",'rb'))
+df1150=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_1.df",'rb'))
 
+diff_test=df1150-df1100
+
+# df_Merlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_optim_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_2.df",'rb'))
+
+
+# dfavant_modif=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_Fcover_irri_man_soil_min/2015/Output/maxZr/output_test_maize_irri_8.df",'rb'))
+
+#  Probleme estiamtion SWC = 0
