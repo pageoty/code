@@ -440,6 +440,7 @@ if __name__ == '__main__':
         plt.plot(coeff_ks.index,coeff_ks.Dr,label="Dr " +label_test,color='blue')
         plt.plot(coeff_ks_man.index,coeff_ks_man.Dr,label="Dr "+label_ref,color='red')
         plt.plot(coeff_ks.index,coeff_ks_man.TAW*0.55,label="RAW",color='black',linestyle="--")
+        plt.plot(coeff_ks.index,coeff_ks_man.TAW,label="TAW",color='black',linestyle="--")
         plt.legend(loc="upper right")
         plt.ylim(0,150)
         plt.ylabel("Dr")

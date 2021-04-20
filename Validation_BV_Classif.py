@@ -59,14 +59,16 @@ if __name__ == "__main__":
     d["data_file"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["data_tra"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
     d["output_file"]='/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
-    d["output_file_unix"]='/run/media/pageot/Transcend/Yann_THESE/DATA_CLASSIFICATION/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
-    d["data_file_unix"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/RESULT/"
-    d["data_tra_unix"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["data_tra_usb"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/TRAITEMENT/"
-    d["data_tra_data"]="/run/media/pageot/ADATAHD650/THESE/CLASSIFICATION/"
+    d["output_file_unix"]='/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_LEARN_VAL_CLASSIF_MT/RUN_FIXE_SEED/'+years+'/'
+    d["data_file_unix"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
+    # d["data_tra_unix"]="/datalocal/vboxshare/RESULTAT_CLASSIFICATION/"
+    d["data_tra_usb"]="/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/"
+    d["data_tra_data"]="/datalocal/vboxshare/THESE/CLASSIFICATION/"
     ram=5000
     tuiles=["T31TCJ","T31TDJ","T30TYP","T30TYN"]
     grain=range(0,5)
+    
+
     # d["unix_data"]="/mnt/d/THESE_TMP/classif/"
     
 #    for jobs in os.listdir(d["data_file"]+"DATA_LEARN_VAL_CLASSIF_MT/NESTE_2017/"): # fonction utlisé pour générer les lotts validation à l'échelle du BV 
