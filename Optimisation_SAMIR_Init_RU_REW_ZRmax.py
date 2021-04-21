@@ -51,8 +51,8 @@ if __name__ == "__main__":
     parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
-    years=["2008","2010","2012","2014","2015","2019"]
-    # years=["2017","2018"]
+    # years=["2008","2010","2012","2014","2015","2019"]
+    years=["2017","2018"]
     
     
     #  Add args User PC home/ PC labo
@@ -235,48 +235,49 @@ if __name__ == "__main__":
 # =============================================================================
 #         # Calibration Init_Ru, année n-1
 # =============================================================================
-        y1=int(y)-1
-
-        if str(args.meteo).strip("['']")=="SAFRAN":
-            # print("scp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/* %s"%(d['SAMIR_run']))
-            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN_Irri_man/"+str(y1)+"/ %s"%(d["SAMIR_run"]))
-        else:
-            os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
-        d['SAMIR_run_RU']=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"+str(y1)+"/"
-        params_update(d['SAMIR_run_RU']+"/Inputdata/param_SAMIR12_13.csv",
-                      d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0101'),date_end=str(y1)+str('1231'),
-                      Ze=150,REW=REW,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=1.50,m=1, Koffset=-0.23)
-        if "Output" in os.listdir(d['SAMIR_run_RU']):
-            print ("existing file")
-        else :
-            os.mkdir ("%s/Output"%d['SAMIR_run_RU']) # allows create file via call system
-        if optimis_val in os.listdir(d['SAMIR_run_RU']+"/Output/"):
-            print ("existing file")
-        else :
-            os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
-
-        if "LAI" in name_run :
-            os.system('python /home/'+user+'/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
-        else:
-            os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv --formaREW Merlin -soiltext Soil_texture.df ')
-           
-          # Extraction du résultat
-        df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test.df','rb'))
-        result_init_cops=df.groupby("LC")
-        result_init=result_init_cops.get_group("maize_irri")
-        result_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]]
-        ru_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-12-31"]
-        # RUn1=ru_init.SWC2.values
-        # print(r'===============')
-        # print(RUn1)
-        # print(r'===============')
-        RUNsoln1 = ru_init[["SWC1i","SWC1p","SWC2","SWC3"]].values.mean()
-        # moyenne pondére à l'épaisseur 
-        # print(ru_init["SWC1i"].values[0]) # probleme SWC1p ou SWC1i si irrigation ou non
-        RUSOL_ponde=np.average([ru_init["SWC1i"].values[0],ru_init["SWC2"].values[0],ru_init["SWC3"].values[0]], weights=[150,df["Zr"].loc[df.date==str(y1)+"-12-31"].values[0] , df["Zd"].loc[df.date==str(y1)+"-12-31"].values[0]])
-        print(r'===============')
-        print(RUSOL_ponde)
-        print(r'===============')
+        if "CACG" not in name_run:
+            y1=int(y)-1
+    
+            if str(args.meteo).strip("['']")=="SAFRAN":
+                # print("scp -r /datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(y1)+"/* %s"%(d['SAMIR_run']))
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN_Irri_man/"+str(y1)+"/ %s"%(d["SAMIR_run"]))
+            else:
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ICOS_STAT_ss_Irri/"+str(y1)+"/ %s"%(d['SAMIR_run']))
+            d['SAMIR_run_RU']=str(args.path).strip("['']")+"/"+name_run+"/"+str(y)+"/"+str(y1)+"/"
+            params_update(d['SAMIR_run_RU']+"/Inputdata/param_SAMIR12_13.csv",
+                          d['SAMIR_run_RU']+"/Inputdata/param_modif.csv",date_start=str(y1)+str('0101'),date_end=str(y1)+str('1231'),
+                          Ze=150,REW=REW,minZr=150,maxZr=1500,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(str(args.IniRU).strip("['']")),Irrig_auto=1,Irrig_man=0,A_kcb=1.50,m=1, Koffset=-0.23)
+            if "Output" in os.listdir(d['SAMIR_run_RU']):
+                print ("existing file")
+            else :
+                os.mkdir ("%s/Output"%d['SAMIR_run_RU']) # allows create file via call system
+            if optimis_val in os.listdir(d['SAMIR_run_RU']+"/Output/"):
+                print ("existing file")
+            else :
+                os.mkdir ("%s/Output/%s"%(d['SAMIR_run_RU'],optimis_val)) 
+    
+            if "LAI" in name_run :
+                os.system('python /home/'+user+'/sources/modspa2_LAI/modspa2/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m /*/meteo.df -n /*/LAI'+str(y1)+'.df -fcover /*/FCOVER.df -fc /*/FC.df -wp /*/WP.df  --fc_input  -o Output/'+optimis_val+'/output_test -p param_modif.csv ')
+            else:
+                os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run_RU']+' -dd '+d['SAMIR_run_RU']+'/Inputdata/ -m meteo.df -n NDVI'+str(y1)+'.df -fc FC.df -wp WP.df -o Output/'+optimis_val+'/output_test.df -p param_modif.csv --formaREW Merlin -soiltext Soil_texture.df ')
+               
+              # Extraction du résultat
+            df=pickle.load(open(d["SAMIR_run_RU"]+'/Output/'+optimis_val+'/output_test.df','rb'))
+            result_init_cops=df.groupby("LC")
+            result_init=result_init_cops.get_group("maize_irri")
+            result_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]]
+            ru_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-12-31"]
+            # RUn1=ru_init.SWC2.values
+            # print(r'===============')
+            # print(RUn1)
+            # print(r'===============')
+            RUNsoln1 = ru_init[["SWC1i","SWC1p","SWC2","SWC3"]].values.mean()
+            # moyenne pondére à l'épaisseur 
+            # print(ru_init["SWC1i"].values[0]) # probleme SWC1p ou SWC1i si irrigation ou non
+            RUSOL_ponde=np.average([ru_init["SWC1i"].values[0],ru_init["SWC2"].values[0],ru_init["SWC3"].values[0]], weights=[150,df["Zr"].loc[df.date==str(y1)+"-12-31"].values[0] , df["Zd"].loc[df.date==str(y1)+"-12-31"].values[0]])
+            print(r'===============')
+            print(RUSOL_ponde)
+            print(r'===============')
         classes=["maize_irri"]
         if "LAI" in name_run:
             b=open(d["SAMIR_run"]+"/Inputdata/maize_irri/LAI"+str(y)+".df","rb")
@@ -316,7 +317,7 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1026'),
-                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0.5,Irrig_auto=1,plateau=30,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,plateau=30,Irrig_man=0,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2999/100/lin")
             else:
                 print('two optimisation')
@@ -377,8 +378,8 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
+                                 Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.4,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1500/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
@@ -403,7 +404,7 @@ if __name__ == "__main__":
                 else:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0,Irrig_auto=0,Irrig_man=1,m=1,Lame_max=30,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                             Ze=150,REW="optim",minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,m=1,Lame_max=30,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin",param2="REW",value_P2="5/15/1/lin")
         #  Lancement du code
         if "Output" in os.listdir(d['SAMIR_run']):

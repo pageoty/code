@@ -30,16 +30,14 @@ from pylab import *
 from sklearn.metrics import *
 from sklearn.linear_model import LinearRegression
 
-
-
 def predict(x):
    return slope * x + intercept
 
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_fewi_De_Kr_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_fewi_De_Kr_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p04_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p04_1500_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -83,12 +81,28 @@ if __name__ == '__main__':
     #                     all_date_jj.append(a)
     # all_resu=pd.DataFrame([all_runs,all_id,all_quantity,all_number,all_date]).T
     # all_resu.columns=["runs",'id','cumul_irr',"nb_irr","date_irr"]
-
+# =============================================================================
+#   Mean flux ETR -> Lam corrigées
+# =============================================================================
+    All_lam=[]
+    for i in os.listdir(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/"):
+        if "ETR_maize_irri" in i and "semi" not in i:
+            ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/"+i,decimal='.',sep=",")
+            ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
+            All_lam.append(ETR.LE_Bowen)
+    lam_et=pd.DataFrame(All_lam)
+    mean_lam=pd.DataFrame(lam_et.mean())
+    std_lam=pd.DataFrame(lam_et.std())
+    # mean_lam["date"]=ETR.date
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
     Vol_tot=pd.DataFrame()
     Id=pd.DataFrame()
+    Vol_tot_min=pd.DataFrame()
+    Vol_tot_max=pd.DataFrame()
+    Vol_tot_min2=pd.DataFrame()
+    Vol_tot_max2=pd.DataFrame()
     for y in years: 
         vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_"+str(y)+".csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
         vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
@@ -97,28 +111,53 @@ if __name__ == '__main__':
         nb_irr=vali_cacg.groupby("ID")["Date_irrigation"].count()
         a=vali_cacg.groupby("ID")
         
-        d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_fewi_De_Kr_irri_auto_soil"
+        d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run
         Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
         gro=Irri_mod.groupby("ID")
         
         NDVI=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/NDVI"+str(y)+".df","rb"))
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
-        # inser loop parcelle Id
         
+# =============================================================================
+#          Recuperation ETR flux +SWC
+# =============================================================================
+#  Lecture file param 
+
+        All_ETR=pd.DataFrame()
+        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+        for r in os.listdir(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Output/maxZr/"):
+            if ".df" in r:
+                print(r)
+                num_run=r[23:-3]
+                df=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Output/maxZr/"+r,'rb'))
+                df["param"]=np.repeat(param.loc[param[0]==int(num_run)][1].values,df.shape[0])
+                All_ETR=All_ETR.append(df[["date","ET","id",'param']])
+        et=All_ETR.groupby("id")
+        # inser loop parcelle Id
+    
         for p in list(set(vali_cacg["ID"])):
             par1=gro.get_group(p)
             par1.reset_index(inplace=True)
             par1.num_run=pd.to_datetime(par1.num_run,format="%Y-%m-%d")
             mean_run=par1[["num_run","4"]]
-            maxIr=par1[["num_run","8"]]
+            maxIr=par1[["num_run","14"]] # 8 
+            max2Ir=par1[["num_run","12"]]
             minIr=par1[["num_run","0"]]
+            min2Ir=par1[["num_run","2"]]
             mean_run.columns=["date","maxZr_1000"]
-            maxIr.columns=["date","maxZr_1200"]
+            maxIr.columns=["date","maxZr_1500"]
             minIr.columns=["date","maxZr_800"]
-            maxIr.replace(0.0,pd.NaT,inplace=True)
-            minIr.replace(0.0,pd.NaT,inplace=True)
+            min2Ir.columns=["date","maxZr_900"]
+            max2Ir.columns=["date","maxZr_1400"]
+            # maxIr.replace(0.0,pd.NaT,inplace=True)
+            # minIr.replace(0.0,pd.NaT,inplace=True)
             # print(mean_run.loc[mean_run['maxZr_1000']!=0.0])
             
+            # Pour ETR
+            paret1=et.get_group(p)
+            paret1.reset_index(inplace=True)
+            paret1.date=pd.to_datetime(paret1.date,format="%Y-%m-%d")
+            paret1=paret1.loc[(paret1.date >= str(y)+"-04-01") &(paret1.date <= str(y)+"-09-30")]
             # validation
             par1_val=a.get_group(p)
             par1_val=par1_val[["Date_irrigation",'Quantite']]
@@ -127,11 +166,15 @@ if __name__ == '__main__':
             par1_val_res.fillna(0.0,inplace=True)
             par1_val_res["date"]=par1_val_res.index
             all_res=pd.merge(par1_val_res,mean_run,on=["date"]) # fusion des sim/obs
+            all_res_min=pd.merge(par1_val_res,minIr,on=["date"])
+            all_res_max=pd.merge(par1_val_res,maxIr,on=["date"])
+            all_res_min2=pd.merge(par1_val_res,min2Ir,on=["date"])
+            all_res_max2=pd.merge(par1_val_res,max2Ir,on=["date"])
             all_resu=all_res.replace(0.0,pd.NaT)
-            print("============")
-            print("parcelle :%s"%p)
-            print(all_res.sum())
-            print("============")
+            # print("============")
+            # print("parcelle :%s"%p)
+            # print(all_res.sum())
+            # print("============")
             #### plot
             plt.figure(figsize=(7,7))
             plt.title(p)
@@ -146,10 +189,24 @@ if __name__ == '__main__':
             ax2.plot(NDVI.loc[NDVI.id==p].date,NDVI.loc[NDVI.id==p].NDVI,color="darkgreen",linestyle="--")
             ax2.set_ylabel("NDVI")
             ax2.set_ylim(0,1)
-            
             plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
             
+            #  Plot ETR comparer avec flux moyenne 6 years LAM 
+            plt.figure(figsize=(7,7))
+            plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
+            plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean()-std_lam[0].rolling(5).mean(),mean_lam[0].rolling(5).mean()+std_lam[0].rolling(5).mean(),facecolor="None",ec='black',linestyle="--",alpha=0.5)
+            plt.plot(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==1000.0]["ET"].rolling(5).mean(),label='ETR parcelle')
+            plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==800.0]["ET"].rolling(5).mean(),paret1.loc[paret1.param==1200.0]["ET"].rolling(5).mean(),alpha=0.5)
+            plt.legend()
+            plt.title(p)
+            plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
+            
+            
             Vol_tot=Vol_tot.append(all_res)
+            Vol_tot_min=Vol_tot_min.append(all_res_min)
+            Vol_tot_max=Vol_tot_max.append(all_res_max)
+            Vol_tot_min2=Vol_tot_min2.append(all_res_min2)
+            Vol_tot_max2=Vol_tot_max2.append(all_res_max2)
             Id=Id.append(list(par1.ID.values))
         
 # =============================================================================
@@ -158,24 +215,61 @@ if __name__ == '__main__':
     Vol_tot["datejj"]=Vol_tot["date"].dt.strftime("%j")
     Vol_tot["annee"]=Vol_tot["date"].dt.strftime("%Y")
     Vol_tot["ID"]=Id
-    Irtot=Vol_tot.groupby("annee")
-    plt.figure(figsize=(7,7))
-    for y in years :
-        payears=Irtot.get_group(str(y))
-        sumyears=payears.groupby("ID").sum()
-        plt.scatter(sumyears.Quantite,sumyears.maxZr_1000,label=y)
-        plt.xlim(0,300)
-        plt.ylim(0,300)
-        plt.legend()
-        plt.xlabel("Volumes annuels observés en mm ")
-        plt.ylabel("Volumes annuels modélisés en mm ")
-        plt.plot([0.0, 300], [0.0,300], 'black', lw=1,linestyle='--')
-        for i in enumerate(sumyears.index):
-            print(i)
-            label = i[1]
-            plt.annotate(label, # this is the text
-                 (sumyears.iloc[i[0]][0],sumyears.iloc[i[0]][1]), # this is the point to label
-                 textcoords="offset points", # how to position the text
-                 xytext=(0,5), # distance from text to points (x,y)
-                 ha='center')
-    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_Irrigation.png")
+    Vol_tot["maxZr_800"]=Vol_tot_min["maxZr_800"]
+    Vol_tot["maxZr_1500"]=Vol_tot_max["maxZr_1500"]
+    Vol_tot["maxZr_900"]=Vol_tot_min2["maxZr_900"]
+    Vol_tot["maxZr_1400"]=Vol_tot_max2["maxZr_1400"]
+    for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400"]:
+        # stat total
+        tot_ID=Vol_tot.groupby("ID").sum()
+        slope, intercept, r_value, p_value, std_err = stats.linregress(tot_ID.Quantite.to_list(),tot_ID[t].to_list())
+        bias=1/tot_ID.shape[0]*sum(np.mean(tot_ID.Quantite)-tot_ID[t]) 
+        # fitLine = predict(tot_ID[t])
+        rms = mean_squared_error(tot_ID.Quantite,tot_ID[t],squared=False)
+        Irtot=Vol_tot.groupby("annee")
+        plt.figure(figsize=(7,7))
+        for y in years :
+            payears=Irtot.get_group(str(y))
+            sumyears=payears.groupby("ID").sum()
+            slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(sumyears.Quantite.to_list(),sumyears[t].to_list())
+            bias1=1/sumyears.shape[0]*sum(np.mean(sumyears.Quantite)-sumyears[t]) 
+            # fitLine = predict(Vol_tot[t])
+            rms1 = mean_squared_error(sumyears.Quantite,sumyears[t],squared=False)
+            plt.scatter(sumyears.Quantite,sumyears[t],label=y)
+            plt.xlim(-10,300)
+            plt.ylim(-10,300)
+            plt.legend()
+            plt.xlabel("Volumes annuels observés en mm ")
+            plt.ylabel("Volumes annuels modélisés en mm ")
+            plt.plot([-10.0, 300], [-10.0,300], 'black', lw=1,linestyle='--')
+            if "2017" in y :
+                rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)
+                plt.gca().add_patch(rectangle)
+                plt.text(100,280,"RMSE = "+str(round(rms1,2))) 
+                plt.text(100,270,"R² = "+str(round(r_value1,2)))
+                plt.text(100,260,"Pente = "+str(round(slope1,2)))
+                plt.text(100,250,"Biais = "+str(round(bias1,2)))
+            else:
+                rectangle = plt.Rectangle((225, 117),70,40, ec='orange',fc='orange',alpha=0.3)
+                plt.gca().add_patch(rectangle)
+                plt.text(230,150,"RMSE = "+str(round(rms1,2))) 
+                plt.text(230,140,"R² = "+str(round(r_value1,2)))
+                plt.text(230,130,"Pente = "+str(round(slope1,2)))
+                plt.text(230,120,"Biais = "+str(round(bias1,2)))
+            for i in enumerate(sumyears.index):
+                label = i[1]
+                plt.annotate(label, # this is the text
+                     (sumyears.iloc[i[0]][0],sumyears[t].iloc[i[0]]), # this is the point to label
+                     textcoords="offset points", # how to position the text
+                     xytext=(0,5), # distance from text to points (x,y)
+                     ha='center')
+        rectangle = plt.Rectangle((225, -2),70,40, ec='black',fc='black',alpha=0.1)
+        plt.gca().add_patch(rectangle)
+        plt.text(230,30,"RMSE = "+str(round(rms,2))) 
+        plt.text(230,20,"R² = "+str(round(r_value,2)))
+        plt.text(230,10,"Pente = "+str(round(slope,2)))
+        plt.text(230,0,"Biais = "+str(round(bias,2)))
+        plt.title(t)
+        plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
+    
+    
