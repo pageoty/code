@@ -41,7 +41,8 @@ if __name__ == '__main__':
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     label="Init ru année n-1 + Irrigation auto"
     years=["2017","2018"]
@@ -103,6 +104,7 @@ if __name__ == '__main__':
     Vol_tot_max=pd.DataFrame()
     Vol_tot_min2=pd.DataFrame()
     Vol_tot_max2=pd.DataFrame()
+    Vol_tot_max3=pd.DataFrame()
     for y in years: 
         vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_"+str(y)+".csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
         vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
@@ -111,7 +113,7 @@ if __name__ == '__main__':
         nb_irr=vali_cacg.groupby("ID")["Date_irrigation"].count()
         a=vali_cacg.groupby("ID")
         
-        d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run
+        d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
         Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
         gro=Irri_mod.groupby("ID")
         
@@ -144,11 +146,13 @@ if __name__ == '__main__':
             max2Ir=par1[["num_run","12"]]
             minIr=par1[["num_run","0"]]
             min2Ir=par1[["num_run","2"]]
+            max3Ir=par1[["num_run","10"]]
             mean_run.columns=["date","maxZr_1000"]
             maxIr.columns=["date","maxZr_1500"]
             minIr.columns=["date","maxZr_800"]
             min2Ir.columns=["date","maxZr_900"]
             max2Ir.columns=["date","maxZr_1400"]
+            max3Ir.columns=["date","maxZr_1200"]
             # maxIr.replace(0.0,pd.NaT,inplace=True)
             # minIr.replace(0.0,pd.NaT,inplace=True)
             # print(mean_run.loc[mean_run['maxZr_1000']!=0.0])
@@ -170,6 +174,7 @@ if __name__ == '__main__':
             all_res_max=pd.merge(par1_val_res,maxIr,on=["date"])
             all_res_min2=pd.merge(par1_val_res,min2Ir,on=["date"])
             all_res_max2=pd.merge(par1_val_res,max2Ir,on=["date"])
+            all_res_max3=pd.merge(par1_val_res,max3Ir,on=["date"])
             all_resu=all_res.replace(0.0,pd.NaT)
             # print("============")
             # print("parcelle :%s"%p)
@@ -189,7 +194,7 @@ if __name__ == '__main__':
             ax2.plot(NDVI.loc[NDVI.id==p].date,NDVI.loc[NDVI.id==p].NDVI,color="darkgreen",linestyle="--")
             ax2.set_ylabel("NDVI")
             ax2.set_ylim(0,1)
-            plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
+            plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
             
             #  Plot ETR comparer avec flux moyenne 6 years LAM 
             plt.figure(figsize=(7,7))
@@ -199,7 +204,7 @@ if __name__ == '__main__':
             plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==800.0]["ET"].rolling(5).mean(),paret1.loc[paret1.param==1200.0]["ET"].rolling(5).mean(),alpha=0.5)
             plt.legend()
             plt.title(p)
-            plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
+            plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
             
             
             Vol_tot=Vol_tot.append(all_res)
@@ -207,6 +212,7 @@ if __name__ == '__main__':
             Vol_tot_max=Vol_tot_max.append(all_res_max)
             Vol_tot_min2=Vol_tot_min2.append(all_res_min2)
             Vol_tot_max2=Vol_tot_max2.append(all_res_max2)
+            Vol_tot_max3=Vol_tot_max3.append(all_res_max3)
             Id=Id.append(list(par1.ID.values))
         
 # =============================================================================
@@ -219,7 +225,8 @@ if __name__ == '__main__':
     Vol_tot["maxZr_1500"]=Vol_tot_max["maxZr_1500"]
     Vol_tot["maxZr_900"]=Vol_tot_min2["maxZr_900"]
     Vol_tot["maxZr_1400"]=Vol_tot_max2["maxZr_1400"]
-    for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400"]:
+    Vol_tot["maxZr_1200"]=Vol_tot_max3["maxZr_1200"]
+    for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400",'maxZr_1200']:
         # stat total
         tot_ID=Vol_tot.groupby("ID").sum()
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_ID.Quantite.to_list(),tot_ID[t].to_list())
@@ -270,6 +277,6 @@ if __name__ == '__main__':
         plt.text(230,10,"Pente = "+str(round(slope,2)))
         plt.text(230,0,"Biais = "+str(round(bias,2)))
         plt.title(t)
-        plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
     
     

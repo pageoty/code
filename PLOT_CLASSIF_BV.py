@@ -71,13 +71,13 @@ def plt_classif_kappa(df,var1,var2):
     plt.legend(fontsize=14)
 
 if __name__ == "__main__":
-    years='CUMUL_VS_NOT' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='SEASON_TIME_2017' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
     d["PC_labo"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/"+str(bv) # path où seront save les graphiques finaux 
-    d["disk_PC"]="H:/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["SAVE_disk"]="H:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
+    d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
+    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
     for b in [bv]: 
         step = []
         jobs=pd.DataFrame()
@@ -331,7 +331,28 @@ if __name__ == "__main__":
 #        plt.legend()
 #        plt.savefig(d["SAVE"]+"barplot_Recall_Accura_crops irrigated"+"_"+years+i[0]+"_"+bv+".png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 #    
-        
+# =============================================================================
+#Graphique cours de saison
+# =============================================================================
+    maize2017=dfMetric.set_index(['Classe'])
+    M7=maize2017.sort_values(by='step',ascending=True)
+    for i in set(maize2017.step):
+        plt.figure(figsize=(12,5)) 
+        plt.grid(axis='x')
+        x1=plt.subplot(121)
+        barWidth = 0.3
+        bars1 = maize2017[maize2017.step==i]["mean_fscore"]
+        yer1 = maize2017[maize2017.step==i]['std_fscore']
+        r1 = np.arange(len(bars1))
+        plt.bar(maize2017[maize2017.step==i].index,maize2017[maize2017.step==i]["mean_fscore"],color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=14)
+        plt.xticks(rotation=45) # fixer problème du nom de l'axe"
+        plt.ylabel('Fscore')
+        plt.ylim(0,1)
+        plt.title(str(i))
+        plt.legend()
+        plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i+"_"+bv+".png",format="png",dpi=300,bbox_inches='tight', pad_inches=0.5)
 # =============================================================================
     # graphi Fscre barplot
 # =============================================================================
