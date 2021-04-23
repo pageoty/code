@@ -64,10 +64,10 @@ def predict(x):
 
 def params_update(path,output,date_start,date_end,ligne_OS=6,FminNDVI=0.2,FmaxNDVI=0.9,FminFC=0,FmaxFC=1,Fslope=1.25,Foffset=-0.13,
                   Plateau=70,KminNDVI=0.1,KmaxNDVI=0.9,KminKcb=0,A_kcb=1.358,KmaxKcb=0.98,Koffset=-0.27,Zsoil=1150,Ze=150,Init_RU=0.5,
-                  DiffE=0.00001,DiffR=0.00001,REW=6,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=0,minDays=20,Kcbmin_start=0.1,
-                  Kcbmax_stop=0.85,m=0.15):
+                  DiffE=0.00001,DiffR=0.00001,REW=8,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=0,minDays=20,Kcbmin_start=0.1,
+                  Kcbmax_stop=0.85,m=1,Start_date_Irr=0):
     
-    param=pd.read_csv(path,delimiter=",",header=None)
+    param=pd.read_csv(path,header=None,sep=";")
     param.loc[int(ligne_OS),13]=A_kcb 
     param.loc[int(ligne_OS),20]=REW
     param.loc[int(ligne_OS),21]=m
@@ -100,6 +100,7 @@ def params_update(path,output,date_start,date_end,ligne_OS=6,FminNDVI=0.2,FmaxND
     param.loc[int(ligne_OS),31]=Kcbmax_stop
     param.loc[0,1]=date_start
     param.loc[0,3]=date_end
+    param.loc[int(ligne_OS),34]=Start_date_Irr
     param.to_csv(output,header=False,sep= ',',index=False,na_rep="")
    
 def params_opti(path,output_path,param1,value_P1,param2=None,value_P2=None,ligne_OS=1):

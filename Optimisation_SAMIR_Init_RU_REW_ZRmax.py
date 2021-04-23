@@ -51,8 +51,8 @@ if __name__ == "__main__":
     parser.add_argument('-B_kcb',dest='bkcb',nargs='+',help='offset_relation_NDVI/Kcb')
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
-    # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2017","2018"]
+    years=["2008","2010","2012","2014","2015","2019"]
+    # years=["2017"]
     
     
     #  Add args User PC home/ PC labo
@@ -101,6 +101,8 @@ if __name__ == "__main__":
         if str(args.meteo).strip("['']")=="SAFRAN":
             if "CACG" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(y)+"/* %s"%(d['SAMIR_run']))
+            elif "PKGC" in name_run:
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(y)+"/* %s"%(d['SAMIR_run']))
             else:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN_Irri_man/"+str(y)+"/* %s"%(d['SAMIR_run']))
         else:
@@ -155,6 +157,31 @@ if __name__ == "__main__":
         #  Lecture file PF_CC
             PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ref_"+str(y)+"_NESTE_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
             # PF_CC.dropna(inplace=True)
+            FC_Bru=PF_CC["CC_mean"]
+            WP_Bru=PF_CC["PF_mean"]
+            Sand_Ainse=PF_CC["Sable"]/100
+            Clay_Ainse=PF_CC["Argile"]/100
+            # modification df soil FC et WP 
+            for p in ["WP_Bru","FC_Bru"]:
+                tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+                data=pickle.load(tmp)
+                tmp.close()
+                valeur=globals()['%s'%p]
+                data[p[:-4]]=valeur.values
+                data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
+            #  Modifcation Soil texture 
+            tmp1=open(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df","rb")
+            data_tex=pickle.load(tmp1)
+            tmp1.close()
+            for tex in ["Sand_Ainse",'Clay_Ainse']:
+                val=globals()['%s'%tex]
+                data_tex[tex[:-6]]=val.values
+            data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
+        elif "PKGC" in name_run : 
+            print('PKGC parcelle')
+        #  Lecture file PF_CC
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+            # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]
             Sand_Ainse=PF_CC["Sable"]/100
@@ -235,7 +262,7 @@ if __name__ == "__main__":
 # =============================================================================
 #         # Calibration Init_Ru, année n-1
 # =============================================================================
-        if "CACG" not in name_run:
+        if "CACG" not in name_run and "PKGC" not in name_run:
             y1=int(y)-1
     
             if str(args.meteo).strip("['']")=="SAFRAN":
@@ -278,6 +305,7 @@ if __name__ == "__main__":
             print(r'===============')
             print(RUSOL_ponde)
             print(r'===============')
+
         classes=["maize_irri"]
         if "LAI" in name_run:
             b=open(d["SAMIR_run"]+"/Inputdata/maize_irri/LAI"+str(y)+".df","rb")
@@ -378,7 +406,7 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
-                                 Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.4,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=20,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1500/50/lin")
                     else:
                         print("Irri manuel activé")
@@ -440,7 +468,7 @@ if __name__ == "__main__":
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 6 --formaREW Merlin -soiltext Soil_texture.df')
                 else:
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 6 --formaREW Merlin -soiltext Soil_texture.df')
-            elif "CACG" in name_run :
+            elif "CACG" in name_run or "PKGC" in name_run:
                 if "Fcover" in name_run:
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 3 --formaREW Merlin -soiltext Soil_texture.df')
                 else:
@@ -460,7 +488,7 @@ if __name__ == "__main__":
                 param=pd.read_csv(d["SAMIR_run"]+"Output/"+optimis_val+"/output_test_"+classe+"_param.txt",header=None,skiprows=1,sep=";")
                 param.set_index(0,inplace=True)
               # Récuparation data_validation ETR
-            if "CACG" not in name_run: 
+            if "CACG" not in name_run and "PKGC" not in name_run : 
                 if classe =='maize_irri':
                     # ETR_lam=pd.read_csv("D:/THESE_TMP/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.')
                     ETR_lam=pd.read_csv(d["data"]+"/DATA_ETR_CESBIO/DATA_ETR_LAM/DATA_ETR_LAM_ICOS/ETR_LAM"+str(y)+".csv",decimal='.') # flux corrigées a mettre 

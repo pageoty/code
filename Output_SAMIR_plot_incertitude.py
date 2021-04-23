@@ -55,9 +55,9 @@ if __name__ == '__main__':
     # name_run="Bilan_hydrique/RUN_FERMETURE_BILAN_HYDRIQUE/RUN_vege_avec_pluie_Fcover_assimil_avec_irri_auto/"
     # name_run="RUNS_SAMIR/RUNS_PARCELLE_GRIGNON/RUN_test/"
     # name_run="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_Fcover_irri_auto_soil"
-    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_0_optim_fewi_De_Kr_irri_man_soil"
-    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_irri_man_soil"
-    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Init_ru/Merlin_init_ru_0_optim_fewi_De_Kr_irri_man_soil"
+    name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
+    name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/modif_irri/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
+    name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/modif_irri/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_auto_soil"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -173,7 +173,7 @@ if __name__ == '__main__':
         data_meteo=data_E.loc[(data_E.date>= str(y)+"-04-01") &(data_E.date <= str(y)+"-09-30")]
         if "Fcover" in name_run_merlin:
             for Fco in ["_pl20","_m20",""]:
-                d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin[0:128]+str(Fco)+name_run_merlin[128:]
+                d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin[0:129]+str(Fco)+name_run_merlin[129:]
                 ####  récupération num_run max incertitude
                 ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
                 ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         ###### run de ref en X
         if "Fcover" in name_run_FAO:
             for Fco in ["_pl20","_m20",""]:
-                d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO[0:130]+str(Fco)+name_run_FAO[130:] # 112 sans optim 
+                d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO[0:118]+str(Fco)+name_run_FAO[118:] # 112 sans optim 
                 ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
                 ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
                 ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
@@ -272,7 +272,7 @@ if __name__ == '__main__':
         dfmax2=dfmax2.loc[(dfmax2.date>= str(y)+"-04-01") &(dfmax2.date <= str(y)+"-09-30")]
         dfmin2=dfmin2.loc[(dfmin2.date>= str(y)+"-04-01") &(dfmin2.date <= str(y)+"-09-30")]
         KS_man=pd.concat([dfmax2,dfmin2])
-        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov',"SWC1",'Irrig','Dei','Dr','TEW','TAW']]
+        coeff_ks_man=KS_man.groupby("date").mean()[["Ks",'Kei','Kep','NDVI',"fewi",'FCov',"SWC1",'Irrig','Dei','Dr']]
 # =============================================================================
 #         # plot dynamique 
 # =============================================================================
@@ -438,9 +438,9 @@ if __name__ == '__main__':
         
         plt.figure(figsize=(7,7))
         plt.plot(coeff_ks.index,coeff_ks.Dr,label="Dr " +label_test,color='blue')
-        plt.plot(coeff_ks_man.index,coeff_ks_man.Dr,label="Dr "+label_ref,color='red')
-        plt.plot(coeff_ks.index,coeff_ks_man.TAW*0.55,label="RAW",color='black',linestyle="--")
-        plt.plot(coeff_ks.index,coeff_ks_man.TAW,label="TAW",color='black',linestyle="--")
+        plt.plot(coeff_ks_man.index,coeff_ks.Dr,label="Dr "+label_ref,color='red')
+        plt.plot(coeff_ks.index,coeff_ks.TAW*0.55,label="RAW",color='black',linestyle="--")
+        plt.plot(coeff_ks.index,coeff_ks.TAW,label="TAW",color='black',linestyle="--")
         plt.legend(loc="upper right")
         plt.ylim(0,150)
         plt.ylabel("Dr")
