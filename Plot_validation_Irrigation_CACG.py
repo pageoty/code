@@ -36,8 +36,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -119,6 +119,8 @@ if __name__ == '__main__':
         
         NDVI=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/NDVI"+str(y)+".df","rb"))
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
+        Prec=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
+        Prec=Prec.loc[(Prec.date >= str(y)+'-04-01')&(Prec.date<=str(y)+"-09-30")]
         
 # =============================================================================
 #          Recuperation ETR flux +SWC
@@ -195,7 +197,8 @@ if __name__ == '__main__':
             ax2.set_ylabel("NDVI")
             ax2.set_ylim(0,1)
             plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
-            
+            # print(p)
+            # print(Prec.loc[Prec.id==p].Prec.sum())
             #  Plot ETR comparer avec flux moyenne 6 years LAM 
             plt.figure(figsize=(7,7))
             plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
@@ -230,7 +233,7 @@ if __name__ == '__main__':
         # stat total
         tot_ID=Vol_tot.groupby("ID").sum()
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_ID.Quantite.to_list(),tot_ID[t].to_list())
-        bias=1/tot_ID.shape[0]*sum(np.mean(tot_ID.Quantite)-tot_ID[t]) 
+        bias=1/tot_ID.Quantite.shape[0]*sum(tot_ID[t]-np.mean(tot_ID.Quantite)) 
         # fitLine = predict(tot_ID[t])
         rms = mean_squared_error(tot_ID.Quantite,tot_ID[t],squared=False)
         Irtot=Vol_tot.groupby("annee")
@@ -239,7 +242,7 @@ if __name__ == '__main__':
             payears=Irtot.get_group(str(y))
             sumyears=payears.groupby("ID").sum()
             slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(sumyears.Quantite.to_list(),sumyears[t].to_list())
-            bias1=1/sumyears.shape[0]*sum(np.mean(sumyears.Quantite)-sumyears[t]) 
+            bias1=1/sumyears.Quantite.shape[0]*sum(sumyears[t]-np.mean(sumyears.Quantite)) 
             # fitLine = predict(Vol_tot[t])
             rms1 = mean_squared_error(sumyears.Quantite,sumyears[t],squared=False)
             plt.scatter(sumyears.Quantite,sumyears[t],label=y)

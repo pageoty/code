@@ -72,7 +72,7 @@ def fig_conf_mat_rec(conf_mat_dic, nom_dict, kappa, oacc, p_dic, r_dic, f_dic,
             
     
 if __name__ == "__main__":
-    years='INDEX_NOT_CUMUL' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='SEASON_TIME_Adour' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
     d["disk_PC"]="H:/Yann_THESE/RESULTAT_CLASSIFICATION/"
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         stock_res_std=[]    
         for classif in os.listdir(d["disk_PC"]+'/FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
             # if "&" in classif or 'Not' in classif or 'Climate' in classif: 
-            if "2018" in classif: 
+            if "OP3" in classif: 
                 print ("=============")
                 print (r" RUN : %s " %classif)
                 print ("=============")
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         ax1=plt.subplot(221)
         ax1.grid(axis='x')
         # sns.set(style="whitegrid")
-        sns.set_context('paper')
+        # sns.set_context('paper')
         plt.title("Irrigated Maize",fontsize=14)
         # df_multi.xs("Maize irrigated").iloc[1:-2].plot(kind='bar',ax=ax1)
         a=df_multi.xs("Irrigated Maize").iloc[1:-2].T.sort_values(by="Rainfed Maize")
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         if bv == "ADOUR":
             b.T.plot(kind="bar",color=["salmon","darkorange","royalblue",'red','deepskyblue','blue'],ax=ax2,legend=False) # Problème color other BV
         else:
-             b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
+            b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
         plt.text(-0.25,60,"b",size="20")
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
@@ -219,7 +219,7 @@ if __name__ == "__main__":
         plt.xticks(rotation=0)
         ax2.xaxis.set_label_text("")
         plt.ylim(0,65)
-    # plt.savefig("H:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
+    plt.savefig("H:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
 #    ax4=plt.subplot(224)
 #    df_multi.xs("Sunflower ").iloc[0:-1].plot(kind='bar',ax=ax4,legend=True)
 #    plt.xticks(rotation=0)
