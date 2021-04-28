@@ -38,11 +38,10 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     label="Init ru année n-1 + Irrigation auto"
     years=["2017","2018"]
@@ -106,6 +105,9 @@ if __name__ == '__main__':
     Vol_tot_max2=pd.DataFrame()
     Vol_tot_max3=pd.DataFrame()
     for y in years: 
+        df_date_aqui=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_"+str(y)+".txt",header=None)
+        df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
+        df_date_aqui.columns=["date"]
         vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_"+str(y)+".csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
         vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
         vali_cacg["Quantite"].astype(float)
@@ -155,6 +157,7 @@ if __name__ == '__main__':
             min2Ir.columns=["date","maxZr_900"]
             max2Ir.columns=["date","maxZr_1400"]
             max3Ir.columns=["date","maxZr_1200"]
+            df_aqui=pd.merge(df_date_aqui,NDVI.loc[NDVI.id==p],on="date")
             # maxIr.replace(0.0,pd.NaT,inplace=True)
             # minIr.replace(0.0,pd.NaT,inplace=True)
             # print(mean_run.loc[mean_run['maxZr_1000']!=0.0])
@@ -194,20 +197,21 @@ if __name__ == '__main__':
             plt.legend()
             ax2=plt.twinx(ax=None)
             ax2.plot(NDVI.loc[NDVI.id==p].date,NDVI.loc[NDVI.id==p].NDVI,color="darkgreen",linestyle="--")
+            ax2.plot(df_aqui.date,df_aqui.NDVI,marker="o",linestyle="")
             ax2.set_ylabel("NDVI")
             ax2.set_ylim(0,1)
             plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
             # print(p)
             # print(Prec.loc[Prec.id==p].Prec.sum())
             #  Plot ETR comparer avec flux moyenne 6 years LAM 
-            plt.figure(figsize=(7,7))
-            plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
-            plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean()-std_lam[0].rolling(5).mean(),mean_lam[0].rolling(5).mean()+std_lam[0].rolling(5).mean(),facecolor="None",ec='black',linestyle="--",alpha=0.5)
-            plt.plot(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==1000.0]["ET"].rolling(5).mean(),label='ETR parcelle')
-            plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==800.0]["ET"].rolling(5).mean(),paret1.loc[paret1.param==1200.0]["ET"].rolling(5).mean(),alpha=0.5)
-            plt.legend()
-            plt.title(p)
-            plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
+            # plt.figure(figsize=(7,7))
+            # plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
+            # plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean()-std_lam[0].rolling(5).mean(),mean_lam[0].rolling(5).mean()+std_lam[0].rolling(5).mean(),facecolor="None",ec='black',linestyle="--",alpha=0.5)
+            # plt.plot(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==1000.0]["ET"].rolling(5).mean(),label='ETR parcelle')
+            # plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==800.0]["ET"].rolling(5).mean(),paret1.loc[paret1.param==1200.0]["ET"].rolling(5).mean(),alpha=0.5)
+            # plt.legend()
+            # plt.title(p)
+            # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
             
             
             Vol_tot=Vol_tot.append(all_res)
@@ -229,22 +233,26 @@ if __name__ == '__main__':
     Vol_tot["maxZr_900"]=Vol_tot_min2["maxZr_900"]
     Vol_tot["maxZr_1400"]=Vol_tot_max2["maxZr_1400"]
     Vol_tot["maxZr_1200"]=Vol_tot_max3["maxZr_1200"]
+    nb_irr=Vol_tot[Vol_tot!=0.0].groupby("ID").count()
     for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400",'maxZr_1200']:
         # stat total
         tot_ID=Vol_tot.groupby("ID").sum()
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_ID.Quantite.to_list(),tot_ID[t].to_list())
         bias=1/tot_ID.Quantite.shape[0]*sum(tot_ID[t]-np.mean(tot_ID.Quantite)) 
         # fitLine = predict(tot_ID[t])
-        rms = mean_squared_error(tot_ID.Quantite,tot_ID[t],squared=False)
+        rms = mean_squared_error(tot_ID.Quantite,tot_ID[t])
         Irtot=Vol_tot.groupby("annee")
         plt.figure(figsize=(7,7))
         for y in years :
             payears=Irtot.get_group(str(y))
             sumyears=payears.groupby("ID").sum()
+            nb_irr=payears[payears!=0.0].groupby("ID").count()
+            sumyears.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_quantite_Irr_%s.csv"%y)
+            nb_irr.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_nb_Irr_%s.csv"%y)
             slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(sumyears.Quantite.to_list(),sumyears[t].to_list())
             bias1=1/sumyears.Quantite.shape[0]*sum(sumyears[t]-np.mean(sumyears.Quantite)) 
             # fitLine = predict(Vol_tot[t])
-            rms1 = mean_squared_error(sumyears.Quantite,sumyears[t],squared=False)
+            rms1 = mean_squared_error(sumyears.Quantite,sumyears[t])
             plt.scatter(sumyears.Quantite,sumyears[t],label=y)
             plt.xlim(-10,300)
             plt.ylim(-10,300)
@@ -282,4 +290,5 @@ if __name__ == '__main__':
         plt.title(t)
         plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
     
+        
     

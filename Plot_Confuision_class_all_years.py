@@ -75,8 +75,8 @@ if __name__ == "__main__":
     years='SEASON_TIME_Adour' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
-    d["disk_PC"]="H:/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["SAVE_disk"]="H:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
+    d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
+    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/" # path où seront save les graphiques finaux 
     for b in [bv]: 
         step = []
@@ -147,9 +147,10 @@ if __name__ == "__main__":
         # df_multi.xs("Maize irrigated").iloc[1:-2].plot(kind='bar',ax=ax1)
         a=df_multi.xs("Irrigated Maize").iloc[1:-2].T.sort_values(by="Rainfed Maize")
         if bv =="ADOUR":
-            a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'],ax=ax1,legend=True)
+            # a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'],ax=ax1,legend=True)
+            a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue"],ax=ax1,legend=True)
         else:
-             a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
+            a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
         plt.legend(fontsize=12)
@@ -163,7 +164,8 @@ if __name__ == "__main__":
         # df_multi.xs("Soybean irrigated").iloc[[0,2,3]].plot(kind='bar',ax=ax2,legend=False)
         b=df_multi.xs("Irrigated Soybean").iloc[[0,2,3]].T.sort_values(by="Rainfed Soybean")
         if bv == "ADOUR":
-            b.T.plot(kind="bar",color=["salmon","darkorange","royalblue",'red','deepskyblue','blue'],ax=ax2,legend=False) # Problème color other BV
+            # b.T.plot(kind="bar",color=["salmon","darkorange","royalblue",'red','deepskyblue','blue'],ax=ax2,legend=False) # Problème color other BV
+            b.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'darkorange',"salmon"],ax=ax2,legend=False)
         else:
             b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
         plt.text(-0.25,60,"b",size="20")
@@ -177,7 +179,8 @@ if __name__ == "__main__":
         # df_multi.xs("Maize no irrigated").iloc[[0,1,3]].plot(kind='bar',ax=ax3,legend=False)
         c=df_multi.xs("Rainfed Maize").iloc[[0,1,3]].T.sort_values(by="Irrigated Maize")
         if bv =="ADOUR":
-            c.T.plot(kind="bar",color=["royalblue",'deepskyblue','blue',"salmon",'red',"darkorange"],ax=ax3,legend=False)
+            # c.T.plot(kind="bar",color=["royalblue",'deepskyblue','blue',"salmon",'red',"darkorange"],ax=ax3,legend=False)
+            c.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'salmon',"darkorange"],ax=ax3,legend=False)
         else:
             c.T.plot(kind="bar",color=["royalblue",'salmon','darkorange',"red",'blue',"deepskyblue"],ax=ax3,legend=False)
         plt.text(-0.25,60,"c",size="20")
@@ -192,7 +195,8 @@ if __name__ == "__main__":
         # df_multi.xs("Soybean no irrigated").iloc[[0,1,2]].plot(kind='bar',ax=ax4,legend=False)
         d=df_multi.xs("Rainfed Soybean").iloc[[0,1,2]].T.sort_values(by="Irrigated Soybean")
         if bv =="ADOUR":
-            d.T.plot(kind="bar",color=['deepskyblue',"royalblue",'blue',"salmon","darkorange",'red'],ax=ax4,legend=False)
+            # d.T.plot(kind="bar",color=['deepskyblue',"royalblue",'blue',"salmon","darkorange",'red'],ax=ax4,legend=False)
+            d.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'darkorange',"salmon"],ax=ax4,legend=False)
         else:
             d.T.plot(kind="bar",color=['salmon',"royalblue",'blue',"darkorange","red",'deepskyblue'],ax=ax4,legend=False)
         plt.text(-0.25,60,"d",size="20")
@@ -219,7 +223,7 @@ if __name__ == "__main__":
         plt.xticks(rotation=0)
         ax2.xaxis.set_label_text("")
         plt.ylim(0,65)
-    plt.savefig("H:/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
+    plt.savefig("/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_"+bv+"_"+years+".png")
 #    ax4=plt.subplot(224)
 #    df_multi.xs("Sunflower ").iloc[0:-1].plot(kind='bar',ax=ax4,legend=True)
 #    plt.xticks(rotation=0)

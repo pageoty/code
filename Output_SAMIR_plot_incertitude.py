@@ -58,14 +58,14 @@ if __name__ == '__main__':
     name_run_FAO="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_irri_man_soil"
     name_run_merlin="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil"
     name_run_save_fig="RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     label_ref="FCover SAMIR"
     label_test="FCover BVNet"
-    years=["2008","2010","2012","2014","2015","2019"]
+    years=["2014"]
     lc="maize_irri"
 # =============================================================================
 
@@ -168,12 +168,13 @@ if __name__ == '__main__':
     ETR_test_FAO_pl20=None
     ETR_test_FAO=None
     for y in years:
-        ET0=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
+        # ET0=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
+        ET0=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_optim_fewi_De_Kr_Fcover_irri_man_soil/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         data_E=ET0[["date",'ET0',"Prec"]]
         data_meteo=data_E.loc[(data_E.date>= str(y)+"-04-01") &(data_E.date <= str(y)+"-09-30")]
         if "Fcover" in name_run_merlin:
             for Fco in ["_pl20","_m20",""]:
-                d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin[0:118]+str(Fco)+name_run_merlin[118:]
+                d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_merlin[0:118]+str(Fco)+name_run_merlin[118:]
                 ####  récupération num_run max incertitude
                 ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
                 ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
@@ -215,7 +216,7 @@ if __name__ == '__main__':
                 globals()["ETR_test_FAO%s"%(Fco)]=pd.concat([ETR_mod_max,ETR_mod,ETR_mod_min])
             ETR_test_FAO=pd.concat([ETR_test_FAO_pl20,ETR_test_FAO_m20,ETR_test_FAO])
         else:
-            d["Output_model_PC_home_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO
+            d["Output_model_PC_home_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run_FAO
             ETR_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_ETR"+str(y)+".csv",index_col=[0,1])
             ETR_mod.columns=pd.to_datetime(ETR_mod.columns,format="%Y-%m-%d")
             ETR_mod=ETR_mod.loc[:,(ETR_mod.columns >= str(y)+"-04-01") &(ETR_mod.columns <= str(y)+"-09-30")]
@@ -276,7 +277,10 @@ if __name__ == '__main__':
 # =============================================================================
 #         # plot dynamique 
 # =============================================================================
+        NDVI=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover_irri_man_Bruand/"+str(y)+"/Inputdata/maize_irri/NDVI"+str(y)+".df","rb"))
+        NDVI=NDVI.loc[(NDVI.date>= str(y)+"-04-01") &(NDVI.date <= str(y)+"-09-30")]
         plt.figure(figsize=(7,7))
+        plt.plot(NDVI.date,NDVI.NDVI*10,label='NDVI',color="green",linewidth=2,linestyle="--")
         plt.plot(ETR_rolling.date,ETR_rolling.LE_Bowen,label='ETR obs',color="black",linewidth=1)
         plt.fill_between(ETR_rolling.date, ETR_obs_rolling_m20,ETR_obs_rolling_pl20,alpha=0.5,facecolor="None",ec='black',linestyle="--")
         plt.plot(ETR_test_rolling.T.index,ETR_test_rolling.mean(),label='ETR '+label_test,linewidth=1,color='red')
@@ -301,7 +305,7 @@ if __name__ == '__main__':
         ax2.set_ylim(0,50)
         # ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
         plt.title("Dynamique ETR moyenne PFCC incertitude %s en %s"%(lc,y))
-        plt.savefig(d["Output_model_save_fig"]+"/plt_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+        # plt.savefig(d["Output_model_save_fig"]+"/plt_ETR_mod_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
         
         
         
@@ -322,7 +326,7 @@ if __name__ == '__main__':
         plt.ylim(0,700)
         plt.title("Dynamique ETR cumul incertitude %s en %s"%(lc,y))
         plt.legend(loc="upper left")
-        plt.savefig(d["Output_model_save_fig"]+"/plt_Dynamique_ETR_ETR_cumul_incertitude_%s_%s.png"%(lc,y))
+        # plt.savefig(d["Output_model_save_fig"]+"/plt_Dynamique_ETR_ETR_cumul_incertitude_%s_%s.png"%(lc,y))
         
 
 # =============================================================================
@@ -366,11 +370,11 @@ if __name__ == '__main__':
         plt.text(8,1.4,"Pente = "+str(round(slope,2)))
         plt.text(8,1.1,"Biais = "+str(round(bias,2)))
         plt.legend(loc="upper right")
-        plt.savefig(d["Output_model_save_fig"]+"/scatter_ETR_mods_obs_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
+        # plt.savefig(d["Output_model_save_fig"]+"/scatter_ETR_mods_obs_mean_rolling_%s_%s.png"%(lc,y),dpi=330)
 # =============================================================================
 #          Calcule flux E
 # =============================================================================
-        Fcov=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover_irri_man_Bruand/"+str(y)+"/Inputdata/maize_irri/FCOVER.df","rb"))
+        Fcov=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_analyse/Merlin_init_ru_Fcover_irri_man_Bruand/"+str(y)+"/Inputdata/maize_irri/FCOVER.df","rb"))
         Fcov=Fcov.loc[(Fcov.date>= str(y)+"-04-01") &(Fcov.date <= str(y)+"-09-30")]
         data_merge=pd.merge(coeff_ks,data_E,on="date")
         data_merge=data_merge.rolling(5).mean()
@@ -397,7 +401,7 @@ if __name__ == '__main__':
         ax2.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
         plt.ylabel("Pluviométrie")
         plt.title(str(y))
-        plt.savefig(d["Output_model_save_fig"]+"/dynamique_flux_E_Fcover_%s_%s.png"%(lc,y),dpi=330)
+        # plt.savefig(d["Output_model_save_fig"]+"/dynamique_flux_E_Fcover_%s_%s.png"%(lc,y),dpi=330)
         
         # plt.figure(figsize=(7,7))
         # plt.plot(coeff_ks.index,coeff_ks.fewi,label="fewi "+label_test)
@@ -452,7 +456,7 @@ if __name__ == '__main__':
         ax2.set_ylim(1,-2)
         ax2.set_ylabel("Ks")
         ax2.legend(loc="upper left")
-        plt.savefig(d["Output_model_save_fig"]+"/dynamique_Dr_RU_%s_%s.png"%(lc,y),dpi=330)
+        # plt.savefig(d["Output_model_save_fig"]+"/dynamique_Dr_RU_%s_%s.png"%(lc,y),dpi=330)
 # =============================================================================
 #          SWC 2012 et 2014 
 # =============================================================================

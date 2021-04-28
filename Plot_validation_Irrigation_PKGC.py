@@ -38,11 +38,11 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
     years=["2017"]
@@ -65,6 +65,9 @@ if __name__ == '__main__':
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
+    df_date_aqui=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
+    df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
+    df_date_aqui.columns=["date"]
     Vol_tot=pd.DataFrame()
     Id=pd.DataFrame()
     Vol_tot_min=pd.DataFrame()
@@ -82,7 +85,7 @@ if __name__ == '__main__':
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
         Prec=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         Prec=Prec.loc[(Prec.date >= str(y)+'-04-01')&(Prec.date<=str(y)+"-09-30")]
-        
+
 # =============================================================================
 #          Recuperation ETR flux +SWC
 # =============================================================================
@@ -99,6 +102,7 @@ if __name__ == '__main__':
         #         All_ETR=All_ETR.append(df[["date","ET","id",'param']])
         # et=All_ETR.groupby("id")
         # # inser loop parcelle Id
+        
         for p in vali_PKGC.ID:
             par1=gro.get_group(p)
             par1.reset_index(inplace=True)
@@ -115,6 +119,7 @@ if __name__ == '__main__':
             min2Ir.columns=["ID","maxZr_900"]
             max2Ir.columns=["ID","maxZr_1400"]
             max3Ir.columns=["ID","maxZr_1200"]
+            df_aqui=pd.merge(df_date_aqui,NDVI.loc[NDVI.id==p],on="date")
             # maxIr.replace(0.0,pd.NaT,inplace=True)
             # minIr.replace(0.0,pd.NaT,inplace=True)
             # print(mean_run.loc[mean_run['maxZr_1000']!=0.0])
@@ -140,6 +145,7 @@ if __name__ == '__main__':
             plt.figure(figsize=(7,7))
             plt.title(p)
             plt.plot(NDVI.loc[NDVI.id==p].date,NDVI.loc[NDVI.id==p].NDVI,color="darkgreen",linestyle="--")
+            plt.plot(df_aqui.date,df_aqui.NDVI,marker="x",linestyle="")
             plt.ylabel("NDVI")
             plt.ylim(0,1)
             ax2=plt.twinx(ax=None)
@@ -147,8 +153,6 @@ if __name__ == '__main__':
             ax2.set_ylim(0,50)
             ax2.set_ylabel("Irrigation en mm")
             plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
-            print(p)
-            print(Prec.loc[Prec.id==p].Prec.sum())
             #  Plot ETR comparer avec flux moyenne 6 years LAM 
             # plt.figure(figsize=(7,7))
             # plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
@@ -177,6 +181,7 @@ if __name__ == '__main__':
     Vol_tot["maxZr_900"]=Vol_tot_min2["maxZr_900"]
     Vol_tot["maxZr_1400"]=Vol_tot_max2["maxZr_1400"]
     Vol_tot["maxZr_1200"]=Vol_tot_max3["maxZr_1200"]
+    nb_irr=Vol_tot[Vol_tot!=0.0].groupby("ID").count()
     tot_ID=Vol_tot.groupby("ID").sum()
     tot_IRR=pd.merge(tot_ID,vali_PKGC,on=["ID"])
     for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400",'maxZr_1200']:
@@ -215,4 +220,6 @@ if __name__ == '__main__':
         plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].ET0.cumsum(),label=p)
         plt.ylabel("Cumul de précipitation en mm")
         # plt.ylim(0,1)
+    tot_IRR.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_quantite_Irr.csv")
+    nb_irr.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_nb_Irr.csv")
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_prec_cumul_parcelle_probleme.png")
