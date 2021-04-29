@@ -36,8 +36,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
