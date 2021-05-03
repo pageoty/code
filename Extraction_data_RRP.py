@@ -36,7 +36,7 @@ if __name__ == '__main__':
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     drpt="32"
 
     # RRP_shp=geo.read_file(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/Cartographie_RRP"+drpt+"/RRP_"+drpt+"_v5.shp")
@@ -76,8 +76,8 @@ if __name__ == '__main__':
 
 
     #other méthode pondération 
-    RRP_shp=geo.read_file(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/Cartographie_RRP"+drpt+"/RRP_"+drpt+"_v5.shp")
-    parcelle=geo.read_file(d["PC_labo_disk"]+"/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
+    RRP_shp=geo.read_file(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/Cartographie_RRP"+drpt+"/RRP_"+drpt+"_v5.shp")
+    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     # parcelle=geo.read_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/DATA_Validation/Parcelle_2017.shp")
     Inter=geo.overlay(parcelle,RRP_shp,how='intersection')
     No_ucs=Inter[["ID",'NO_UCS','Surface']] # attention récupérer l'UCS majoritaire pour chaque id
@@ -88,16 +88,16 @@ if __name__ == '__main__':
     
     name32="donesol3_661_20190516_1147_E3RU"
     name31="donesol3_661_20191011_0915_C2DI"
-    tab_UCS=pd.read_csv(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_ucs.csv",sep=";",encoding="latin-1")
-    tab_UTS=pd.read_csv(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_l_ucs_uts.csv",sep=";")
-    tab_UTS_prof=pd.read_csv(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_uts.csv",sep=";",encoding="latin-1")
-    tab_strat=pd.read_csv(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_strate.csv",sep=";",encoding="latin-1")
-    tab_strat_quat=pd.read_csv(d["PC_labo_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_strate_quant.csv",sep=";",encoding="latin-1")
+    tab_UCS=pd.read_csv(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_ucs.csv",sep=";",encoding="latin-1")
+    tab_UTS=pd.read_csv(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_l_ucs_uts.csv",sep=";")
+    tab_UTS_prof=pd.read_csv(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_uts.csv",sep=";",encoding="latin-1")
+    tab_strat=pd.read_csv(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_strate.csv",sep=";",encoding="latin-1")
+    tab_strat_quat=pd.read_csv(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/BDDonesol_RRP"+drpt+"/"+name32+"_table_strate_quant.csv",sep=";",encoding="latin-1")
 
     data_parcelle_Texture=pd.DataFrame()
     ids=[]
     entete=[]
-    variable=["Argile",'Sable',"Limon"]
+    variable=["Argile",'Sable',"Limon","epais"]
     for i in enumerate(UCS_no.values):
         print("id : %s" %i[1][0])
         print("no_ucs :%s" %i[1][2])
@@ -115,18 +115,25 @@ if __name__ == '__main__':
         tab_strat_quant_uts=tab_strat_quat.loc[(tab_strat_quat.id_uts==int(UTS_maj))][['nom_var', 'val_min', 'val_mod', 'val_max','no_strate']]
         All= pd.merge(tab_strat_quant_uts,Strat_uts, on="no_strate")
         All.dropna(inplace=True)
-        Argile_moy=np.average(All.loc[(All.nom_var=="TAUX ARGILE")]["val_max"]/1000, weights=All.loc[(All.nom_var=="TAUX ARGILE")]["epais_moy"].to_list())
-        Sable_moy=np.average(All.loc[(All.nom_var=="TAUX SABLE")]["val_max"]/1000, weights=All.loc[(All.nom_var=="TAUX SABLE")]["epais_moy"].to_list())
-        Limon_moy=np.average(All.loc[(All.nom_var=="TAUX LIMON")]["val_max"]/1000, weights=All.loc[(All.nom_var=="TAUX LIMON")]["epais_moy"].to_list())
+        Argile_moy=np.average(All.loc[(All.nom_var=="TAUX ARGILE")]["val_mod"]/1000, weights=All.loc[(All.nom_var=="TAUX ARGILE")]["epais_moy"].to_list())
+        Sable_moy=np.average(All.loc[(All.nom_var=="TAUX SABLE")]["val_mod"]/1000, weights=All.loc[(All.nom_var=="TAUX SABLE")]["epais_moy"].to_list())
+        Limon_moy=np.average(All.loc[(All.nom_var=="TAUX LIMON")]["val_mod"]/1000, weights=All.loc[(All.nom_var=="TAUX LIMON")]["epais_moy"].to_list())
+        Argile=All.loc[(All.nom_var=="TAUX ARGILE")]["val_mod"]/1000
+        Argile =Argile.to_list()
+        Sable=All.loc[(All.nom_var=="TAUX SABLE")]["val_mod"]/1000
+        Sable=Sable.to_list()
+        Limon=All.loc[(All.nom_var=="TAUX LIMON")]["val_mod"]/1000
+        Limon=Limon.to_list()
+        epais=All.loc[(All.nom_var=="TAUX LIMON")]["epais_moy"].to_list()
         
         
-        print(Argile_moy)
-        print(Sable_moy)
-        print(Limon_moy)
-        ids.append(np.repeat(i[1][0],3))
+        # print(Argile_moy)
+        # print(Sable_moy)
+        # print(Limon_moy)
+        ids.append(np.repeat(i[1][0],4))
         entete.append(variable)
-        data_parcelle_Texture=data_parcelle_Texture.append([Argile_moy,Sable_moy,Limon_moy])
-
+        data_parcelle_Texture=data_parcelle_Texture.append([Argile,Sable,Limon,epais])
+    data_parcelle_Texture.columns=["Strat1","Strat2","Strat3","Strat4"]
     data_parcelle_Texture["ID"]=pd.DataFrame(ids).T.unstack().values
-    data_parcelle_Texture["Variable_moyenne"]=pd.DataFrame(entete).T.unstack().values
-    data_parcelle_Texture.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017.csv")
+    data_parcelle_Texture["Variable_modale"]=pd.DataFrame(entete).T.unstack().values
+    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017.csv")

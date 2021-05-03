@@ -36,12 +36,12 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_modif_irri_auto_soil/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p04_1500_modif_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_Fcover_fewi_De_Kr_days10_p04_1500_modif_irri_auto_soil/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     label="Init ru année n-1 + Irrigation auto"
     years=["2017","2018"]
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     Vol_tot_max2=pd.DataFrame()
     Vol_tot_max3=pd.DataFrame()
     for y in years: 
-        df_date_aqui=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_"+str(y)+".txt",header=None)
+        df_date_aqui=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_"+str(y)+".txt",header=None)
         df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
         df_date_aqui.columns=["date"]
         vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_"+str(y)+".csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
@@ -240,7 +240,7 @@ if __name__ == '__main__':
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_ID.Quantite.to_list(),tot_ID[t].to_list())
         bias=1/tot_ID.Quantite.shape[0]*sum(tot_ID[t]-np.mean(tot_ID.Quantite)) 
         # fitLine = predict(tot_ID[t])
-        rms = mean_squared_error(tot_ID.Quantite,tot_ID[t])
+        rms = mean_squared_error(tot_ID.Quantite,tot_ID[t],squared=False)
         Irtot=Vol_tot.groupby("annee")
         plt.figure(figsize=(7,7))
         for y in years :
@@ -252,7 +252,7 @@ if __name__ == '__main__':
             slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(sumyears.Quantite.to_list(),sumyears[t].to_list())
             bias1=1/sumyears.Quantite.shape[0]*sum(sumyears[t]-np.mean(sumyears.Quantite)) 
             # fitLine = predict(Vol_tot[t])
-            rms1 = mean_squared_error(sumyears.Quantite,sumyears[t])
+            rms1 = mean_squared_error(sumyears.Quantite,sumyears[t],squared=False)
             plt.scatter(sumyears.Quantite,sumyears[t],label=y)
             plt.xlim(-10,300)
             plt.ylim(-10,300)
