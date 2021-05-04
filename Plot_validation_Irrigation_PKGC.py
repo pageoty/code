@@ -36,12 +36,12 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days0_dose50_p06_1500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days0_dose50_p06_1500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days0_dose50_p075_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days0_dose50_p075_1500_irri_auto_soil/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
-    df_date_aqui=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
+    df_date_aqui=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
     df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
     df_date_aqui.columns=["date"]
     Vol_tot=pd.DataFrame()
@@ -190,7 +190,7 @@ if __name__ == '__main__':
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_IRR.MMEAU.to_list(),tot_IRR[t].to_list())
         bias=1/tot_IRR["MMEAU"].shape[0]*sum(tot_IRR[t]-np.mean(tot_IRR.MMEAU)) 
         # fitLine = predict(tot_ID[t])
-        rms = mean_squared_error(tot_IRR.MMEAU,tot_IRR[t],squared=False)
+        rms = mean_squared_error(tot_IRR.MMEAU,tot_IRR[t])
         plt.figure(figsize=(7,7))
         plt.scatter(tot_IRR.MMEAU,tot_IRR[t],label=y)
         plt.xlim(-10,350)

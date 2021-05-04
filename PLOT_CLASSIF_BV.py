@@ -336,18 +336,15 @@ if __name__ == "__main__":
 # =============================================================================
     maize2017=dfMetric.set_index(['Classe'])
     M7=maize2017.sort_values(by='step',ascending=True)
-    for i in set(maize2017.step):
+    for i in set(M7.step):
         plt.figure(figsize=(12,5)) 
         plt.grid(axis='x')
         x1=plt.subplot(121)
-        barWidth = 0.3
-        bars1 = maize2017[maize2017.step==i]["mean_fscore"]
-        yer1 = maize2017[maize2017.step==i]['std_fscore']
-        r1 = np.arange(len(bars1))
-        plt.bar(maize2017[maize2017.step==i].index,maize2017[maize2017.step==i]["mean_fscore"],color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+        yer1 = M7[M7.step==i]['std_fscore']
+        plt.bar(M7[M7.step==i].index,M7[M7.step==i]["mean_fscore"],color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
         plt.xticks(fontsize=10)
         plt.yticks(fontsize=14)
-        plt.xticks(rotation=45) # fixer problème du nom de l'axe"
+        plt.xticks(rotation=45)
         plt.ylabel('Fscore')
         plt.ylim(0,1)
         plt.title(str(i))
@@ -393,7 +390,7 @@ if __name__ == "__main__":
                     plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
         
-            else: # A revoir probleme dans la conception du plot
+            else: 
                 for i in set(zip(M7.step,M8.step)):
                     print(i)
                     plt.figure(figsize=(12,5)) 
