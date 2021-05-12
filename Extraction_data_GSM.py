@@ -49,7 +49,10 @@ if __name__ == '__main__':
     data_parcelle_Texture=[]
     for i in PKGC.index:
         for v in ["clay","sand","silt"]:
-            a=np.average(PKGC[[v+"_l0_me",v+"_l5_me",v+"_l15_m",v+"_l30_m",v+'_l60_m',v+"_l100_"]].iloc[i],weights=[1,5,10,15,30,40])
+            a=np.average(PKGC[[v+"_l0_me",v+"_l5_me",v+"_l15_m",v+"_l30_m",v+'_l60_m']].iloc[i],weights=[1,5,10,15,30])
+            print("ID : %s "%PKGC.ID.iloc[i])
+            print(v)
+            print(a)
             data_parcelle_Texture.append(a)
             ids.append(PKGC.ID.iloc[i])
             entete.append(v)

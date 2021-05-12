@@ -140,8 +140,11 @@ if __name__ == '__main__':
                 All_ETR=All_ETR.append(df[["date","ET","id",'param']])
         et=All_ETR.groupby("id")
         # inser loop parcelle Id
-    
-        for p in list(set(vali_cacg["ID"])):
+        if y =="2017":
+            id_CACG=[1,4,5,6,13]
+        else:
+            id_CACG=[1,5,9,10,12,13]
+        for p in id_CACG:
             par1=gro.get_group(p)
             par1.reset_index(inplace=True)
             par1.num_run=pd.to_datetime(par1.num_run,format="%Y-%m-%d")

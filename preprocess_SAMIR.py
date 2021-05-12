@@ -36,9 +36,9 @@ if __name__ == "__main__":
     # print(args.name_run)
    
     years="2017"
-    ZONE =["PKGC"] # Fusion PARCELLE_CESBIO
+    ZONE =["ASA"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
@@ -202,6 +202,28 @@ if __name__ == "__main__":
                 FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
                 FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
                 FCOVER.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
+          elif bv == 'ASA' :
+                dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None)
+                dfs=pd.DataFrame(dfnames)
+                dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/NDVI_ASA_2017.csv",sep=",")
+                tmp=df[["ID"]]
+                tmp1=pd.DataFrame()
+                for i in np.arange(1,37,1): #♣ 2018 : 49 :  2017 : 41
+                      a=df[str(i)+"mean"]/1000
+                      tmp1=tmp1.append(a)
+                Fcover=tmp1.T
+                Fcover.columns=list(dates)
+                # Fcover=Fcover.T
+                Fcover.T.sort_index(inplace=True)
+                Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+                Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+                Fcover=Fcover.append(df.ID)
+                Fcover=Fcover.T
+                Fcover.set_index("ID",inplace=True)
+                FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+                FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
+                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2017.df")
 # =============================================================================
 # LAI
 # =============================================================================
@@ -257,6 +279,14 @@ if __name__ == "__main__":
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
+        elif bv == "ASA":
+            for i in ["WP",'FC']:
+                soil=pd.DataFrame()
+                for j in np.arange(1,113):
+                    a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
+                    soil=soil.append(a)
+                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
+                # if i=="FC":
                 # if i=="FC":
                 #     soil[str(i)].loc[0]=0.3635
                 #     soil[str(i)].loc[1]=np.mean([0.310,0.392])
@@ -304,6 +334,12 @@ if __name__ == "__main__":
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
+        elif bv =="ASA" :
+                soil=pd.DataFrame()
+                for j in np.arange(1,113):
+                    a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+                    soil=soil.append(a)
+                soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df')
                     # soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
 # #                     # soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
@@ -451,10 +487,10 @@ if __name__ == "__main__":
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
             FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=6.0) & (FCOVER.id!=8.0) & (FCOVER.id!=2) & (FCOVER.id!=3)]
         elif bv =="PKGC" :
-            dfnames=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2017_TYP.txt",sep=',', header=None)
+            dfnames=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2017_TYP.txt",sep=',', header=None)
             dates=dfnames[0].apply(lambda x:x[11:19])
             dates=pd.to_datetime(dates,format="%Y%m%d")
-            df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/PARCELLE_PKGC_TYP.csv",decimal=".")
+            df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/PARCELLE_PKGC_TYP.csv",decimal=".")
             tmp=df[["ID"]]
             tmp1=pd.DataFrame()
             for i in np.arange(0,41,2): #♣ 2018 : 49 :  2017 : 41
