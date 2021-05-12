@@ -200,6 +200,7 @@ def indexdate(df,intervalle_inf,out):
 if __name__ == '__main__':
     d={}
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/"
+    d["SAVE"]="G:/THESE/CLASSIFICATION/RESULT/PLOT/"
 #    df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/tmp/TEST_ANALYSE_SIGNAL/ZONE_TEST_MAIZE.csv")
 #    dfpar=df.groupby("originfid").mean()
     Label=[1,2,11,22,33,44]
@@ -221,16 +222,16 @@ if __name__ == '__main__':
     list_drop=["labcroirr","OGC_FID","alt_band_0"]
     list_drop_2018=["labcroirr","ogc_fid"]
     cropslab1=[]
-    for z in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/"):
+    for z in os.listdir("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/"):
         if years in z:
             if BV in z and "NORD" not in z and "SUD" not in z :
                 tuile=z[:5]
                 if years == "2017":
                     print( z)
-                    col_sqlite("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/%s"%z ,tuile+years,list_drop_bv,"/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/list_features_SAR.txt")     
+                    col_sqlite("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/%s"%z ,tuile+years,list_drop_bv,"G:/THESE/CLASSIFICATION/RESULT/list_features_SAR.txt")     
                 else:
                     print (z)
-                    col_sqlite("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/%s" %z, tuile+years ,list_drop_2018,"/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/list_features_TYN2018.txt")
+                    col_sqlite("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/DATA_SQLITE/%s" %z, tuile+years ,list_drop_2018,"G:/THESE/CLASSIFICATION/RESULT/list_features_TYN2018.txt")
 
                 for p in polarisation:
                     print (p)
@@ -282,11 +283,11 @@ if __name__ == '__main__':
                         confiancesup.append(globals()["b_sup%s%s"% (i,l)])
 
 #        
-                for m in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/"): # regle meteo pour 2018 sur les auters zones 
+                for m in os.listdir("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/"): # regle meteo pour 2018 sur les auters zones 
 #                    print (m)
                     if years=="2017" :
                         if m[4:9] == tuile and m[-8:-4]== "2017" :
-                            df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/%s" % m)
+                            df=pd.read_csv("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/%s" % m)
                             df=df[["DATE","PRELIQ_Q"]]
                             globals()["dfSAFR%s"% (tuile)]=df.set_index("DATE")
                             globals()["dfSAFR%s"% (tuile)].index=pd.to_datetime(globals()["dfSAFR%s"% (tuile)].index,format="%Y%m%d")
@@ -294,7 +295,7 @@ if __name__ == '__main__':
                             globals()["dfSAFR%s"% (tuile)]["sort_date"]=globals()["dfSAFR%s"% (tuile)].date.dt.strftime("%m-%d")
                     else:
                         if m[4:9] == tuile and m[-8:-4]=="2018":
-                            df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/%s" % m)
+                            df=pd.read_csv("G:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_SIGNAL_SAR/SAFRAN/%s" % m)
                             df=df[["DATE","PRELIQ_Q"]][0:365]
                             globals()["dfSAFR%s"% (tuile)]=df.set_index("DATE")
                             globals()["dfSAFR%s"% (tuile)].index=pd.to_datetime(globals()["dfSAFR%s"% (tuile)].index,format="%Y%m%d")
@@ -936,9 +937,8 @@ if __name__ == '__main__':
     #         globals()["%s%s"%(i,l)]=globals()["%s%s"%(i,l)].resample("D").asfreq().interpolate()
     #         # globals()["%s%s"%(i,l)]["date"]=globals()["%s%s"%(i,l)].index
     #         # globals()["%s%s"%(i,l)]["sort_date"]=globals()["%s%s"%(i,l)].date.dt.strftime("%m-%d")
-    
-    
-#     confianceinf=[] # list pour introduire les intervalle de confiance 
+
+#     confianceinf=[] # list pour introduire les intervalles de confiances 
 #     confiancesup=[]
 
 #     for i in features:
@@ -963,16 +963,16 @@ if __name__ == '__main__':
     p3=plt.plot(NDVI11.sort_date,NDVI11.T.iloc[:-2].mean()/1000,color='red',linestyle='-')
     plt.fill_between(NDVI11.sort_date, confiancesup[2]/1000, confianceinf[2]/1000, facecolor='red', alpha=0.1)
     p2=plt.plot(NDVI2.sort_date,NDVI2.T.iloc[:-2].mean()/1000,color='blue',linestyle="--")
-    plt.fill_between(NDVI1.sort_date, confiancesup[1]/1000, confianceinf[1]/1000, facecolor='blue', alpha=0.1)
+    # plt.fill_between(NDVI1.sort_date, confiancesup[1]/1000, confianceinf[1]/1000, facecolor='blue', alpha=0.1)
     p4=plt.plot(NDVI22.sort_date,NDVI22.T.iloc[:-2].mean()/1000,color='red',linestyle='--')
-    plt.fill_between(NDVI11.sort_date, confiancesup[3]/1000, confianceinf[3]/1000, facecolor='red', alpha=0.1)
+    # plt.fill_between(NDVI11.sort_date, confiancesup[3]/1000, confianceinf[3]/1000, facecolor='red', alpha=0.1)
     p5=plt.plot(NDVI44.sort_date,NDVI44.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
-    plt.fill_between(NDVI44.sort_date, confiancesup[5]/1000, confianceinf[5]/1000, facecolor='black', alpha=0.1)
+    # plt.fill_between(NDVI44.sort_date, confiancesup[5]/1000, confianceinf[5]/1000, facecolor='black', alpha=0.1)
     plt.ylabel("NDVI")
     plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
-    plt.text(325,0.90,"c",size="20")
+    plt.text(325,0.90,"a",size="20")
     plt.xticks(size='large',rotation=45)
     plt.yticks(fontsize= 12)
     ax1 = plt.subplot(122)
@@ -990,9 +990,9 @@ if __name__ == '__main__':
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.xticks(size='large',rotation=45)
-    plt.text(325,0.16,"d",size="20")
+    plt.text(325,0.14,"b",size="20")
     plt.yticks(fontsize= 12)
-    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_V3_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
     plt.figure(figsize=(13,5))
     ax3=plt.subplot(121)
     p1=plt.plot(asc_vh1.sort_date,asc_vh1.T.iloc[:-2].mean(),color='blue',linestyle="-")
@@ -1033,7 +1033,7 @@ if __name__ == '__main__':
     plt.fill_between(asc_vv44.sort_date, confiancesup[35], confianceinf[35], facecolor='black', alpha=0.1)
     plt.ylabel("sigma0 VH")
     plt.xticks(size='large',rotation=45)
-    plt.text(325,-4,"b",size="20")
+    plt.text(325,-5,"b",size="20")
     plt.yticks(fontsize= 12)
     ax32=plt.twinx()
     ax32.yaxis.grid(False) 
@@ -1045,6 +1045,6 @@ if __name__ == '__main__':
     plt.yticks(fontsize= 12)
     plt.xticks(visible=False)
 
-    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V2"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V3"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 
 

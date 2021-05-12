@@ -22,7 +22,7 @@ if __name__ == '__main__':
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     years="2018"
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(years)+"/Inputdata/"
     # mode="CSV"
     d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_run_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
     meteo=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
-    parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
+    parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_er10_only_Gers.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     meteo.DATE=meteo.DATE.astype(int)
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
@@ -64,10 +64,10 @@ if __name__ == '__main__':
     meteo.reset_index(inplace=True)
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
-    meteo.to_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
-    meteo2=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CACG/meteo_'+years+'.csv')
+    meteo.to_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_ASA/meteo_'+years+'.csv')
+    meteo2=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_ASA/meteo_'+years+'.csv')
     meteo2.drop(columns=["Unnamed: 0"],inplace=True)
-    meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
+    # meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
     meteo2.date=pd.to_datetime(meteo2.date,format="%Y-%m-%d")
     meteo2.to_pickle(d["path_run_disk"]+"/maize_irri/meteo.df")
 # =============================================================================
