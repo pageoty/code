@@ -69,8 +69,7 @@ def fig_conf_mat_rec(conf_mat_dic, nom_dict, kappa, oacc, p_dic, r_dic, f_dic,
 
                 vals.append(val_percentage)
         return vals
-            
-    
+
 if __name__ == "__main__":
     years='SEASON_TIME_Adour' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
