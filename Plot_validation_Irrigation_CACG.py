@@ -260,8 +260,8 @@ if __name__ == '__main__':
             plt.xlim(-10,300)
             plt.ylim(-10,300)
             plt.legend()
-            plt.xlabel("Volumes annuels observés en mm ")
-            plt.ylabel("Volumes annuels modélisés en mm ")
+            plt.xlabel("Quantité annuelles observés en mm ")
+            plt.ylabel("Quantité annuelles modélisés en mm ")
             plt.plot([-10.0, 300], [-10.0,300], 'black', lw=1,linestyle='--')
             if "2017" in y :
                 rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)

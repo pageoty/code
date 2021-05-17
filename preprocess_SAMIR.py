@@ -508,6 +508,28 @@ if __name__ == "__main__":
             FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
             # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
+        elif bv =="ASA" :
+            dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2017_TYP.txt",sep=',', header=None)
+            dates=dfnames[0].apply(lambda x:x[11:19])
+            dates=pd.to_datetime(dates,format="%Y%m%d")
+            df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/PARCELLE_ASA_2017_TYP.csv",decimal=".")
+            tmp=df[["ID"]]
+            tmp1=pd.DataFrame()
+            for i in np.arange(0,41,2): #♣ 2018 : 49 :  2017 : 41
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a)
+            Fcover=tmp1.T
+            Fcover.columns=list(dates)
+            # Fcover=Fcover.T
+            Fcover.T.sort_index(inplace=True)
+            Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+            Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+            Fcover=Fcover.append(df.ID)
+            Fcover=Fcover.T
+            Fcover.set_index("ID",inplace=True)
+            FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+            FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
+            # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
             #  Manque ID 2 et 3
             # dfnamesTCJ=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TCJ.txt",sep=',', header=None)
             # dates=dfnamesTCJ[0].apply(lambda x:x[11:19])

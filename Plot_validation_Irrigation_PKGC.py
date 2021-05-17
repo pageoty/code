@@ -30,18 +30,21 @@ from pylab import *
 from sklearn.metrics import *
 from sklearn.linear_model import LinearRegression
 
+
 def predict(x):
    return slope * x + intercept
 
 
+
+
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_optim_Fcover_fewi_De_Kr_p06_1500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_optim_Fcover_fewi_De_Kr_p06_1500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_irri_auto_soil/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -65,7 +68,7 @@ if __name__ == '__main__':
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
-    df_date_aqui=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
+    df_date_aqui=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
     df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
     df_date_aqui.columns=["date"]
     Vol_tot=pd.DataFrame()
@@ -85,7 +88,8 @@ if __name__ == '__main__':
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
         Prec=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         Prec=Prec.loc[(Prec.date >= str(y)+'-04-01')&(Prec.date<=str(y)+"-09-30")]
-
+        uts_type=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+        data_v=pd.merge(vali_PKGC,uts_type,on="ID")
 # =============================================================================
 #          Recuperation ETR flux +SWC
 # =============================================================================
@@ -183,21 +187,23 @@ if __name__ == '__main__':
     Vol_tot["maxZr_1200"]=Vol_tot_max3["maxZr_1200"]
     nb_irr=Vol_tot[Vol_tot!=0.0].groupby("ID").count()
     tot_ID=Vol_tot.groupby("ID").sum()
-    tot_IRR=pd.merge(tot_ID,vali_PKGC,on=["ID"])
+    tot_IRR=pd.merge(tot_ID,data_v,on=["ID"])
     tot_IRR=tot_IRR[tot_IRR.ID!=10.0]
+    tot_IRR.dropna(inplace=True)
+    labels, index = np.unique(tot_IRR["Classe"], return_inverse=True)
     for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400",'maxZr_1200']:
         # stat total
         slope, intercept, r_value, p_value, std_err = stats.linregress(tot_IRR.MMEAU.to_list(),tot_IRR[t].to_list())
         bias=1/tot_IRR["MMEAU"].shape[0]*sum(tot_IRR[t]-np.mean(tot_IRR.MMEAU)) 
         # fitLine = predict(tot_ID[t])
-        rms = mean_squared_error(tot_IRR.MMEAU,tot_IRR[t],squared=False)
+        rms = mean_squared_error(tot_IRR.MMEAU,tot_IRR[t])
         plt.figure(figsize=(7,7))
-        plt.scatter(tot_IRR.MMEAU,tot_IRR[t],label=y)
+        a=plt.scatter(tot_IRR.MMEAU,tot_IRR[t],c=index,cmap='coolwarm')
+        plt.legend(a.legend_elements()[0],labels)
         plt.xlim(-10,350)
         plt.ylim(-10,350)
-        plt.legend()
-        plt.xlabel("Quantité annuels observés en mm ")
-        plt.ylabel("Quantité annuels modélisés en mm ")
+        plt.xlabel("Quantité annuelles observées en mm ")
+        plt.ylabel("Quantité annuelles modélisées en mm ")
         plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
         rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
         plt.gca().add_patch(rectangle)
@@ -215,16 +221,17 @@ if __name__ == '__main__':
         plt.title(t)
         plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
         
-    plt.figure(figsize=(7,7))
-    for p in [20,1,30,14,22,33,24,40]:#list(set(Prec.id))
-        plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].Prec.cumsum(),label=p)
-        plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].ET0.cumsum(),label=p)
-        plt.ylabel("Cumul de précipitation en mm")
-        plt.text(Prec.loc[Prec.id==p].iloc[-1].date,Prec.loc[Prec.id==p].Prec.cumsum().iloc[-1],s=p)
-        plt.text(Prec.loc[Prec.id==p].iloc[-1].date,Prec.loc[Prec.id==p].ET0.cumsum().iloc[-1],s=p)
-        # plt.ylim(0,1)
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_PREC_cumul_%s_Irrigation.png"%t)
+    # plt.figure(figsize=(10,10))
+    # for p in list(set(Prec.id)):#list(set(Prec.id))
+    #     plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].Prec.cumsum(),label='pluie')
+    #     # plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].ET0.cumsum(),label="Et0")
+    #     plt.ylabel("Cumul de précipitation en mm")
+    #     plt.text(Prec.loc[Prec.id==p].iloc[-1].date,Prec.loc[Prec.id==p].Prec.cumsum().iloc[-1],s=p)
+    #     # plt.text(Prec.loc[Prec.id==p].iloc[-1].date,Prec.loc[Prec.id==p].ET0.cumsum().iloc[-1],s=p)
+    # # plt.legend()
+    #     # plt.ylim(0,1)
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_PREC_cumul_%s_Irrigation.png"%t)
         
     tot_IRR.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_quantite_Irr.csv")
     nb_irr.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_nb_Irr.csv")
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_prec_cumul_parcelle_probleme.png")
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_prec_cumul_parcelle_probleme.png")
