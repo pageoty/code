@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr 23 10:47:32 2021
+Created on Tue May 18 10:05:24 2021
 
 @author: yann 
 
-Validation Irrigation automatique parcelle de référence PKGC
+Validation Irrigation automatique parcelle de référence ASA
 """
 
 
@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_RRP_GERS_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1500_RRP_GERS_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1000_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1000_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -48,29 +48,14 @@ if __name__ == '__main__':
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
-    years=["2017"]
+    years=["2018"]
     lc="maize_irri"
-    soil=['RRP',"RRP_GERS"]
-    
-# =============================================================================
-#   Mean flux ETR -> Lam corrigées
-# =============================================================================
-    # All_lam=[]
-    # for i in os.listdir(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/"):
-    #     if "ETR_maize_irri" in i and "semi" not in i:
-    #         ETR=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/DATA_VALIDATION/DATA_ETR_CESBIO/DATA_ETR_corr_maize_irri/"+i,decimal='.',sep=",")
-    #         ETR["date"]=pd.to_datetime(ETR["date"],format="%Y-%m-%d")
-    #         All_lam.append(ETR.LE_Bowen)
-    # lam_et=pd.DataFrame(All_lam)
-    # mean_lam=pd.DataFrame(lam_et.mean())
-    # std_lam=pd.DataFrame(lam_et.std())
-    # mean_lam["date"]=ETR.date
+
+
 # =============================================================================
 # Validation des Irr cumulées CACG
 # =============================================================================
-    df_date_aqui=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
-    df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
-    df_date_aqui.columns=["date"]
+
     Vol_tot=pd.DataFrame()
     Id=pd.DataFrame()
     Vol_tot_min=pd.DataFrame()
@@ -79,7 +64,7 @@ if __name__ == '__main__':
     Vol_tot_max2=pd.DataFrame()
     Vol_tot_max3=pd.DataFrame()
     for y in years: 
-        vali_PKGC=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/VOL_TOT_PKGC_"+str(y)+".csv",encoding='latin-1',decimal='.',sep=',',na_values="nan")
+        vali_ASA=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/ConsoASA_NESTE_"+str(y)+".csv",encoding='latin-1',decimal='.',sep=';',na_values="nan")
         d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
         Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
         gro=Irri_mod.groupby("ID")
@@ -88,8 +73,9 @@ if __name__ == '__main__':
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
         Prec=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         Prec=Prec.loc[(Prec.date >= str(y)+'-04-01')&(Prec.date<=str(y)+"-09-30")]
-        uts_type=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/"+soil[0]+"/Extract_"+soil[1]+"_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-        data_v=pd.merge(vali_PKGC,uts_type,on="ID")
+        df_date_aqui=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_"+str(y)+".txt",header=None)
+        df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
+        df_date_aqui.columns=["date"]
 # =============================================================================
 #          Recuperation ETR flux +SWC
 # =============================================================================
@@ -107,7 +93,7 @@ if __name__ == '__main__':
         # et=All_ETR.groupby("id")
         # # inser loop parcelle Id
         
-        for p in vali_PKGC.ID:
+        for p in list(set(Irri_mod.ID))[2:]:
             par1=gro.get_group(p)
             par1.reset_index(inplace=True)
             par1.num_run=pd.to_datetime(par1.num_run,format="%Y-%m-%d")
@@ -124,49 +110,6 @@ if __name__ == '__main__':
             max2Ir.columns=["ID","maxZr_1400"]
             max3Ir.columns=["ID","maxZr_1200"]
             df_aqui=pd.merge(df_date_aqui,NDVI.loc[NDVI.id==p],on="date")
-            # maxIr.replace(0.0,pd.NaT,inplace=True)
-            # minIr.replace(0.0,pd.NaT,inplace=True)
-            # print(mean_run.loc[mean_run['maxZr_1000']!=0.0])
-            
-            # Pour ETR
-            # paret1=et.get_group(p)
-            # paret1.reset_index(inplace=True)
-            # paret1.date=pd.to_datetime(paret1.date,format="%Y-%m-%d")
-            # paret1=paret1.loc[(paret1.date >= str(y)+"-04-01") &(paret1.date <= str(y)+"-09-30")]
-            # validation
-            # all_res=pd.merge(vali_PKGC,mean_run,on=["ID"]) # fusion des sim/obs
-            # all_res_min=pd.merge(vali_PKGC,minIr,on=["ID"])
-            # all_res_max=pd.merge(vali_PKGC,maxIr,on=["ID"])
-            # all_res_min2=pd.merge(vali_PKGC,min2Ir,on=["ID"])
-            # all_res_max2=pd.merge(vali_PKGC,max2Ir,on=["ID"])
-            # all_res_max3=pd.merge(vali_PKGC,max3Ir,on=["ID"])
-            # all_resu=all_res.replace(0.0,pd.NaT)
-            # print("============")
-            # print("parcelle :%s"%p)
-            # print(all_res.sum())
-            # print("============")
-            # #### plot
-            # plt.figure(figsize=(7,7))
-            # plt.title(p)
-            # plt.plot(NDVI.loc[NDVI.id==p].date,NDVI.loc[NDVI.id==p].NDVI,color="darkgreen",linestyle="--")
-            # plt.plot(df_aqui.date,df_aqui.NDVI,marker="x",linestyle="")
-            # plt.ylabel("NDVI")
-            # plt.ylim(0,1)
-            # ax2=plt.twinx(ax=None)
-            # ax2.bar(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].Prec,color="blue")
-            # ax2.set_ylim(0,50)
-            # ax2.set_ylabel("Irrigation en mm")
-            # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_Irrigation_%s_%s.png"%(p,y))
-            # #  Plot ETR comparer avec flux moyenne 6 years LAM 
-            # plt.figure(figsize=(7,7))
-            # plt.plot(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean(),color='black',label="ETR lam moyenne 6 years")
-            # plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],mean_lam[0].rolling(5).mean()-std_lam[0].rolling(5).mean(),mean_lam[0].rolling(5).mean()+std_lam[0].rolling(5).mean(),facecolor="None",ec='black',linestyle="--",alpha=0.5)
-            # plt.plot(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==1000.0]["ET"].rolling(5).mean(),label='ETR parcelle')
-            # plt.fill_between(paret1.loc[paret1.param==1000.0]["date"],paret1.loc[paret1.param==800.0]["ET"].rolling(5).mean(),paret1.loc[paret1.param==1200.0]["ET"].rolling(5).mean(),alpha=0.5)
-            # plt.legend()
-            # plt.title(p)
-            # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_ETR_dynamiuqe_%s_%s.png"%(p,y))
-            
             
             Vol_tot=Vol_tot.append(mean_run)
             Vol_tot_min=Vol_tot_min.append(minIr)
@@ -187,34 +130,45 @@ if __name__ == '__main__':
     Vol_tot["maxZr_1200"]=Vol_tot_max3["maxZr_1200"]
     nb_irr=Vol_tot[Vol_tot!=0.0].groupby("ID").count()
     tot_ID=Vol_tot.groupby("ID").sum()
-    tot_IRR=pd.merge(tot_ID,data_v,on=["ID"])
-    tot_IRR=tot_IRR[tot_IRR.ID!=10.0]
-    # tot_IRR.dropna(inplace=True)
-    labels, index = np.unique(tot_IRR["Classe"], return_inverse=True)
+    tot_IRR=pd.merge(tot_ID,vali_ASA,on=["ID"])
+    tot_IRR.dropna(inplace=True)
+    asagroup=tot_IRR.groupby("nomasa")
+    # loop 
     for t in ["maxZr_1000","maxZr_1500","maxZr_800","maxZr_900","maxZr_1400",'maxZr_1200']:
-        # stat total
-        slope, intercept, r_value, p_value, std_err = stats.linregress(tot_IRR.MMEAU.to_list(),tot_IRR[t].to_list())
-        bias=1/tot_IRR["MMEAU"].shape[0]*sum(tot_IRR[t]-np.mean(tot_IRR.MMEAU)) 
+        conso=[]
+        asa_n=[]
+        data_v=[]
+        for asa in list(set(tot_IRR.nomasa)):
+            tet=asagroup.get_group(asa)
+            tet["conso"]=tet.eval("%s*area*10"%t)
+            # tet["am3"]=tet.area*10000
+            # tet["conso"]=tet.eval("maxZr_1000*am3")
+            conso_asa=sum(tet["conso"])
+            conso.append(conso_asa)
+            asa_n.append(asa)
+            data_v.append(tet.data_Conso.iloc[0])
+            # stat total
+        slope, intercept, r_value, p_value, std_err = stats.linregress(data_v,conso)
+        bias=1/len(data_v)*sum(conso-np.mean(data_v)) 
         # fitLine = predict(tot_ID[t])
-        rms = mean_squared_error(tot_IRR.MMEAU,tot_IRR[t],squared= False)
+        rms = mean_squared_error(data_v,conso,squared= False)
         plt.figure(figsize=(7,7))
-        a=plt.scatter(tot_IRR.MMEAU,tot_IRR[t],c=index,cmap='coolwarm')
-        plt.legend(a.legend_elements()[0],labels)
-        plt.xlim(-10,350)
-        plt.ylim(-10,350)
-        plt.xlabel("Quantité annuelles observées en mm ")
-        plt.ylabel("Quantité annuelles modélisées en mm ")
-        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-        rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
-        plt.gca().add_patch(rectangle)
-        plt.text(100,330,"RMSE = "+str(round(rms,2))) 
-        plt.text(100,320,"R² = "+str(round(r_value,2)))
-        plt.text(100,310,"Pente = "+str(round(slope,2)))
-        plt.text(100,300,"Biais = "+str(round(bias,2)))
-        for i in enumerate(tot_IRR.ID):
-            label = int(i[1])
+        plt.scatter(data_v,conso)
+        plt.xlim(-1000,1000000)
+        plt.ylim(-1000,1000000)
+        plt.xlabel("Quantité annuelles observées en m3 ")
+        plt.ylabel("Quantité annuelles modélisées en m3 ")
+        plt.plot([-1000, 1000000], [-1000,1000000], 'black', lw=1,linestyle='--')
+        # rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+        # plt.gca().add_patch(rectangle)
+        # plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+        # plt.text(100,320,"R² = "+str(round(r_value,2)))
+        # plt.text(100,310,"Pente = "+str(round(slope,2)))
+        # plt.text(100,300,"Biais = "+str(round(bias,2)))
+        for i in enumerate(asa_n):
+            label = i[1]
             plt.annotate(label, # this is the text
-                 (tot_IRR["MMEAU"].iloc[i[0]],tot_IRR[t].iloc[i[0]]), # this is the point to label
+                 (data_v[i[0]],conso[i[0]]), # this is the point to label
                  textcoords="offset points", # how to position the text
                  xytext=(0,5), # distance from text to points (x,y)
                  ha='center')
