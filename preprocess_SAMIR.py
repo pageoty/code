@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2017"
+    years="2018"
     ZONE =["ASA"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(years)+"/Inputdata/"
@@ -206,11 +206,11 @@ if __name__ == "__main__":
                 dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None)
                 dfs=pd.DataFrame(dfnames)
                 dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/NDVI_ASA_2017.csv",sep=",")
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/NDVI_ASA_2018.csv",sep=",")
                 tmp=df[["ID"]]
                 tmp1=pd.DataFrame()
-                for i in np.arange(1,37,1): #♣ 2018 : 49 :  2017 : 41
-                      a=df[str(i)+"mean"]/1000
+                for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 41
+                      a=df["mean_"+str(i)]/1000
                       tmp1=tmp1.append(a)
                 Fcover=tmp1.T
                 Fcover.columns=list(dates)
@@ -223,7 +223,7 @@ if __name__ == "__main__":
                 Fcover.set_index("ID",inplace=True)
                 FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
                 FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
-                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2017.df")
+                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2018.df")
 # =============================================================================
 # LAI
 # =============================================================================
@@ -282,7 +282,7 @@ if __name__ == "__main__":
         elif bv == "ASA":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame()
-                for j in np.arange(1,113):
+                for j in np.arange(1,387):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
@@ -336,7 +336,7 @@ if __name__ == "__main__":
                 soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
         elif bv =="ASA" :
                 soil=pd.DataFrame()
-                for j in np.arange(1,113):
+                for j in np.arange(1,387):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df')
@@ -509,13 +509,13 @@ if __name__ == "__main__":
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
             # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
         elif bv =="ASA" :
-            dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2017_TYP.txt",sep=',', header=None)
+            dfnames=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2018_TYP.txt",sep=',', header=None)
             dates=dfnames[0].apply(lambda x:x[11:19])
             dates=pd.to_datetime(dates,format="%Y%m%d")
-            df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/PARCELLE_ASA_2017_TYP.csv",decimal=".")
+            df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/PARCELLE_ASA_2018_TYP.csv",decimal=".")
             tmp=df[["ID"]]
             tmp1=pd.DataFrame()
-            for i in np.arange(0,41,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
             Fcover=tmp1.T
@@ -556,7 +556,7 @@ if __name__ == "__main__":
             # FCOVERTCJ.rename(columns={'ID':'ID', 'level_1':'date',0: 'FCov'}, inplace=True)
 
             # Fcover_all=pd.concat([FCOVER,FCOVERTCJ])
-            FCOVER.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
+            FCOVER.to_pickle(d["path_run"]+"/maize_irri/Fcover.df")
 
 
            
