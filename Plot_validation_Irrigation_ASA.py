@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
-    years=["2018"]
+    years=["2017"]
     lc="maize_irri"
 
 
@@ -156,8 +156,8 @@ if __name__ == '__main__':
         plt.scatter(data_v,conso)
         plt.xlim(-1000,1000000)
         plt.ylim(-1000,1000000)
-        plt.xlabel("Quantité annuelles observées en m3 ")
-        plt.ylabel("Quantité annuelles modélisées en m3 ")
+        plt.xlabel("Volumes annuels observés en m3 ")
+        plt.ylabel("Volumes annuels modélisés en m3 ")
         plt.plot([-1000, 1000000], [-1000,1000000], 'black', lw=1,linestyle='--')
         # rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
         # plt.gca().add_patch(rectangle)
@@ -173,7 +173,7 @@ if __name__ == '__main__':
                  xytext=(0,5), # distance from text to points (x,y)
                  ha='center')
         plt.title(t)
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_%s_Irrigation.png"%(t,y))
         
     # plt.figure(figsize=(10,10))
     # for p in list(set(Prec.id)):#list(set(Prec.id))

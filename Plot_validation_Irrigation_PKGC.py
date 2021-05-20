@@ -39,12 +39,12 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC//PKGC_init_ru_optim_Fcover_fewi_De_Kr_p6_days10_dose30_irri_auto_soil_cpus1/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC//PKGC_init_ru_optim_Fcover_fewi_De_Kr_p6_days10_dose30_irri_auto_soil_cpus1/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -147,57 +147,61 @@ if __name__ == '__main__':
 # Volumes annuels
 # =============================================================================
     Vol_tot.columns=["date"]+param[1].to_list()
-    nb_irr=Vol_tot[Vol_tot!=0.0].groupby("ID").count()
     tot_ID=Vol_tot.groupby("ID").sum()
     tot_IRR=pd.merge(tot_ID,data_v,on=["ID"])
     tot_IRR=tot_IRR[tot_IRR.ID!=10.0]
-    # tot_IRR.dropna(inplace=True)
+    tot_IRR.dropna(inplace=True)
     table_RMSE_parcelle=[]
     labels, index = np.unique(tot_IRR["Classe"], return_inverse=True)
     for t in Vol_tot.columns[1:-1]:
-        # stat total
-        slope, intercept, r_value, p_value, std_err = stats.linregress(tot_IRR.MMEAU.to_list(),tot_IRR[t].to_list())
-        bias=1/tot_IRR["MMEAU"].shape[0]*sum(tot_IRR[t]-np.mean(tot_IRR.MMEAU)) 
-        # fitLine = predict(tot_ID[t])
-        rms = np.sqrt(mean_squared_error(tot_IRR.MMEAU,tot_IRR[t]))
-        plt.figure(figsize=(7,7))
-        a=plt.scatter(tot_IRR.MMEAU,tot_IRR[t],c=index,cmap='coolwarm')
-        plt.legend(a.legend_elements()[0],labels)
-        plt.xlim(-10,350)
-        plt.ylim(-10,350)
-        plt.xlabel("Quantité annuelles observées en mm ")
-        plt.ylabel("Quantité annuelles modélisées en mm ")
-        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-        rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
-        plt.gca().add_patch(rectangle)
-        plt.text(100,330,"RMSE = "+str(round(rms,2))) 
-        plt.text(100,320,"R² = "+str(round(r_value,2)))
-        plt.text(100,310,"Pente = "+str(round(slope,2)))
-        plt.text(100,300,"Biais = "+str(round(bias,2)))
-        for i in enumerate(tot_IRR.ID):
-            label = int(i[1])
-            plt.annotate(label, # this is the text
-                  (tot_IRR["MMEAU"].iloc[i[0]],tot_IRR[t].iloc[i[0]]), # this is the point to label
-                  textcoords="offset points", # how to position the text
-                  xytext=(0,5), # distance from text to points (x,y)
-                  ha='center')
-        plt.title(t)
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
         for p in tot_IRR.ID:
             rmsep = np.sqrt(mean_squared_error(tot_IRR.loc[tot_IRR.ID==p]["MMEAU"],tot_IRR.loc[tot_IRR.ID==p][t]))
-            table_RMSE_parcelle.append([rmsep,t,p])
+            quant=tot_IRR.loc[tot_IRR.ID==p][t]
+            table_RMSE_parcelle.append([rmsep,t,p,quant])
     table_RMSE_parcelle=pd.DataFrame(table_RMSE_parcelle)
-    table_RMSE_parcelle.columns=["RMSE",'p','ID']
+    table_RMSE_parcelle.columns=["RMSE",'p','ID',"Quant"]
+    # table_RMSE_parcelle["p2"]=np.repeat(param[2][:-1],38).to_list() # uniquement si maxZr et p ensemble
     a=table_RMSE_parcelle.groupby(["p",'ID']).min()
-    a.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/Table_RMSE_parcelle.csv")
-    p_value_min=a.unstack().idxmin()
-    value_RMSE=a.unstack().min()
-    tab_f=pd.concat([p_value_min,value_RMSE],axis=1)
-    tab_f2=pd.merge(tab_f,data_v[["ID","Classe","Sable","Limon","Argile"]],on='ID')
+    p_value_min=pd.DataFrame(a.unstack()["RMSE"].idxmin())
+    value_RMSE=pd.DataFrame(a.unstack()["Quant"].min())
+    tab_f=pd.merge(p_value_min,value_RMSE,on='ID')
+    if soil[0]=="SOIL_RIGOU":
+        tab_f2=pd.merge(tab_f,data_v[["ID","MMEAU","ProfRacPot"]],on='ID')
+        tab_f2.columns=["ID","maxZr","Quant","MMEAU","Prof_rac_UTS"]
+    else:
+        tab_f2=pd.merge(tab_f,data_v[["ID","MMEAU"]],on='ID')
+        tab_f2.columns=["ID","maxZr","Quant","MMEAU"]
+    tab_f2.drop_duplicates(inplace=True)
     tab_f2.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/Table_RMSE_parcelle_min.csv")
+    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_f2.Quant.to_list())
+    bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_f2.Quant-np.mean(tab_f2.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_f2.Quant))
+    plt.figure(figsize=(7,7))
+    a=plt.scatter(tab_f2.MMEAU,tab_f2.Quant,c=index,cmap='coolwarm')
+    plt.legend(a.legend_elements()[0],labels)
+    plt.xlim(-10,350)
+    plt.ylim(-10,350)
+    plt.xlabel("Quantité annuelles observées en mm ")
+    plt.ylabel("Quantité annuelles modélisées en mm ")
+    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+    plt.text(100,320,"R² = "+str(round(r_value,2)))
+    plt.text(100,310,"Pente = "+str(round(slope,2)))
+    plt.text(100,300,"Biais = "+str(round(bias,2)))
+    for i,m in zip(enumerate(tab_f2.ID),tab_f2.maxZr):
+        label = int(i[1])
+        plt.annotate(label, # this is the text
+              (tab_f2["MMEAU"].iloc[i[0]],tab_f2.Quant.iloc[i[0]]), # this is the point to label
+              textcoords="offset points", # how to position the text
+              xytext=(0,5), # distance from text to points (x,y)
+              ha='center')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_Irrigation.png")
+
 
     # plt.figure(figsize=(10,10))
-    # for p in list(set(Prec.id)):#list(set(Prec.id))
+    # for p in [6,14,34,20,33,1]:#list(set(Prec.id))
     #     plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].Prec.cumsum(),label='pluie')
     #     # plt.plot(Prec.loc[Prec.id==p].date,Prec.loc[Prec.id==p].ET0.cumsum(),label="Et0")
     #     plt.ylabel("Cumul de précipitation en mm")
@@ -206,16 +210,34 @@ if __name__ == '__main__':
     # # plt.legend()
     #     # plt.ylim(0,1)
     # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_PREC_cumul_%s_Irrigation.png"%t)
+
+
+
+#  Regarder évolution TAW pour parcelle 6 ,14,34,33,20,1
+    # dfFAO=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_p6_days10_dose30_irri_auto_soil/"+str(y)+"/Output/maxZr/output_test_maize_irri_5.df","rb"))
+    # TAWFAO=dfFAO.loc[dfFAO.id==20.0][["date","Dr",'Ir_auto']]
+    # dfMerlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_p6_days10_dose30_irri_auto_soil_cpus1/"+str(y)+"/Output/maxZr/output_test_maize_irri_5.df","rb"))
+    # TAWMerlin=dfMerlin.loc[dfMerlin.id==20.0][["date","Dr",'Ir_auto']]
+    # TAWFAO=dfMerlin.loc[dfMerlin.id==24.0][["date","Dr",'Ir_auto']]
+    
+    
+    # for i in [6.0,14.0,34.0,33.0,20.0,1.0,28.0]:
+    #     TAWMerlin=dfMerlin.loc[dfMerlin.id==i][["date","Dr",'Ir_auto']]
+    #     TAWFAO=dfFAO.loc[dfFAO.id==i][["date","Dr",'Ir_auto']]
+    #     plt.figure(figsize=(7,7))
+    #     # plt.scatter(TAWFAO.Dr,TAWMerlin.Dr)
+    #     plt.plot(TAWFAO.date,TAWFAO.Dr,c='r')
+    #     plt.plot(TAWMerlin.date,TAWMerlin.Dr,c='b')
+    #     plt.plot(TAWFAO[TAWFAO.Ir_auto!=0.0].date,TAWFAO[TAWFAO.Ir_auto!=0.0].Ir_auto,marker='x',linestyle="",c="r")
+    #     plt.plot(TAWMerlin[TAWMerlin.Ir_auto!=0.0].date,TAWMerlin[TAWMerlin.Ir_auto!=0.0].Ir_auto,marker="o",linestyle="",c='b')
         
-    tot_IRR.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_quantite_Irr.csv")
-    nb_irr.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_final_nb_Irr.csv")
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_prec_cumul_parcelle_probleme.png")
-
-
-# # 
-df=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/run_full_foracge/2017/output_test.df",'rb'))
-tt=df[["id","Ir_auto"]].groupby("id").sum()
-df_o=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil//2017/Output/p/output_test_maize_irri_4.df",'rb'))
-tto=df_o[["id","Ir_auto"]].groupby("id").sum()
-df_osol=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_p6_days10_dose30_irri_auto_soil//2017/Output/maxZr/output_test_maize_irri_4.df",'rb'))
-ttosol=df_osol[["id","Ir_auto"]].groupby("id").sum()
+    #     # plt.plot([-10.0, 150], [-10.0,150], 'black', lw=1,linestyle='--')
+    #     # plt.xlim(-10,150)
+    #     # plt.ylim(-10,150)
+    #     # plt.xlabel("FAO Dr")
+    #     plt.title(i)
+    #     # plt.figure(figsize=(7,7))
+    #     # plt.plot(TAWFAO.date,TAWFAO.Ir_auto,marker='x',linestyle="")
+    #     # plt.plot(TAWMerlin.date,TAWMerlin.Ir_auto,marker="o",linestyle="")
+    #     print(TAWMerlin[TAWMerlin.Ir_auto!=0.0])
+    #     print(TAWFAO[TAWFAO.Ir_auto!=0.0])
