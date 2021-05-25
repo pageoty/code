@@ -122,8 +122,10 @@ if __name__ == '__main__':
         TT=pd.DataFrame(g).T
         if y =="2018":
             tot_2018=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
+            tot_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018.csv")
         else:
             tot_2017=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
+            tot_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017.csv")
     for t in Vol_tot.columns[1:-1]:
         plt.figure(figsize=(7,7))
         for y in years: 
