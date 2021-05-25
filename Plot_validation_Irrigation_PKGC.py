@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_750_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_750_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -50,8 +50,8 @@ if __name__ == '__main__':
     # label="Init ru année n-1 + Irrigation auto"
     years=["2017"]
     lc="maize_irri"
-    soil=['SOIL_RIGOU',"RRP_Rigou"]#['SOIL_RIGOU',"RRP_Rigou"]["RRP","RRP_GERS"]
-    optim_val="p"
+    soil=["GSM","GSM"]#['SOIL_RIGOU',"RRP_Rigou"]["RRP","RRP_GERS"]
+    optim_val="maxZr"
     
 # =============================================================================
 #   Mean flux ETR -> Lam corrigées
@@ -72,12 +72,6 @@ if __name__ == '__main__':
     df_date_aqui.columns=["date"]
     Vol_tot=pd.DataFrame()
     Id=pd.DataFrame()
-    Vol_tot_min=pd.DataFrame()
-    Vol_tot_max=pd.DataFrame()
-    Vol_tot_min2=pd.DataFrame()
-    Vol_tot_max2=pd.DataFrame()
-    Vol_tot_max3=pd.DataFrame()
-    # Vol_tot=pd.DataFrame()
     for y in years: 
         vali_PKGC=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/VOL_TOT_PKGC_"+str(y)+".csv",encoding='latin-1',decimal='.',sep=',',na_values="nan")
         d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
@@ -153,6 +147,7 @@ if __name__ == '__main__':
     tot_IRR=tot_IRR[tot_IRR.ID!=10.0]
     tot_IRR.dropna(inplace=True)
     table_RMSE_parcelle=[]
+    tab_quant=[]
     labels, index = np.unique(tot_IRR["Classe"], return_inverse=True)
     for t in Vol_tot.columns[1:-1]:
         for p in tot_IRR.ID:
@@ -163,8 +158,12 @@ if __name__ == '__main__':
     table_RMSE_parcelle.columns=["RMSE",'p','ID',"Quant"]
     a=table_RMSE_parcelle.groupby(["p",'ID']).min()
     p_value_min=pd.DataFrame(a.unstack()["RMSE"].idxmin())
-    value_RMSE=pd.DataFrame(a.unstack()["Quant"].min())
-    tab_f=pd.merge(p_value_min,value_RMSE,on='ID')
+    value_RMSE=pd.DataFrame(a.unstack()["Quant"])
+    for j in tot_IRR.ID:
+        b=value_RMSE.loc[value_RMSE.index==p_value_min.loc[p_value_min.index==j][0].values[0]][j]
+        tab_quant.append([j,b.values[0]])
+    vaRMSE=pd.DataFrame(tab_quant,columns=["ID","Quant"])
+    tab_f=pd.merge(p_value_min,vaRMSE,on='ID')
     if soil[0]=="SOIL_RIGOU":
         tab_f2=pd.merge(tab_f,data_v[["ID","MMEAU","ProfRacPot"]],on='ID')
         tab_f2.columns=["ID","maxZr","Quant","MMEAU","Prof_rac_UTS"]
@@ -245,47 +244,48 @@ if __name__ == '__main__':
 # =============================================================================
 #  Plot résultats optimisation P
 # =============================================================================
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-    param=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    dfUTS=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-    IRR=[]
-    for i in dfUTS.ID:
-        maxUTS=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["maxZr"])][1]
-        # maxUTSFAO=param.loc[param[1].isin(dfUTSFAO.loc[dfUTSFAO.ID==i]["maxZr"])][1]
-        param2=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/2017/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-        dfUTSp=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-        c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][0]+1
-        val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][1]
-        UTS=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/2017/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
-        data_id=UTS.groupby("id")
-        ID_data=data_id.get_group(i)
-        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0]])
-    tab_irr=pd.DataFrame(IRR)
-    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr[1].to_list())
-    bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr[1]-np.mean(tab_f2.MMEAU)) 
-    rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr[1]))
-    plt.figure(figsize=(7,7))
-    a=plt.scatter(tab_f2.MMEAU,tab_irr[1],c=index,cmap='coolwarm')
-    plt.legend(a.legend_elements()[0],labels)
-    plt.xlim(-10,350)
-    plt.ylim(-10,350)
-    plt.xlabel("Quantité annuelles observées en mm ")
-    plt.ylabel("Quantité annuelles modélisées en mm ")
-    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-    rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
-    plt.gca().add_patch(rectangle)
-    plt.text(100,330,"RMSE = "+str(round(rms,2))) 
-    plt.text(100,320,"R² = "+str(round(r_value,2)))
-    plt.text(100,310,"Pente = "+str(round(slope,2)))
-    plt.text(100,300,"Biais = "+str(round(bias,2)))
-    for i,m in zip(enumerate(tab_f2.ID),tab_f2.maxZr):
-        label = int(i[1])
-        plt.annotate(label, # this is the text
-              (tab_f2["MMEAU"].iloc[i[0]],tab_irr[1].iloc[i[0]]), # this is the point to label
-              textcoords="offset points", # how to position the text
-              xytext=(0,5), # distance from text to points (x,y)
-              ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_Irrigation_post_optim.png")
+    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    # param=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    # dfUTS=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    # IRR=[]
+
+    # for i in dfUTS.ID:
+    #     maxUTS=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["maxZr"])][1]
+    #     # maxUTSFAO=param.loc[param[1].isin(dfUTSFAO.loc[dfUTSFAO.ID==i]["maxZr"])][1]
+    #     param2=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/2017/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    #     dfUTSp=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    #     c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][0]+1
+    #     val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][1]
+    #     UTS=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS.values[0]))+"_irri_auto_soil/2017/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
+    #     data_id=UTS.groupby("id")
+    #     ID_data=data_id.get_group(i)
+    #     IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS.values[0]])
+    # tab_irr=pd.DataFrame(IRR)
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr[1].to_list())
+    # bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr[1]-np.mean(tab_f2.MMEAU)) 
+    # rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr[1]))
+    # plt.figure(figsize=(7,7))
+    # a=plt.scatter(tab_f2.MMEAU,tab_irr[1],c=index,cmap='coolwarm')
+    # plt.legend(a.legend_elements()[0],labels)
+    # plt.xlim(-10,350)
+    # plt.ylim(-10,350)
+    # plt.xlabel("Quantité annuelles observées en mm ")
+    # plt.ylabel("Quantité annuelles modélisées en mm ")
+    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+    # plt.text(100,320,"R² = "+str(round(r_value,2)))
+    # plt.text(100,310,"Pente = "+str(round(slope,2)))
+    # plt.text(100,300,"Biais = "+str(round(bias,2)))
+    # for i,m in zip(enumerate(tab_f2.ID),tab_f2.maxZr):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_f2["MMEAU"].iloc[i[0]],tab_irr[1].iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(0,5), # distance from text to points (x,y)
+    #           ha='center')
+    # # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_Irrigation_post_optim.png")
     
     
     
