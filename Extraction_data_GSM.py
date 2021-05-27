@@ -30,15 +30,20 @@ if __name__ == '__main__':
 
 
     #other méthode pondération 
-    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_TYP_only_GSM_data.shp")
-    PKGC=parcelle[['clay_l0_me', 'clay_l0__1', 'clay_l100_', 'clay_l10_1', 'clay_l15_m',
-       'clay_l15_1', 'clay_l30_m', 'clay_l30_1', 'clay_l5_me', 'clay_l5__1',
-       'clay_l60_m', 'clay_l60_1', 'sand_l0_me', 'sand_l0__1', 'sand_l100_',
-       'sand_l10_1', 'sand_l15_m', 'sand_l15_1', 'sand_l30_m', 'sand_l30_1',
-       'sand_l5_me', 'sand_l5__1', 'sand_l60_m', 'sand_l60_1', 'silt_l0_me',
-       'silt_l0__1', 'silt_l100_', 'silt_l10_1', 'silt_l15_m', 'silt_l15_1',
-       'silt_l30_m', 'silt_l30_1', 'silt_l5_me', 'silt_l5__1', 'silt_l60_m',
-       'silt_l60_1']]
+    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
+    # PKGC=parcelle[['clay_l0_me', 'clay_l0__1', 'clay_l100_', 'clay_l10_1', 'clay_l15_m',
+    #     'clay_l15_1', 'clay_l30_m', 'clay_l30_1', 'clay_l5_me', 'clay_l5__1',
+    #     'clay_l60_m', 'clay_l60_1', 'sand_l0_me', 'sand_l0__1', 'sand_l100_',
+    #     'sand_l10_1', 'sand_l15_m', 'sand_l15_1', 'sand_l30_m', 'sand_l30_1',
+    #     'sand_l5_me', 'sand_l5__1', 'sand_l60_m', 'sand_l60_1', 'silt_l0_me',
+    #     'silt_l0__1', 'silt_l100_', 'silt_l10_1', 'silt_l15_m', 'silt_l15_1',
+    #     'silt_l30_m', 'silt_l30_1', 'silt_l5_me', 'silt_l5__1', 'silt_l60_m',
+    #     'silt_l60_1']]
+    PKGC=parcelle[['clay_l0_me', 'clay_l100_',
+       'clay_l15_m', 'clay_l30_m', 'clay_l5_me', 'clay_l60_m', 'sand_l0_me',
+       'sand_l100_', 'sand_l15_m', 'sand_l30_m', 'sand_l5_me', 'sand_l60_m',
+       'silt_l0_me', 'silt_l100_', 'silt_l15_m', 'silt_l30_m', 'silt_l5_me',
+       'silt_l60_m']]
     ids=parcelle.ID
     PKGC=PKGC/1000*100
     PKGC["ID"]=ids
@@ -59,5 +64,5 @@ if __name__ == '__main__':
     data_parcelle_Texture=pd.DataFrame(data_parcelle_Texture)
     data_parcelle_Texture["ID"]=ids
     data_parcelle_Texture["Variable_modale"]=entete
-    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017.csv")
+    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_2017.csv")
  

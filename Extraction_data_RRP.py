@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     #other méthode pondération 
     RRP_shp=geo.read_file(d["PC_disk"]+"DONNEES_RAW/DONNES_SOIL/RRP_Midi_pyrénées/RRP"+drpt+"/Cartographie_RRP"+drpt+"/RRP_"+drpt+"_v5.shp")
-    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
+    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/DONNEES_CACG_PARCELLE_REF/Parcelle_CAGC.shp")
     # parcelle=geo.read_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/DATA_Validation/Parcelle_2017.shp")
     Inter=geo.overlay(parcelle,RRP_shp,how='intersection')
     No_ucs=Inter[["ID",'NO_UCS','Surface']] # attention récupérer l'UCS majoritaire pour chaque id
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         ids.append(np.repeat(i[1][0],4))
         entete.append(variable)
         data_parcelle_Texture=data_parcelle_Texture.append([Argile,Sable,Limon,epais])
-    data_parcelle_Texture.columns=["Strat1","Strat2","Strat3","Strat4"]
+    data_parcelle_Texture.columns=["Strat1","Strat2","Strat3"]
     data_parcelle_Texture["ID"]=pd.DataFrame(ids).T.unstack().values
     data_parcelle_Texture["Variable_modale"]=pd.DataFrame(entete).T.unstack().values
-    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017.csv")
+    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_CACG_2017.csv")
