@@ -36,8 +36,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_RRP_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_RRP_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil_varmo20/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil_varmo20/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -279,27 +279,82 @@ if __name__ == '__main__':
                  textcoords="offset points", # how to position the text
                  xytext=(0,5), # distance from text to points (x,y)
                  ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%t)
 
         
 # =============================================================================
 #     Optim P et forcer maxZr
 # =============================================================================
+    # plt.figure(figsize=(7,7))
+    # for y in years :
+    #     data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    #     # param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    #     dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_CACG_mod_"+str(y)+".csv")
+    #     IRR=[]
+    
+    #     for i in dfUTS.ID:
+    #         maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0] # Si forcage 
+    #         maxUTS=int(float(maxUTS)*10)
+    #         param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    #         dfUTSp=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/tab_CACG_mod_"+str(y)+".csv")
+    #         c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][0]+1
+    #         val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][1]
+    #         UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
+    #         data_id=UTS.groupby("id")
+    #         ID_data=data_id.get_group(i)
+    #         IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS])
+    #     tab_irr=pd.DataFrame(IRR)
+    #     slope, intercept, r_value, p_value, std_err = stats.linregress(dfUTS.Vali.to_list(),tab_irr[1].to_list())
+    #     bias=1/dfUTS["Vali"].shape[0]*sum(tab_irr[1]-np.mean(dfUTS.Vali)) 
+    #     rms = np.sqrt(mean_squared_error(dfUTS.Vali,tab_irr[1]))
+    #     a=plt.scatter(dfUTS.Vali,tab_irr[1],label=y)
+    #     plt.legend()
+    #     plt.xlim(-10,350)
+    #     plt.ylim(-10,350)
+    #     plt.xlabel("Quantité annuelles observées en mm ")
+    #     plt.ylabel("Quantité annuelles modélisées en mm ")
+    #     plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #     if "2017" in y :
+    #         rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)
+    #         plt.gca().add_patch(rectangle)
+    #         plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+    #         plt.text(100,270,"R² = "+str(round(r_value,2)))
+    #         plt.text(100,260,"Pente = "+str(round(slope,2)))
+    #         plt.text(100,250,"Biais = "+str(round(bias,2)))
+    #     else:
+    #         rectangle = plt.Rectangle((225, 117),70,40, ec='orange',fc='orange',alpha=0.3)
+    #         plt.gca().add_patch(rectangle)
+    #         plt.text(230,150,"RMSE = "+str(round(rms,2))) 
+    #         plt.text(230,140,"R² = "+str(round(r_value,2)))
+    #         plt.text(230,130,"Pente = "+str(round(slope,2)))
+    #         plt.text(230,120,"Biais = "+str(round(bias,2)))
+    #     for i,m in zip(enumerate(dfUTS.ID),dfUTS.param):
+    #         label = int(i[1])
+    #         plt.annotate(label, # this is the text
+    #               (dfUTS["Vali"].iloc[i[0]],tab_irr[1].iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p.png")
+    
+            
+# =============================================================================
+#     forcage P et forcer maxZr
+# =============================================================================
     plt.figure(figsize=(7,7))
     for y in years :
         data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-        # param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
         dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_CACG_mod_"+str(y)+".csv")
         IRR=[]
     
         for i in dfUTS.ID:
             maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0] # Si forcage 
             maxUTS=int(float(maxUTS)*10)
-            param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-            dfUTSp=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/tab_CACG_mod_"+str(y)+".csv")
+            param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+            dfUTSp=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/tab_CACG_mod_"+str(y)+".csv")
             c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][0]+1
             val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][1]
-            UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
+            UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
             data_id=UTS.groupby("id")
             ID_data=data_id.get_group(i)
             IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS])
@@ -335,4 +390,117 @@ if __name__ == '__main__':
                   textcoords="offset points", # how to position the text
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_forcagemaxZr_p.png")
+    
+# =============================================================================
+#     Robuste du paramètrage 2017 sur 2018
+# =============================================================================
+    # data1=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P05_Fcover_fewi_De_Kr_days10_dose30_1750_irri_auto_soil/2018/Output/output_test_2018.df","rb"))
+    # dataid1=data1.loc[data1.id==1]
+    # sum_id1=dataid1.Ir_auto.sum()
+    # data2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P04_Fcover_fewi_De_Kr_days10_dose30_450_irri_auto_soil/2018/Output/output_test_2018.df","rb"))
+    # dataid5=data2.loc[data2.id==5]
+    # sum_id5=dataid5.Ir_auto.sum()
+    # data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P07_Fcover_fewi_De_Kr_days10_dose30_600_irri_auto_soil/2018/Output/output_test_2018.df","rb"))
+    # dataid13=data3.loc[data3.id==13]
+    # sum_id13=dataid13.Ir_auto.sum()
+    # data_2018_for2017=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    
+    
+    # plt.figure(figsize=(7,7))
+    # plt.scatter(tot_2017.iloc[[0,2,4]].Vali,tot_2017.iloc[[0,2,4]].conso,label="2017")
+    # plt.scatter(data_2018_for2017.Vali,data_2018_for2017.conso,label="2018")
+    # plt.legend()
+    # plt.xlim(-10,350)
+    # plt.ylim(-10,350)
+    # plt.xlabel("Quantité annuelles observées en mm ")
+    # plt.ylabel("Quantité annuelles modélisées en mm ")
+    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # plt.title("transposition optimisation 2017 sur 2018")
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(tot_2017.iloc[[0,2,4]].Vali.to_list(),tot_2017.iloc[[0,2,4]].conso.to_list())
+    # bias=1/tot_2017.iloc[[0,2,4]]["Vali"].shape[0]*sum(tot_2017.iloc[[0,2,4]].conso-np.mean(tot_2017.iloc[[0,2,4]].Vali)) 
+    # rms = np.sqrt(mean_squared_error(tot_2017.iloc[[0,2,4]].Vali,tot_2017.iloc[[0,2,4]].conso))
+    # rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+    # plt.text(100,270,"R² = "+str(round(r_value,2)))
+    # plt.text(100,260,"Pente = "+str(round(slope,2)))
+    # plt.text(100,250,"Biais = "+str(round(bias,2)))
+    # slope2, intercept, r_value2, p_value, std_err = stats.linregress(data_2018_for2017.Vali.to_list(),data_2018_for2017.conso.to_list())
+    # bias2=1/data_2018_for2017["Vali"].shape[0]*sum(data_2018_for2017.conso-np.mean(data_2018_for2017.Vali)) 
+    # rms2 = np.sqrt(mean_squared_error(data_2018_for2017.Vali,data_2018_for2017.conso))
+    # rectangle = plt.Rectangle((225, 117),70,40, ec='orange',fc='orange',alpha=0.3)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(230,150,"RMSE = "+str(round(rms2,2))) 
+    # plt.text(230,140,"R² = "+str(round(r_value2,2)))
+    # plt.text(230,130,"Pente = "+str(round(slope2,2)))
+    # plt.text(230,120,"Biais = "+str(round(bias2,2)))
+    # for i in enumerate(data_2018_for2017.ID):
+    #         label = int(i[1])
+    #         plt.annotate(label, # this is the text
+    #               (data_2018_for2017["Vali"].iloc[i[0]],data_2018_for2017.conso.iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    #         plt.annotate(label, # this is the text
+    #               (tot_2017.iloc[[0,2,4]]["Vali"].iloc[i[0]],tot_2017.iloc[[0,2,4]].conso.iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_transposition_optim2017sur2018.png")
+# =============================================================================
+#     Robuste du paramètrage 2018 sur 2017
+# =============================================================================
+    # data1=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P06_Fcover_fewi_De_Kr_days10_dose30_400_irri_auto_soil/2017/Output/output_test_2017.df","rb"))
+    # dataid1=data1.loc[data1.id==1]
+    # sum_id1=dataid1.Ir_auto.sum()
+    # data2=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P07_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/Output/output_test_2017.df","rb"))
+    # dataid5=data2.loc[data2.id==5]
+    # sum_id5=dataid5.Ir_auto.sum()
+    # data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P045_Fcover_fewi_De_Kr_days10_dose30_400_irri_auto_soil/2017/Output/output_test_2017.df","rb"))
+    # dataid13=data3.loc[data3.id==13]
+    # sum_id13=dataid13.Ir_auto.sum()
+    # data_2017_for2018=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    
+    
+    # plt.figure(figsize=(7,7))
+    # plt.scatter(tot_2018.iloc[[0,1,5]].Vali,tot_2018.iloc[[0,1,5]].conso,label="2017")
+    # plt.scatter(data_2017_for2018.Vali,data_2017_for2018.conso,label="2018")
+    # plt.legend()
+    # plt.xlim(-10,350)
+    # plt.ylim(-10,350)
+    # plt.xlabel("Quantité annuelles observées en mm ")
+    # plt.ylabel("Quantité annuelles modélisées en mm ")
+    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # plt.title("transposition optimisation 2017 sur 2018")
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(tot_2018.iloc[[0,1,5]].Vali.to_list(),tot_2018.iloc[[0,1,5]].conso.to_list())
+    # bias=1/tot_2018.iloc[[0,1,5]]["Vali"].shape[0]*sum(tot_2018.iloc[[0,1,5]].conso-np.mean(tot_2018.iloc[[0,1,5]].Vali)) 
+    # rms = np.sqrt(mean_squared_error(tot_2018.iloc[[0,1,5]].Vali,tot_2018.iloc[[0,1,5]].conso))
+    # rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+    # plt.text(100,270,"R² = "+str(round(r_value,2)))
+    # plt.text(100,260,"Pente = "+str(round(slope,2)))
+    # plt.text(100,250,"Biais = "+str(round(bias,2)))
+    # slope2, intercept, r_value2, p_value, std_err = stats.linregress(data_2017_for2018.Vali.to_list(),data_2017_for2018.conso.to_list())
+    # bias2=1/data_2017_for2018["Vali"].shape[0]*sum(data_2017_for2018.conso-np.mean(data_2017_for2018.Vali)) 
+    # rms2 = np.sqrt(mean_squared_error(data_2017_for2018.Vali,data_2017_for2018.conso))
+    # rectangle = plt.Rectangle((225, 117),70,40, ec='orange',fc='orange',alpha=0.3)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(230,150,"RMSE = "+str(round(rms2,2))) 
+    # plt.text(230,140,"R² = "+str(round(r_value2,2)))
+    # plt.text(230,130,"Pente = "+str(round(slope2,2)))
+    # plt.text(230,120,"Biais = "+str(round(bias2,2)))
+    # for i in enumerate(data_2017_for2018.ID):
+    #         label = int(i[1])
+    #         plt.annotate(label, # this is the text
+    #               (data_2017_for2018["Vali"].iloc[i[0]],data_2017_for2018.conso.iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    #         plt.annotate(label, # this is the text
+    #               (tot_2018.iloc[[0,1,5]]["Vali"].iloc[i[0]],tot_2018.iloc[[0,1,5]].conso.iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_transposition_optim2018sur2017.png")

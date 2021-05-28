@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2018"]
+    years=["2017"]
     
     #  Add args User PC home/ PC labo
     result=[]
@@ -162,7 +162,12 @@ if __name__ == "__main__":
             elif "RRP" in name_run: 
                 PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
             else:
-                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                if "varplus20" in name_run :
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj_varplus20.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                elif "varmo20" in name_run :
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj_varmo20.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                else:
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
             # PF_CC.dropna(inplace=True)
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]
@@ -184,6 +189,8 @@ if __name__ == "__main__":
                 val=globals()['%s'%tex]
                 data_tex[tex[:-6]]=val.values
             data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
+            
+            
         elif "PKGC" in name_run : 
             print('PKGC parcelle')
         #  Lecture file PF_CC
@@ -470,7 +477,7 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
-                                 Ze=150,REW=8,minZr=150,maxZr=850,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p='optim',Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=8,minZr=150,maxZr=1050,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p='optim',Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="p",value_P1="0.4/0.7/0.05/lin")
                     else:
                         print("Irri manuel activé")
