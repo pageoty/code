@@ -732,10 +732,46 @@ if __name__ == '__main__':
 # =============================================================================
 # debug
 
+prec=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2012/Inputdata/maize_irri/meteo.df",'rb'))
+df_Merlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2012/Output/maxZr/output_test_maize_irri_0.df",'rb'))
+df_FAO=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/FAO_init_ru_fewi_De_Kr_irri_man_soil/2012/Output/maxZr/output_test_maize_irri_0.df",'rb'))
 
-# df_Merlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_optim_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_2.df",'rb'))
+
+plt.plot(df_Merlin.date,df_Merlin.Kei,label="Merlin")
+plt.plot(df_FAO.date,df_FAO.Kei,label="FAO")
+plt.bar(prec.date,prec.Prec)
+plt.legend()
+
+prec=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2010/Inputdata/maize_irri/meteo.df",'rb'))
 
 
-# dfavant_modif=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/init_ru/Merlin_init_ru_100_optim_fewi_De_Kr_Fcover_irri_man_soil_min/2015/Output/maxZr/output_test_maize_irri_8.df",'rb'))
+SWC=pd.read_csv("D:/THESE_TMP//TRAITEMENT/DATA_VALIDATION/DATA_SWC/SWC_LAM/SWC_LAM_2010.csv")
+df_Merlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2010/Output/maxZr/output_test_maize_irri_0.df",'rb'))
+df_FAO=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/FAO_init_ru_fewi_De_Kr_irri_man_soil/2010/Output/maxZr/output_test_maize_irri_0.df",'rb'))
+df_Merlin.date=pd.to_datetime(df_Merlin.date,format="%Y-%m-%d")
+df_Merlin=df_Merlin.loc[(df_Merlin.date >= "2010-04-01") &(df_Merlin.date <= "2010-09-30")]
+df_FAO.date=pd.to_datetime(df_FAO.date,format="%Y-%m-%d")
+df_FAO=df_FAO.loc[(df_FAO.date >= "2010-04-01") &(df_FAO.date <= "2010-09-30")]
+SWC["Date"]=pd.to_datetime(SWC["Date/Time"],format="%Y-%m-%d")
+SWC=SWC.loc[(SWC.Date >= "2010-04-01") &(SWC.Date <= "2010-09-30")]
 
-#  Probleme estiamtion SWC = 0
+plt.plot(df_Merlin.date,df_Merlin.Dei,label="Merlin")
+plt.plot(df_FAO.date,df_FAO.Dei,label="FAO")
+plt.legend()
+plt.plot(df_Merlin.date,df_Merlin.Dr,label="Merlin")
+plt.plot(df_FAO.date,df_FAO.Dr,label="FAO")
+plt.legend()
+plt.plot(df_Merlin.date,0.311/2+df_Merlin.SWC1*33/150,label="Merlin")
+plt.plot(df_FAO.date,0.311/2+df_FAO.SWC1*33/150,label="FAO")
+plt.plot(SWC.Date,SWC.SWC_5_moy/100,label="OBS",marker="x",linestyle="")
+plt.legend()
+plt.plot(df_Merlin["date"],np.repeat(0.172,len(df_Merlin["date"])),c="r",label="WP")
+plt.plot(df_Merlin["date"],np.repeat(0.363,len(df_Merlin["date"])),c="b", label="FC")
+
+prec=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2015/Inputdata/maize_irri/meteo.df",'rb'))
+df_Merlin=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/Merlin_init_ru_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_0.df",'rb'))
+df_FAO=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_OPTIMI_LAM/RUN_final/FAO_init_ru_fewi_De_Kr_irri_man_soil/2015/Output/maxZr/output_test_maize_irri_0.df",'rb'))
+plt.plot(df_Merlin.date,df_Merlin.SWC1,label="Merlin")
+plt.plot(df_FAO.date,df_FAO.SWC1,label="FAO")
+plt.legend()
+

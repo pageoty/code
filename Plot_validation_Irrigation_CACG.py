@@ -344,25 +344,24 @@ if __name__ == '__main__':
     plt.figure(figsize=(7,7))
     for y in years :
         data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-        dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_CACG_mod_"+str(y)+".csv")
         IRR=[]
-    
+        vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_"+str(y)+".csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
+        vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
+        vali_cacg["Quantite"].astype(float)
+        sum_irr_cacg_val=vali_cacg.groupby("ID")["Quantite"].sum()
         for i in dfUTS.ID:
             maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0] # Si forcage 
             maxUTS=int(float(maxUTS)*10)
-            param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-            dfUTSp=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/tab_CACG_mod_"+str(y)+".csv")
-            c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][0]+1
-            val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["param"])][1]
-            UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
+            UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Sans_optim/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/output_test_"+str(y)+".df","rb"))
             data_id=UTS.groupby("id")
             ID_data=data_id.get_group(i)
-            IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS])
-        tab_irr=pd.DataFrame(IRR)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(dfUTS.Vali.to_list(),tab_irr[1].to_list())
-        bias=1/dfUTS["Vali"].shape[0]*sum(tab_irr[1]-np.mean(dfUTS.Vali)) 
-        rms = np.sqrt(mean_squared_error(dfUTS.Vali,tab_irr[1]))
-        a=plt.scatter(dfUTS.Vali,tab_irr[1],label=y)
+            IRR.append([i,ID_data.Ir_auto.sum(),maxUTS])
+        tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr"])
+        tab_irr2=pd.merge(tab_irr,sum_irr_cacg_val,on='ID')
+        slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.Quantite.to_list(),tab_irr2.conso.to_list())
+        bias=1/tab_irr2["Quantite"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.Quantite)) 
+        rms = np.sqrt(mean_squared_error(tab_irr2.Quantite,tab_irr2.conso))
+        plt.scatter(tab_irr2.Quantite,tab_irr2.conso,label=y)
         plt.legend()
         plt.xlim(-10,350)
         plt.ylim(-10,350)
@@ -386,7 +385,7 @@ if __name__ == '__main__':
         for i,m in zip(enumerate(dfUTS.ID),dfUTS.param):
             label = int(i[1])
             plt.annotate(label, # this is the text
-                  (dfUTS["Vali"].iloc[i[0]],tab_irr[1].iloc[i[0]]), # this is the point to label
+                  (tab_irr2["Quantite"].iloc[i[0]],tab_irr2.conso.iloc[i[0]]), # this is the point to label
                   textcoords="offset points", # how to position the text
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
