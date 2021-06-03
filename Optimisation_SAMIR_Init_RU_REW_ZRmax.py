@@ -167,7 +167,7 @@ if __name__ == "__main__":
                 elif "varmo20" in name_run :
                     PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj_varmo20.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 else:
-                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
             # PF_CC.dropna(inplace=True)
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]
@@ -259,14 +259,16 @@ if __name__ == "__main__":
 #         Incertitude sur le Fcover
 # =============================================================================
         # Lecture du Fcover 
-        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/FCOVER.df","rb")
+        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df","rb")
         Fcover=pickle.load(Fco)
         Fco.close()
         if "Fcover_pl20" in name_run:
+            print("add +20 %")
             Fcover.FCov=Fcover.FCov+(20*Fcover.FCov/100)
         elif "Fcover_m20" in name_run:
+            print("add -20 %")
             Fcover.FCov=Fcover.FCov-(20*Fcover.FCov/100)
-        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/FCOVER.df")
+        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df")
 # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
@@ -452,8 +454,8 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
-                                 Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=50,m=1,minDays=10,p=0.6,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/1000/50/lin")
+                                 Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
@@ -477,7 +479,7 @@ if __name__ == "__main__":
                     if 'irri_auto' in name_run:
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
-                                 Ze=150,REW=8,minZr=150,maxZr=850,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p='optim',Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                 Ze=150,REW=8,minZr=150,maxZr=1800,Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p='optim',Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                         params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="p",value_P1="0.4/0.7/0.05/lin")
                     else:
                         print("Irri manuel activé")
@@ -541,7 +543,7 @@ if __name__ == "__main__":
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 6 --formaREW Merlin -soiltext Soil_texture.df')
             elif "CACG" in name_run or "PKGC" in name_run or "ASA" in name_run:
                 if "Fcover" in name_run:
-                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover FCOVER.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 1 --formaREW Merlin -soiltext Soil_texture.df')
+                    os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df -fcover Fcover.df -fc FC.df -wp WP.df  --fc_input  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 1 --formaREW Merlin -soiltext Soil_texture.df')
                 else:
                     os.system('python /home/'+user+'/sources/modspa_SAMIR/modspa/Code/models/main/runSAMIR.py -wd '+d['SAMIR_run']+' -dd '+d['SAMIR_run']+'/Inputdata/ -m meteo.df -n NDVI'+str(y)+'.df  -fc FC.df -wp WP.df  -o Output/'+optimis_val+'/output_test.df -p param_modif.csv  -optim test_optim.csv --cal ET Ir_auto NDVI Ks Kei Kep Irrig fewi fewp FCov Dei Dr DP Dd SWC1 Kri TEW TAW --cpu 3 --formaREW Merlin -soiltext Soil_texture.df')
             elif "FAO" in name_run:

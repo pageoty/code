@@ -40,34 +40,34 @@ if __name__ == '__main__':
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    # label="Init ru année n-1 + Irrigation auto"
     years=["2017"]
     lc="maize_irri"
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-    param=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    dfGSM=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-    dfRRP=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_RRP_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-    dfUTS=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2018/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    dfGSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/tab_CACG_mod_2018.csv",sep=",")
+    dfRRP=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_RRP_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/tab_CACG_mod_2018.csv")
+    dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/tab_CACG_mod_2018.csv")
     # dfUTSFAO=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
     All_TAW=[]
     Ir_all=[]
     quant_irr=[]
     valeur_maxZr=[]
     for i in dfUTS.ID:
-        a=param.loc[param[1].isin(dfGSM.loc[dfGSM.ID==i]["maxZr"])][0]+1
-        b=param.loc[param[1].isin(dfRRP.loc[dfRRP.ID==i]["maxZr"])][0]+1
-        c=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["maxZr"])][0]+1
+        a=param.loc[param[1].isin(dfGSM.loc[dfGSM.ID==i]["param"])][0]+1
+        b=param.loc[param[1].isin(dfRRP.loc[dfRRP.ID==i]["param"])][0]+1
+        c=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["param"])][0]+1
         # d=param.loc[param[1].isin(dfUTSFAO.loc[dfUTSFAO.ID==i]["maxZr"])][0]+1
-        maxGsm=param.loc[param[1].isin(dfGSM.loc[dfGSM.ID==i]["maxZr"])][1]
-        maxRRP=param.loc[param[1].isin(dfRRP.loc[dfRRP.ID==i]["maxZr"])][1]
-        maxUTS=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["maxZr"])][1]
+        maxGsm=param.loc[param[1].isin(dfGSM.loc[dfGSM.ID==i]["param"])][1]
+        maxRRP=param.loc[param[1].isin(dfRRP.loc[dfRRP.ID==i]["param"])][1]
+        maxUTS=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["param"])][1]
+        print(" ID : %s ==> GSM = %s ; RRP = %s  ; UTS = %s "%(i,maxGsm.values[0],maxRRP.values[0],maxUTS.values[0]))
         # maxUTSFAO=param.loc[param[1].isin(dfUTSFAO.loc[dfUTSFAO.ID==i]["maxZr"])][1]
-        UTS=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
-        GSM=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_GSM_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(a))+".df","rb"))
-        RRP=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_RRP_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(b))+".df","rb"))
+        UTS=pickle.load(open(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2018/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        GSM=pickle.load(open(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2018/Output/maxZr/output_test_maize_irri_"+str(int(a))+".df","rb"))
+        RRP=pickle.load(open(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_RRP_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2018/Output/maxZr/output_test_maize_irri_"+str(int(b))+".df","rb"))
         # UTSFAO=pickle.load(open("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(d))+".df","rb"))
 
         TAWdfGSM=GSM.loc[GSM.id==i][["date","Dr",'Ir_auto',"TAW"]]
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         plt.plot(TAWdfGSM.date,TAWdfUTS.Dr,c="g",linestyle="--",linewidth=0.9)
         plt.title(i)
         plt.legend()
-        plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/dynamique_TAW_3_soil_%s.png"%int(i))
+        # plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/dynamique_TAW_3_soil_%s.png"%int(i))
     TAW_all=pd.DataFrame(All_TAW)
     TAW_all.columns=["ID","UTS","RRP","GSM"]
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -110,12 +110,12 @@ if __name__ == '__main__':
     plt.xlabel("TAW")
     plt.xlim(50,180)
     plt.title("TAW GSM")
-    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/hist_TAW_type_sol_data.png")
+    # plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/hist_TAW_type_sol_data.png")
     ALL_nb_Irr=pd.DataFrame(Ir_all)
     ALL_nb_Irr.columns=["ID",'UTS',"RRP",'GSM']
-    ALL_nb_Irr.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/NB_IRR_sol_data.csv")
+    # ALL_nb_Irr.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/NB_IRR_sol_data.csv")
     Quant_irr=pd.DataFrame(quant_irr,columns=["ID","UTS","RRP","GSM"])
-    Quant_irr.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/Quant_IRR_sol_data.csv")
+    # Quant_irr.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/Quant_IRR_sol_data.csv")
     val_max=pd.DataFrame(valeur_maxZr,columns=["ID","GSM","RRP","UTS"])
     data_SOIL=pd.merge(val_max,data_prof["ProfRacPot"]*10,on=["ID"])
     
@@ -130,8 +130,8 @@ if __name__ == '__main__':
     rmsUTS = np.sqrt(mean_squared_error(data_SOIL.ProfRacPot,data_SOIL.UTS))
     plt.figure(figsize=(7,7))
     plt.scatter(data_SOIL.ProfRacPot,data_SOIL.GSM,c='r',label="GSM",marker="x")
-    plt.scatter(data_SOIL.ProfRacPot,data_SOIL.RRP,c='b',label="RRP",marker="v")
-    plt.scatter(data_SOIL.ProfRacPot,data_SOIL.UTS,c='g',label="UTS")
+    plt.scatter(data_SOIL.ProfRacPot,data_SOIL.RRP,c='b',label="RRP",marker="+")
+    plt.scatter(data_SOIL.ProfRacPot,data_SOIL.UTS,c='g',label="UTS",marker='1')
     plt.xlim(0,2000)
     plt.ylim(0,2000)
     plt.legend()
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     plt.text(1500,350,"R² = "+str(round(r_valueUTS,2)))
     plt.text(1500,300,"Pente = "+str(round(slopeUTS,2)))
     plt.text(1500,250,"Biais = "+str(round(biasUTS,2)))
-    plt.savefig("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose50_500_800_irri_auto_soil/scatter_MAXZR_type_sol_data.png")
+    plt.savefig(d['PC_disk']+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/scatter_MAXZR_type_sol_data.png")
     
     
 #   
