@@ -38,10 +38,10 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
     years=["2017","2018"]
@@ -305,7 +305,7 @@ if __name__ == '__main__':
         if y =="2017":
             id_CACG=[1,4,5,6,13]
         else:
-            id_CACG=[1,10,13,9,5,12]
+            id_CACG=[1,5,9,10,12,13]
         for i in id_CACG:
             maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0] # Si forcage 
             maxUTS=int(float(maxUTS)*10)
@@ -316,7 +316,7 @@ if __name__ == '__main__':
             UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
             data_id=UTS.groupby("id")
             ID_data=data_id.get_group(i)
-            print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.TAW*val.values[0],2))))
+            # print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.TAW*val.values[0],2))))
             IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS])
             # dfmore
             param2more=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
@@ -332,7 +332,7 @@ if __name__ == '__main__':
             dfUTSpless=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/tab_CACG_mod_"+str(y)+".csv")
             cless=param2less.loc[param2less[1].isin(dfUTSpless.loc[dfUTSpless.ID==i]["param"])][0]+1
             valless=param2less.loc[param2less[1].isin(dfUTSpless.loc[dfUTSpless.ID==i]["param"])][1]
-            UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(cmore))+".df","rb"))
+            UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(cless))+".df","rb"))
             data_idless=UTSless.groupby("id")
             ID_dataless=data_idless.get_group(i)
             yerrless.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
@@ -370,7 +370,7 @@ if __name__ == '__main__':
                   textcoords="offset points", # how to position the text
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p.png")
     
             
 # =============================================================================
@@ -457,7 +457,7 @@ if __name__ == '__main__':
     data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_850_irri_auto_soil/2018/output_test_2018.df","rb"))
     dataid13=data3.loc[data3.id==13]
     sum_id13=dataid13.Ir_auto.sum()
-    data_2018_for2017=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    data_2018_for2017=pd.DataFrame(np.array([[1.0,sum_id1 , 172.0], [5.0, sum_id5, 134.0], [13, sum_id13,195.0 ]]),columns=['ID', 'conso', 'Vali'])
     data1=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P07_Fcover_fewi_De_Kr_days10_dose30_600_irri_auto_soil/2017/output_test_2017.df","rb"))
     dataid1=data1.loc[data1.id==1]
     sum_id1=dataid1.Ir_auto.sum()
@@ -467,7 +467,7 @@ if __name__ == '__main__':
     data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_850_irri_auto_soil/2017/output_test_2017.df","rb"))
     dataid13=data3.loc[data3.id==13]
     sum_id13=dataid13.Ir_auto.sum()
-    tot_2017=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    tot_2017=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 170.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
     
     
     
@@ -524,7 +524,7 @@ if __name__ == '__main__':
     data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P04_Fcover_fewi_De_Kr_days10_dose30_850_irri_auto_soil/2017/output_test_2017.df","rb"))
     dataid13=data3.loc[data3.id==13]
     sum_id13=dataid13.Ir_auto.sum()
-    data_2017_for2018=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    data_2017_for2018=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 170.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
     data1=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P04_Fcover_fewi_De_Kr_days10_dose30_600_irri_auto_soil/2018/output_test_2018.df","rb"))
     dataid1=data1.loc[data1.id==1]
     sum_id1=dataid1.Ir_auto.sum()
@@ -534,7 +534,7 @@ if __name__ == '__main__':
     data3=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P04_Fcover_fewi_De_Kr_days10_dose30_850_irri_auto_soil/2018/output_test_2018.df","rb"))
     dataid13=data3.loc[data3.id==13]
     sum_id13=dataid13.Ir_auto.sum()
-    tot_2018=pd.DataFrame(np.array([[1.0,sum_id1 , 169.8], [5.0, sum_id5, 125.0], [13, sum_id13,149.0 ]]),columns=['ID', 'conso', 'Vali'])
+    tot_2018=pd.DataFrame(np.array([[1.0,sum_id1 , 172.0], [5.0, sum_id5, 134.0], [13, sum_id13,195.0]]),columns=['ID', 'conso', 'Vali'])
     
     
     plt.figure(figsize=(7,7))
@@ -550,7 +550,7 @@ if __name__ == '__main__':
     slope, intercept, r_value, p_value, std_err = stats.linregress(tot_2018.Vali.to_list(),tot_2018.conso.to_list())
     bias=1/tot_2018["Vali"].shape[0]*sum(tot_2018.conso-np.mean(tot_2018.Vali)) 
     rms = np.sqrt(mean_squared_error(tot_2018.Vali,tot_2018.conso))
-    rectangle = plt.Rectangle((95, 245),70,40, ec='blue',fc='blue',alpha=0.1)
+    rectangle = plt.Rectangle((95, 245),70,40, ec='orange',fc='orange',alpha=0.3)
     plt.gca().add_patch(rectangle)
     plt.text(100,280,"RMSE = "+str(round(rms,2))) 
     plt.text(100,270,"R² = "+str(round(r_value,2)))
@@ -559,7 +559,7 @@ if __name__ == '__main__':
     slope2, intercept, r_value2, p_value, std_err = stats.linregress(data_2017_for2018.Vali.to_list(),data_2017_for2018.conso.to_list())
     bias2=1/data_2017_for2018["Vali"].shape[0]*sum(data_2017_for2018.conso-np.mean(data_2017_for2018.Vali)) 
     rms2 = np.sqrt(mean_squared_error(data_2017_for2018.Vali,data_2017_for2018.conso))
-    rectangle = plt.Rectangle((225, 117),70,40, ec='orange',fc='orange',alpha=0.3)
+    rectangle = plt.Rectangle((225, 117),70,40, ec='blue',fc='blue',alpha=0.1)
     plt.gca().add_patch(rectangle)
     plt.text(230,150,"RMSE = "+str(round(rms2,2))) 
     plt.text(230,140,"R² = "+str(round(r_value2,2)))
