@@ -27,7 +27,7 @@ from scipy import stats
 from pylab import *
 from sklearn.metrics import *
 from sklearn.linear_model import LinearRegression
-
+from trianglegraph import SoilTrianglePlot
 
 def predict(x):
    return slope * x + intercept
@@ -37,11 +37,11 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     years=["2017"]
     lc="maize_irri"
@@ -258,4 +258,33 @@ if __name__ == '__main__':
 # =============================================================================
 #      Triangle texture
 # =============================================================================
-        
+data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+tex_UTS=data_prof[["Argile","Sable","Limon"]]
+tex_UTS.columns=["clay","sand",'silt']
+# tex_UTS.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS.csv")
+plt.figure(figsize=(7,7))
+fstp = SoilTrianglePlot('Données UTS')
+fstp.soil_categories(country="Ainse")
+fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS.csv",diameter='nb'*10, cmap=cm.copper_r, alpha=1)
+
+
+
+data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+tex_RRP=data_prof[["Argile","Sable","Limon"]]
+tex_RRP.columns=["clay","sand",'silt']
+# tex_RRP.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv")
+plt.figure(figsize=(7,7))
+fstp = SoilTrianglePlot('Données RRP')
+fstp.soil_categories(country="Ainse")
+fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",diameter='nb'*10, cmap=cm.copper_r, alpha=1)
+# fstp.colorbar('nombre de parcelles')
+    
+data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+tex_GSM=data_prof[["Argile","Sable","Limon"]]
+tex_GSM.columns=["clay","sand",'silt']
+# tex_GSM.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv")
+plt.figure(figsize=(7,7))
+fstp = SoilTrianglePlot('Données GSM')
+fstp.soil_categories(country="Ainse")
+fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv",diameter='nb'*10, cmap=cm.copper_r, alpha=1)
+# fstp.colorbar('nombre de parcelles')

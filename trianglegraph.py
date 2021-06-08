@@ -142,16 +142,21 @@ class SoilTrianglePlot:
             self.line((91.5,8.5,0),(63,12,25),**lstyle)
             self.line((76.25, 10.5, 13.25),(50,50,0),**lstyle)
         if country == "Ainse" :
-            self.line((12, 80, 20), (12, 80, 20), **lstyle)
-            # self.line((70, 0, 30), (85, 15, 0), **lstyle)
-            # self.line((82,18,0),(0,18,82), **lstyle)
-            # self.line((70,30,0),(50,30,20),**lstyle)
-            # self.line((50,30,20),(50,0,50), **lstyle)
-            # self.line((20,35,45),(20,0,80), **lstyle)
-            # self.line((0,55,45),(20,35,45), **lstyle)
-            # self.line((45,35,20),(0,35,65), **lstyle)
-            # self.line((45,35,20),(50,30,20),**lstyle)
-            # self.line((45,35,20),(45,55,0), **lstyle)
+            self.line((80, 10, 0), (90, 10, 0), **lstyle)# classe S
+            self.line((80, 10, 85), (80, 0, 85), **lstyle) # Classe S
+            self.line((75,25,0),(57,25,20),**lstyle) # Classe SAble
+            self.line((35,30,70),(35,8,10),**lstyle) # Classe LSA
+            self.line((50,30,75),(0,30,50),**lstyle)
+            self.line((57,25,75),(57,0,10),**lstyle) # Classe LLS
+            self.line((15,30,70),(15,0,10),**lstyle) # Classe LL et LM
+            self.line((57,18,0),(0,18,57), **lstyle)
+            self.line((57,8,0),(0,8,57), **lstyle)
+            self.line((55,45,0),(0,45,55), **lstyle) # Classe ALO
+            self.line((50,30,70),(57,25,75), **lstyle) # classe LSA
+            self.line((20,30,70),(20,45,30),**lstyle)
+            self.line((50,30,70),(50,45,30),**lstyle)
+            self.line((75,15,0),(57,15,10),**lstyle)
+            self.line((80,10,10),(75,15,10),**lstyle)
         
         if country =="Ainse":
             labels = ('Sable (%)', 'Argile (%)', 'Limon (%)')
@@ -190,7 +195,7 @@ class SoilTrianglePlot:
         # fh = file(filename, 'rU')
         fh = open(filename, 'rU')
         # soilrec = csv2rec(fh)
-        soilrec = pd.read_csv(fh)
+        soilrec = pd.read_csv(filename,sep=";")
         count = 0
         if (sand in soilrec.dtypes):
             count = count + 1
@@ -207,18 +212,17 @@ class SoilTrianglePlot:
                 locargs[key] = soilrec[col]
             else:
                 print ('ERROR: did not find ', col, 'in ', filename)
-        for k in kwargs:
-            locargs[k] = kwargs[k]
+        for k in kwargs: # color
+              locargs[k] = kwargs[k]
         values = list(zip(*[soilrec[sand], soilrec[clay], soilrec[silt]]))
-        # print (values)
         (xs, ys) = self._toCart(values)
         p.scatter(xs, ys, label='_', **locargs)
         if (tags != ''):
             tags = tags.lower()
             for (x, y, tag) in zip(*[xs, ys, soilrec[tags]]):
-                print (x),
-                print (y),
-                print (tag)
+                # print (x),
+                # print (y),
+                # print (tag)
                 p.text(x + 1, y + 1, tag, fontsize=12)
         fh.close()
 

@@ -8,9 +8,10 @@ import matplotlib.cm as cm
 #One to load data from a .csv file
 fstp = SoilTrianglePlot('Data read from triangleplot_demo.csv;\n size of marker increases with porosity')
 fstp.soil_categories(country="Ainse")
-fstp.scatter_from_csv('triangleplot_demo.csv',diameter='maxzr', hue='rum', cmap=cm.copper_r, alpha=1)
+fstp.scatter_from_csv('triangleplot_demo.csv', cmap=cm.copper_r, alpha=1)
 fstp.colorbar('Organic matter (%)')
-fstp.show('triangleplot_subtle')
+
+# fstp.show('triangleplot_subtle')
 
 # from random import sample, randint, random #to make up a pile of data, in function randomtriples
 # def randomtriples(count):
@@ -44,11 +45,13 @@ atp.soil_categories(country="Ainse")
 atp.outline(country ="Ainse")
 atp.show('triangleplot_australian')
 
-tp = SoilTrianglePlot('Poetry as sociology') # No soil-specific stuff
-tp.grid(([25,50,75],[33.3, 66.6],[20,40,60,80]), labels=('Sugar','Spice','Everything nice'))
-tp.patch([[10,90],[50,70],[10,90]], facecolor='#eeaa88', label='observed')
-tp.patch([[5,12],[22, 57],[60,100]], facecolor='#aa88ee', label='predicted')
-tp.text((75, 15, 10), 'WHY?', fontsize=48)
-tp.show('triangleplot_general')
+# tp = SoilTrianglePlot('') # No soil-specific stuff
+# tp.grid(([0,25,50,75,100],[0,25,50,75,100],[0,25,50,75,100]),labels=('Sugar','Spice','Everything nice'))
+
+# tp.grid(([25,50,75],[33.3, 66.6],[20,40,60,80]), labels=('Sugar','Spice','Everything nice'))
+# tp.patch([[10,90],[50,70],[10,90]], facecolor='#eeaa88', label='observed')
+# tp.patch([[5,12],[22, 57],[60,100]], facecolor='#aa88ee', label='predicted')
+# tp.text((75, 15, 10), 'WHY?', fontsize=48)
+# tp.show('triangleplot_general')
 
  
