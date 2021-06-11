@@ -195,7 +195,7 @@ class SoilTrianglePlot:
         # fh = file(filename, 'rU')
         fh = open(filename, 'rU')
         # soilrec = csv2rec(fh)
-        soilrec = pd.read_csv(filename,sep=";")
+        soilrec = pd.read_csv(filename,sep=",")
         count = 0
         if (sand in soilrec.dtypes):
             count = count + 1
