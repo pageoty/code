@@ -298,7 +298,7 @@ if __name__ == '__main__':
 # =============================================================================
     plt.figure(figsize=(7,7))
     for y in years :
-        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
         IRR=[]
         yerrmore=[]
         yerrless=[]
@@ -306,7 +306,9 @@ if __name__ == '__main__':
             id_CACG=[1,4,5,6,13]
         else:
             id_CACG=[1,5,9,10,12,13]
+        Vali_TAW=data_prof.loc[data_prof.index.isin(id_CACG)]["RUM"]
         for i in id_CACG:
+            
             maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0] # Si forcage 
             maxUTS=int(float(maxUTS)*10)
             param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
@@ -317,7 +319,7 @@ if __name__ == '__main__':
             data_id=UTS.groupby("id")
             ID_data=data_id.get_group(i)
             # print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.TAW*val.values[0],2))))
-            IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS])
+            IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS,ID_data.TAW.max()])
             # dfmore
             param2more=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
             dfUTSpmore=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/tab_CACG_mod_"+str(y)+".csv")
@@ -372,7 +374,21 @@ if __name__ == '__main__':
                   ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p.png")
     
-            
+   #  Validation TAW RUM$
+    plt.figure(figsize=(7,7))
+    plt.scatter(Vali_TAW.astype(float),tab_irr[4])
+    plt.xlim(0,200)
+    plt.ylim(0,200)
+    plt.xlabel("RUM observées en mm ")
+    plt.ylabel("RUM modélisées en mm ")
+    plt.plot([0.0, 200], [0.0,200], 'black', lw=1,linestyle='--')
+    for i in enumerate(tab_irr[0]):
+            label = int(i[1])
+            plt.annotate(label, # this is the text
+                  (Vali_TAW.astype(float).iloc[i[0]],tab_irr[4].iloc[i[0]]), # this is the point to label
+                  textcoords="offset points", # how to position the text
+                  xytext=(0,5), # distance from text to points (x,y)
+                  ha='center')
 # =============================================================================
 #     forcage P et forcer maxZr
 # =============================================================================

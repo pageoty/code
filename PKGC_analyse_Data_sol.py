@@ -270,7 +270,7 @@ if __name__ == '__main__':
     plt.text(250,110,"Pente = "+str(round(slopeUTS,2)))
     plt.text(250,100,"Biais = "+str(round(biasUTS,2)))
     
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/Plot_Sol/scatter_irrigation_tot_GSM_RRP_UTS_PKGC.png")
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/Plot_Sol/scatter_irrigation_tot_GSM_RRP_UTS_PKGC_max1000p055.png")
 # =============================================================================
 #     plot RUM forcage 600 et p 
 # =============================================================================
@@ -289,9 +289,9 @@ if __name__ == '__main__':
     biasUTS=1/testGSM["RUM"].shape[0]*sum(testUTS.TAW-np.mean(testGSM.RUM)) 
     rmsUTS = np.sqrt(mean_squared_error(testGSM.RUM,testUTS.TAW))
     plt.figure(figsize=(7,7))
-    plt.scatter(testGSM.RUM, mod_Irr_GSM, marker="+",label='GSM',color='r',s=50)
-    plt.scatter(testGSM.RUM, mod_Irr_RRP, marker="1",label='RRP',color='b',s=50)
-    plt.scatter(testGSM.RUM, mod_Irr_UTS, marker="x",label='UTS',color='g',s=50)
+    plt.scatter(testGSM.RUM, testGSM.TAW, marker="+",label='GSM',color='r',s=50)
+    plt.scatter(testGSM.RUM, testRRP.TAW, marker="1",label='RRP',color='b',s=50)
+    plt.scatter(testGSM.RUM, testUTS.TAW, marker="x",label='UTS',color='g',s=50)
     plt.xlim(0,300)
     plt.ylim(0,300)
     plt.legend()
@@ -316,7 +316,7 @@ if __name__ == '__main__':
     plt.text(230,120,"R² = "+str(round(r_valueUTS,2)))
     plt.text(230,110,"Pente = "+str(round(slopeUTS,2)))
     plt.text(230,100,"Biais = "+str(round(biasUTS,2)))
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/Plot_Sol/scatter_RUM_GSM_RRP_UTS_PKGC.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/Plot_Sol/scatter_RUM_GSM_RRP_UTS_PKGC_foracge_1000et055.png")
 # =============================================================================
 #      Triangle texture
 # =============================================================================
@@ -324,40 +324,152 @@ if __name__ == '__main__':
 # tex_UTS=data_prof[["Argile","Sable","Limon"]]
 # tex_UTS.columns=["clay","sand",'silt']
 # tex_UTS.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS.csv")
-plt.figure(figsize=(7,7))
-fstp = SoilTrianglePlot()
-fstp.soil_categories(country="Ainse")
-fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50,marker="x")
-fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50,marker="+")
-fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS.csv",hue="nb", cmap=cm.copper_r, alpha=1,s=50,marker="o")
-fstp.colorbar('nombre de parcelles')
-fstp.line((0,0,0),(0, 0, 0), 'black', label='RRP', marker="x",linestyle='',linewidth=0.5) 
-fstp.line((0,0,0),(0, 0, 0), 'black', label='GSM', marker="+",linestyle='',linewidth=1,alpha=0.5) 
-fstp.line((0,0,0),(0, 0, 0), 'black', label='UTS', marker="o",linestyle='',linewidth=1,alpha=0.5)
-plt.legend()
-
-
-# plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_UTS.png")
-
-
-# data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-# tex_RRP=data_prof[["Argile","Sable","Limon"]]
-# tex_RRP.columns=["clay","sand",'silt']
-# tex_RRP.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv")
-plt.figure(figsize=(7,7))
-fstp = SoilTrianglePlot('Données RRP')
-fstp.soil_categories(country="Ainse")
-fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
-fstp.colorbar('nombre de parcelles')
-plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_RRP.png")
+    plt.figure(figsize=(7,7))
+    fstp = SoilTrianglePlot()
+    fstp.soil_categories(country="Ainse")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50,marker="x")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50,marker="+")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS.csv",hue="nb", cmap=cm.copper_r, alpha=1,s=50,marker="o")
+    fstp.colorbar('nombre de parcelles')
+    fstp.line((0,0,0),(0, 0, 0), 'black', label='RRP', marker="x",linestyle='',linewidth=0.5) 
+    fstp.line((0,0,0),(0, 0, 0), 'black', label='GSM', marker="+",linestyle='',linewidth=1,alpha=0.5) 
+    fstp.line((0,0,0),(0, 0, 0), 'black', label='UTS', marker="o",linestyle='',linewidth=1,alpha=0.5)
+    plt.legend()
     
-# data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-# tex_GSM=data_prof[["Argile","Sable","Limon"]]
-# tex_GSM.columns=["clay","sand",'silt']
-# tex_GSM.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv")
-plt.figure(figsize=(7,7))
-fstp = SoilTrianglePlot('Données GSM')
-fstp.soil_categories(country="Ainse")
-fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
-fstp.colorbar('nombre de parcelles')
-plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_GSM.png")
+    
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_UTS.png")
+    
+    
+    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    # tex_RRP=data_prof[["Argile","Sable","Limon"]]
+    # tex_RRP.columns=["clay","sand",'silt']
+    # tex_RRP.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv")
+    plt.figure(figsize=(7,7))
+    fstp = SoilTrianglePlot('Données RRP')
+    fstp.soil_categories(country="Ainse")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
+    fstp.colorbar('nombre de parcelles')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_RRP.png")
+        
+    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    # tex_GSM=data_prof[["Argile","Sable","Limon"]]
+    # tex_GSM.columns=["clay","sand",'silt']
+    # tex_GSM.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv")
+    plt.figure(figsize=(7,7))
+    fstp = SoilTrianglePlot('Données GSM')
+    fstp.soil_categories(country="Ainse")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
+    fstp.colorbar('nombre de parcelles')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_GSM.png")
+
+
+# =============================================================================
+#  comparasion des PF_CC UTS/GSM
+# =============================================================================
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    data_prof_GSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+
+    tab_resu_UTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/tab_resu_forcagemaxZr_optim_p_UTS_maps.csv")
+    tab_resu_GSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/tab_resu_forcagemaxZr_optim_p_GSM_maps.csv")
+    data_prof=data_prof[["CC_mean","PF_mean","Classe",'RUM']]
+    UTS_data=pd.merge(data_prof,tab_resu_UTS,on='ID')
+    data_prof_GSM=data_prof_GSM[["CC_mean","PF_mean","Classe"]]
+    GSM_data=pd.merge(data_prof_GSM,tab_resu_GSM,on='ID')
+    
+    CC_test=UTS_data.RUM/UTS_data.maxZr+UTS_data.PF_mean
+# =============================================================================
+#     Comparaison run avec CC estimer via RUM
+# =============================================================================
+    Valid=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")    
+    df_CC=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Sans_optim/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil_CC_estimer/2017/output_test_2017.df","rb"))
+    df_ref=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Sans_optim/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil/2017/output_test_2017.df","rb"))
+    mod_irr_CC=df_CC.groupby("id")["Ir_auto"].sum()
+    mod_Irr_CC=pd.DataFrame(mod_irr_CC)
+    mod_Irr_CC = mod_Irr_CC[mod_irr_CC.index!=10]
+    mod_irr_UTS=df_ref.groupby("id")["Ir_auto"].sum()
+    mod_Irr_UTS=pd.DataFrame(mod_irr_UTS)
+    mod_Irr_UTS = mod_Irr_UTS[mod_irr_UTS.index!=10]
+    
+    slopeUTS, intercept, r_valueUTS, p_value, std_err = stats.linregress(Valid.MMEAU.to_list(),mod_Irr_UTS.Ir_auto.to_list())
+    biasUTS=1/Valid["MMEAU"].shape[0]*sum(mod_Irr_UTS.Ir_auto-np.mean(Valid.MMEAU)) 
+    rmsUTS = np.sqrt(mean_squared_error(Valid.MMEAU,mod_Irr_UTS.Ir_auto))
+    slopeCC, intercept, r_valueCC, p_value, std_err = stats.linregress(Valid.MMEAU.to_list(),mod_Irr_CC.Ir_auto.to_list())
+    biasCC=1/Valid["MMEAU"].shape[0]*sum(mod_Irr_CC.Ir_auto-np.mean(Valid.MMEAU)) 
+    rmsCC = np.sqrt(mean_squared_error(Valid.MMEAU,mod_Irr_CC.Ir_auto))
+    plt.figure(figsize=(7,7))
+    plt.scatter(Valid.MMEAU, mod_Irr_UTS, marker="+",label='REF',color='r',s=50)
+    plt.scatter(Valid.MMEAU, mod_Irr_CC, marker="x",label='CC_estimer',color='b',s=50)
+    plt.xlim(0,350)
+    plt.ylim(0,350)
+    plt.legend()
+    plt.xlabel("Quantité annuelles observées en mm ")
+    plt.ylabel("Quantité annuelles modélisées en mm ")
+    plt.plot([0, 350], [0.0,350], 'black', lw=1,linestyle='--')
+    rectangle = plt.Rectangle((75, 265),70,50, ec='r',fc='r',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(80,300,"RMSE = "+str(round(rmsUTS,2))) 
+    plt.text(80,290,"R² = "+str(round(r_valueUTS,2)))
+    plt.text(80,280,"Pente = "+str(round(slopeUTS,2)))
+    plt.text(80,270,"Biais = "+str(round(biasUTS,2)))
+    rectangle = plt.Rectangle((215, 275),70,50, ec='b',fc='b',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(220,310,"RMSE = "+str(round(rmsCC,2))) 
+    plt.text(220,300,"R² = "+str(round(r_valueCC,2)))
+    plt.text(220,290,"Pente = "+str(round(slopeCC,2)))
+    plt.text(220,280,"Biais = "+str(round(biasCC,2)))
+    for i in enumerate(mod_Irr_UTS.index):
+        label = int(i[1])
+        plt.annotate(label, # this is the text
+              (Valid["MMEAU"].iloc[i[0]],mod_Irr_UTS.iloc[i[0]]), # this is the point to label
+              textcoords="offset points", # how to position the text
+              xytext=(0,5), # distance from text to points (x,y)
+              ha='center')
+    for i in enumerate(mod_Irr_UTS.index):
+        label = int(i[1])
+        plt.annotate(label, # this is the text
+              (Valid["MMEAU"].iloc[i[0]],mod_Irr_CC.iloc[i[0]]), # this is the point to label
+              textcoords="offset points", # how to position the text
+              xytext=(0,5), # distance from text to points (x,y)
+              ha='center')
+    
+    mod_TAW_UTS=df_ref.groupby("id")["TAW"].max()
+    mod_TAW_UTS=pd.DataFrame(mod_TAW_UTS,columns=["ID","TAW"])
+    mod_TAW_UTS.ID=mod_TAW_UTS.index
+    mod_TAW_UTS = mod_TAW_UTS[mod_TAW_UTS.index!=10]
+    
+    mod_TAW_CC=df_CC.groupby("id")["TAW"].max()
+    mod_TAW_CC=pd.DataFrame(mod_TAW_CC,columns=["ID","TAW"])
+    mod_TAW_CC.ID=mod_TAW_CC.index
+    mod_TAW_CC = mod_TAW_CC[mod_TAW_CC.index!=10]
+    
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    testGSM=pd.merge(data_prof["RUM"],mod_TAW_CC,on='ID')
+    testUTS=pd.merge(data_prof["RUM"],mod_TAW_UTS,on='ID')
+    
+    slopeCC, intercept, r_valueCC, p_value, std_err = stats.linregress(testGSM.RUM.to_list(),testGSM.TAW.to_list())
+    biasCC=1/testGSM["RUM"].shape[0]*sum(testGSM.TAW-np.mean(testGSM.RUM)) 
+    rmsCC = np.sqrt(mean_squared_error(testGSM.RUM,testGSM.TAW))
+    slopeUTS, intercept, r_valueUTS, p_value, std_err = stats.linregress(testUTS.RUM.to_list(),testUTS.TAW.to_list())
+    biasUTS=1/testGSM["RUM"].shape[0]*sum(testUTS.TAW-np.mean(testUTS.RUM)) 
+    rmsUTS = np.sqrt(mean_squared_error(testGSM.RUM,testUTS.TAW))
+    plt.figure(figsize=(7,7))
+    plt.scatter(testGSM.RUM, testGSM.TAW, marker="+",label='CC_estimer',color='b',s=50)
+    plt.scatter(testUTS.RUM, testUTS.TAW, marker="x",label='ref',color='r',s=50)
+    plt.xlim(50,200)
+    plt.ylim(50,200)
+    plt.legend()
+    plt.xlabel("RUM obséreves en mm")
+    plt.ylabel("RUM modélisées en mm ")
+    plt.plot([50, 200], [50,200], 'black', lw=1,linestyle='--')
+    rectangle = plt.Rectangle((55, 55),40,30, ec='r',fc='r',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(60,75,"RMSE = "+str(round(rmsUTS,2))) 
+    plt.text(60,70,"R² = "+str(round(r_valueUTS,2)))
+    plt.text(60,65,"Pente = "+str(round(slopeUTS,2)))
+    plt.text(60,60,"Biais = "+str(round(biasUTS,2)))
+    rectangle = plt.Rectangle((155, 155),40,30, ec='b',fc='b',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(160,175,"RMSE = "+str(round(rmsCC,2))) 
+    plt.text(160,170,"R² = "+str(round(r_valueCC,2)))
+    plt.text(160,165,"Pente = "+str(round(slopeCC,2)))
+    plt.text(160,160,"Biais = "+str(round(biasCC,2)))
