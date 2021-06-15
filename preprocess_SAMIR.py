@@ -35,10 +35,10 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2018"
-    ZONE =["ASA"] # Fusion PARCELLE_CESBIO
+    years="2017"
+    ZONE =["TARN"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
@@ -224,6 +224,28 @@ if __name__ == "__main__":
                 FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
                 FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
                 FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2018.df")
+          elif bv == "FUSION":
+                dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None)
+                dfs=pd.DataFrame(dfnames)
+                dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/FUSION/NDVI_2017_FUSION_v2.csv",sep=";")
+                tmp=df[["ID"]]
+                tmp1=pd.DataFrame()
+                for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 41
+                      a=df["mean_"+str(i)]/1000
+                      tmp1=tmp1.append(a)
+                Fcover=tmp1.T
+                Fcover.columns=list(dates)
+                # Fcover=Fcover.T
+                Fcover.T.sort_index(inplace=True)
+                Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+                Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+                Fcover=Fcover.append(df.ID)
+                Fcover=Fcover.T
+                Fcover.set_index("ID",inplace=True)
+                FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+                FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
+                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2017.df")
 # =============================================================================
 # LAI
 # =============================================================================
