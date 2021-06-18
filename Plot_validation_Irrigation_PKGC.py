@@ -224,14 +224,38 @@ if __name__ == '__main__':
     plt.text(200,160,"Pente = "+str(round(slope,2)))
     plt.text(200,150,"Biais = "+str(round(bias,2)))
     plt.plot([-10.0, 300], [-10.0,300], 'black', lw=1,linestyle='--')
-    for i in enumerate(tab_f2.ID):
-        label = int(i[1])
-        plt.annotate(label, # this is the text
-              (tab_f2["RUM"].iloc[i[0]],tab_f2.TAWmax.iloc[i[0]]), # this is the point to label
-              textcoords="offset points", # how to position the text
-              xytext=(-6,2), # distance from text to points (x,y)
-              ha='center')
+    # for i in enumerate(tab_f2.ID):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_f2["RUM"].iloc[i[0]],tab_f2.TAWmax.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_RUM_TAWmax.png")
+    tab_f2["maxZr_obs"]=tab_f2.Prof_rac_UTS*10
+    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.maxZr_obs.to_list(),tab_f2.maxZr.to_list())
+    bias=1/tab_f2["maxZr_obs"].shape[0]*sum(tab_f2.maxZr-np.mean(tab_f2.maxZr_obs)) 
+    rms = np.sqrt(mean_squared_error(tab_f2.maxZr_obs,tab_f2.maxZr))
+    plt.figure(figsize=(7,7))
+    a=plt.scatter(tab_f2.maxZr_obs,tab_f2.maxZr,c=index,cmap="coolwarm")
+    plt.legend(a.legend_elements()[0],labels)
+    plt.xlim(-10,2000)
+    plt.ylim(-10,2000)
+    plt.xlabel("MaxZr observée en mm ")
+    plt.ylabel("RUM modélisées en mm ")
+    plt.text(1500,300,"RMSE = "+str(round(rms,2))) 
+    plt.text(1500,250,"R² = "+str(round(r_value,2)))
+    plt.text(1500,200,"Pente = "+str(round(slope,2)))
+    plt.text(1500,150,"Biais = "+str(round(bias,2)))
+    plt.plot([-10.0, 2000], [-10.0,2000], 'black', lw=1,linestyle='--')
+    # for i in enumerate(tab_f2.ID):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_f2["RUM"].iloc[i[0]],tab_f2.TAWmax.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_maxZr_racinepro.png")
 # ===============================================================================
 #  Plot résultats optimisation P
 # # =============================================================================
@@ -454,6 +478,8 @@ if __name__ == '__main__':
     # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.MMEAU.to_list(),tab_irr2.conso.to_list())
     # bias=1/tab_irr2["MMEAU"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.MMEAU)) 
     # rms = np.sqrt(mean_squared_error(tab_irr2.MMEAU,tab_irr2.conso))
+    # valid_sol_classe=pd.merge(data_prof[["Classe","RUM"]],tab_irr2,on='ID')
+    # labels, index = np.unique(valid_sol_classe["Classe"], return_inverse=True)
     # plt.figure(figsize=(7,7))
     # plt.xlim(-10,350)
     # plt.ylim(-10,350)
@@ -476,8 +502,112 @@ if __name__ == '__main__':
     #           textcoords="offset points", # how to position the text
     #           xytext=(-6,2), # distance from text to points (x,y)
     #           ha='center')
-    # # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_et_p_UTS_maps.png")
+    # # # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_et_p_UTS_maps.png")
+    #  # # Plot TAW/ RUM
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(valid_sol_classe.RUM.to_list(),valid_sol_classe.TAWmax.to_list())
+    # bias=1/valid_sol_classe["RUM"].shape[0]*sum(valid_sol_classe.TAWmax-np.mean(valid_sol_classe.RUM)) 
+    # rms = np.sqrt(mean_squared_error(valid_sol_classe.RUM,valid_sol_classe.TAWmax))
+    # plt.figure(figsize=(7,7))
+    # a=plt.scatter(valid_sol_classe.RUM,valid_sol_classe.TAWmax,c=index,cmap="coolwarm")
+    # plt.legend(a.legend_elements()[0],labels)
+    # plt.xlim(-10,200)
+    # plt.ylim(-10,200)
+    # plt.xlabel("RUM observée en cm ")
+    # plt.ylabel("RUM modélisées en cm ")
+    # plt.plot([-10.0, 200], [-10.0,200], 'black', lw=1,linestyle='--')
+    # plt.text(50,165,"RMSE = "+str(round(rms,2))) 
+    # plt.text(50,160,"R² = "+str(round(r_value,2)))
+    # plt.text(50,155,"Pente = "+str(round(slope,2)))
+    # plt.text(50,150,"Biais = "+str(round(bias,2)))
+    # # for i in enumerate(valid_sol_classe.Classe):
+    # #     label = str(i[1])
+    # #     plt.annotate(label, # this is the text
+    # #           (valid_sol_classe["RUM"].iloc[i[0]],valid_sol_classe.TAWmax.iloc[i[0]]), # this is the point to label
+    # #           textcoords="offset points", # how to position the text
+    # #           xytext=(-6,2), # distance from text to points (x,y)
+    # #           ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_optim_forcagemaxZr_p_UTS_maps.png")
 
+# =============================================================================
+# maxZr focer avec value RUM
+# =============================================================================
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    IRR=[]
+    yerrmin=[]
+    yerrmax=[]
+    for i in dfUTS.ID:
+        maxUTS=data_prof.loc[data_prof.index==i]["maxZr_RUM"].values[0]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/2017/output_test_2017.df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        print(r'ID == %s ==> TAW == %s'%(i,max(round(ID_data.TAW,2))))
+        IRR.append([i,ID_data.Ir_auto.sum(),maxUTS,ID_data.TAW.max()])
+        # dfmore#
+    #     UTSmore=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/2017//output_test_2017.df","rb"))
+    #     data_idmore=UTSmore.groupby("id")
+    #     ID_datamore=data_idmore.get_group(i)
+    #     yerrmax.append(abs(ID_data.Ir_auto.sum()-ID_datamore.Ir_auto.sum()))
+    #     # dfless
+    #     UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/2017/output_test_2017.df","rb"))
+    #     data_idless=UTSless.groupby("id")
+    #     ID_dataless=data_idless.get_group(i)
+    #     yerrmin.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
+    # yerr=[yerrmin,yerrmax]
+    tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWmax"])
+    tab_irr2=pd.merge(tab_irr,dfUTS[["ID","MMEAU"]],on='ID')
+    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.MMEAU.to_list(),tab_irr2.conso.to_list())
+    bias=1/tab_irr2["MMEAU"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(tab_irr2.MMEAU,tab_irr2.conso))
+    valid_sol_classe=pd.merge(data_prof[["Classe","RUM"]],tab_irr2,on='ID')
+    labels, index = np.unique(valid_sol_classe["Classe"], return_inverse=True)
+    plt.figure(figsize=(7,7))
+    plt.xlim(-10,350)
+    plt.ylim(-10,350)
+    plt.xlabel("Quantité annuelles observées en mm ")
+    plt.ylabel("Quantité annuelles modélisées en mm ")
+    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
+    a=plt.scatter(tab_irr2.MMEAU,tab_irr2.conso,c=index,cmap='coolwarm')
+    plt.legend(a.legend_elements()[0],labels)
+    plt.gca().add_patch(rectangle)
+    plt.text(100,300,"RMSE = "+str(round(rms,2))) 
+    plt.text(100,290,"R² = "+str(round(r_value,2)))
+    plt.text(100,280,"Pente = "+str(round(slope,2)))
+    plt.text(100,270,"Biais = "+str(round(bias,2)))
+    for i in enumerate(dfUTS.ID):
+        label = int(i[1])
+        plt.annotate(label, # this is the text
+              (tab_irr2["MMEAU"].iloc[i[0]],tab_irr2.conso.iloc[i[0]]), # this is the point to label
+              textcoords="offset points", # how to position the text
+              xytext=(-6,2), # distance from text to points (x,y)
+              ha='center')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_p_value_RUM.png")
+     # # Plot TAW/ RUM
+    slope, intercept, r_value, p_value, std_err = stats.linregress(valid_sol_classe.RUM.to_list(),valid_sol_classe.TAWmax.to_list())
+    bias=1/valid_sol_classe["RUM"].shape[0]*sum(valid_sol_classe.TAWmax-np.mean(valid_sol_classe.RUM)) 
+    rms = np.sqrt(mean_squared_error(valid_sol_classe.RUM,valid_sol_classe.TAWmax))
+    plt.figure(figsize=(7,7))
+    a=plt.scatter(valid_sol_classe.RUM,valid_sol_classe.TAWmax,c=index,cmap="coolwarm")
+    plt.legend(a.legend_elements()[0],labels)
+    plt.xlim(-10,200)
+    plt.ylim(-10,200)
+    plt.xlabel("RUM observée en cm ")
+    plt.ylabel("RUM modélisées en cm ")
+    plt.plot([-10.0, 200], [-10.0,200], 'black', lw=1,linestyle='--')
+    plt.text(50,165,"RMSE = "+str(round(rms,2))) 
+    plt.text(50,160,"R² = "+str(round(r_value,2)))
+    plt.text(50,155,"Pente = "+str(round(slope,2)))
+    plt.text(50,150,"Biais = "+str(round(bias,2)))
+    # for i in enumerate(valid_sol_classe.Classe):
+    #     label = str(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (valid_sol_classe["RUM"].iloc[i[0]],valid_sol_classe.TAWmax.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_optim_forcagemaxZr_p_value_RUM.png")
 # =============================================================================
 # résul pour maxzr 600 (median maize 2017 et 2018 sur UTS maps + 055 p)
 # ============================================================================= 
