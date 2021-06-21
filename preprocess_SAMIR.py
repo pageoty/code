@@ -35,15 +35,15 @@ if __name__ == "__main__":
     # print (args.optim)
     # print(args.name_run)
    
-    years="2017"
+    years="2018"
     ZONE =["TARN"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
-    # d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    # d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     list_col_drop_tarn=['originfid','ogc_fid', 'num']
     list_col_drop_fus=['originfid', 'ogc_fid']
 
-    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
+    dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
     
     for bv in ZONE:
         NDVI=pd.DataFrame()
@@ -308,6 +308,13 @@ if __name__ == "__main__":
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
+        elif bv == "Adour_Tarn":
+            for i in ["WP",'FC']:
+                soil=pd.DataFrame()
+                for j in np.arange(1,18):
+                    a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
+                    soil=soil.append(a)
+                soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
                 # if i=="FC":
                 # if i=="FC":
                 #     soil[str(i)].loc[0]=0.3635
@@ -362,6 +369,12 @@ if __name__ == "__main__":
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
                 soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df')
+        elif bv =="Adour_Tarn" :
+                soil=pd.DataFrame()
+                for j in np.arange(1,18):
+                    a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
+                    soil=soil.append(a)
+                soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
                     # soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
 # #                     # soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})

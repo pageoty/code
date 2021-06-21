@@ -103,7 +103,8 @@ if __name__ == "__main__":
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/CACG_SAFRAN/"+str(y)+"/* %s"%(d['SAMIR_run']))
             elif "PKGC" in name_run:
                 print("ici")
-                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(y)+"/* %s"%(d['SAMIR_run']))
+                # os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(y)+"/* %s"%(d['SAMIR_run']))
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(y)+"/* %s"%(d['SAMIR_run'])) # pour la préparation des données ADOUR_TARN
             elif "ASA" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(y)+"/* %s"%(d['SAMIR_run']))
             else:
@@ -197,8 +198,9 @@ if __name__ == "__main__":
             print('PKGC parcelle')
         #  Lecture file PF_CC
             if "GSM" in name_run:
-                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                # PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 print("data soil GSM use")
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_Adour_Tarn_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
             elif "RRP" in name_run: 
                 PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 print("data soil RRP use")
@@ -263,17 +265,17 @@ if __name__ == "__main__":
 #         Incertitude sur le Fcover
 # =============================================================================
         # Lecture du Fcover 
-        Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df","rb")
-        Fcover=pickle.load(Fco)
-        Fco.close()
-        if "Fcover_pl20" in name_run:
-            print("add +20 %")
-            Fcover.FCov=Fcover.FCov+(20*Fcover.FCov/100)
-        elif "Fcover_m20" in name_run:
-            print("add -20 %")
-            Fcover.FCov=Fcover.FCov-(20*Fcover.FCov/100)
-        Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df")
-# =============================================================================
+#         Fco=open(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df","rb")
+#         Fcover=pickle.load(Fco)
+#         Fco.close()
+#         if "Fcover_pl20" in name_run:
+#             print("add +20 %")
+#             Fcover.FCov=Fcover.FCov+(20*Fcover.FCov/100)
+#         elif "Fcover_m20" in name_run:
+#             print("add -20 %")
+#             Fcover.FCov=Fcover.FCov-(20*Fcover.FCov/100)
+#         Fcover.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Fcover.df")
+# # =============================================================================
       # Calcule REW allen 2005 
 # =============================================================================
         # Sand = mean([0.471,0.646]) # ensemble de la colonne sol 
@@ -459,7 +461,7 @@ if __name__ == "__main__":
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
                                  Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="400/2500/50/lin")
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="400/1800/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
