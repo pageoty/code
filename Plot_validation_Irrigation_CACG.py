@@ -439,9 +439,9 @@ if __name__ == '__main__':
 # =============================================================================
     plt.figure(figsize=(7,7))
     data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
-    # depth_GSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_2017_soil_depth.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/tab_CACG_mod_2017.csv")
+    depth_GSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_2017_soil_depth.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/tab_CACG_mod_2017.csv")
     IRR=[]
     IRR=[]
     yerrmore=[]
@@ -449,9 +449,9 @@ if __name__ == '__main__':
     id_CACG=[1,4,5,6,13]
     Vali_TAW=data_prof.loc[data_prof.index.isin(id_CACG)]["RUM"]
     for i in id_CACG:
-        c=param.loc[param[1].isin(data_prof.loc[data_prof.index==i]["ProfRacPot"]*10)][0]
-        val=param.loc[param[1].isin(data_prof.loc[data_prof.index==i]["ProfRacPot"]*10)][1]
-        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        c=param.loc[param[1].isin(depth_GSM.loc[depth_GSM.index==i]["mean_arrondi"])][0]
+        val=param.loc[param[1].isin(depth_GSM.loc[depth_GSM.index==i]["mean_arrondi"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
         data_id=UTS.groupby("id")
         ID_data=data_id.get_group(i)
         # print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.TAW*val.values[0],2))))
@@ -481,7 +481,7 @@ if __name__ == '__main__':
               textcoords="offset points", # how to position the text
               xytext=(0,5), # distance from text to points (x,y)
               ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_p_GSM.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_p_depthGSM.png")
  
 #  Validation TAW RUM$
     plt.figure(figsize=(7,7))
@@ -498,7 +498,13 @@ if __name__ == '__main__':
                   textcoords="offset points", # how to position the text
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_RUM_optim_forcagemaxZr_p_GSM.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_RUM_optim_forcagemaxZr_p_depth_GSM.png")
+    plt.figure(figsize=(7,7))
+    plt.hist( tab_irr[3],label="RUM_modèle",ec="black",bins=10,linestyle="--")
+    plt.hist(Vali_TAW.astype(float),label="RUM_obs",alpha=0.7,ec="black",bins=10)
+    plt.xlabel("Valeur des RUM")
+    plt.legend()
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_histo_RUM_forcagemaxZr_p_depth_GSM.png")
 # =============================================================================
 #     forcage P et forcer maxZr
 # =============================================================================
@@ -694,6 +700,11 @@ if __name__ == '__main__':
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/plot_scatter_RUM_post_forcagemaxZr_RUMvalue_p.png")
+    plt.hist( tab_irr["TAWMax"],label="RUM_modèle",ec="black",bins=10,linestyle="--")
+    plt.hist(vali_RUM.RUM,label="RUM_obs",alpha=0.7,ec="black",bins=10)
+    plt.xlabel("Valeur des RUM")
+    plt.legend()
+    
     # =============================================================================
 #     Forcage p et maxZr aavec modif CC
 # =============================================================================

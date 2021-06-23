@@ -41,10 +41,10 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -395,6 +395,15 @@ if __name__ == '__main__':
     tab_irr2=pd.DataFrame(IRR,columns=["ID","Quant","maxZr","TAWmax"])
     tab_irr2.to_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/tab_resu_forcagemaxZr_p_depth_GSM.csv")
     tab_f2=pd.merge(tab_irr2,dfUTS[["MMEAU","ID"]],on='ID')
+    Classe=pd.merge(tab_f2,data_prof["Classe"],on='ID')
+    #  Isoler les parcelles en fonction du Sol
+    Classe["TEX"]="L"
+    Classe.loc[(Classe.Classe == "A"),'TEX']= "A"
+    Classe.loc[(Classe.Classe == "ALO"),'TEX']="A"
+    Classe.loc[(Classe.Classe == "AL"),'TEX']="A"
+    Classe.loc[(Classe.Classe == "SL"),'TEX']="S"
+    Classe.loc[(Classe.Classe == "SA"),'TEX']="S"
+    labels, index = np.unique(Classe["Classe"], return_inverse=True)
     slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr[1].to_list())
     bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr[1]-np.mean(tab_f2.MMEAU)) 
     rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr[1]))
@@ -426,6 +435,7 @@ if __name__ == '__main__':
     # ##### plot TAW /RUM
     tab_irr.columns=["ID","conso","maxZr","TAWmax"]
     test=pd.merge(tab_irr,data_prof,on='ID')
+    test=pd.merge(test,depth_GSM,on="ID")
     slope, intercept, r_value, p_value, std_err = stats.linregress(test.RUM.to_list(),tab_irr.TAWmax.to_list())
     bias=1/test["RUM"].shape[0]*sum(tab_irr.TAWmax-np.mean(test.RUM)) 
     rms = np.sqrt(mean_squared_error(test.RUM,tab_irr.TAWmax))
@@ -449,6 +459,62 @@ if __name__ == '__main__':
               xytext=(-6,2), # distance from text to points (x,y)
               ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_optim_forcagemaxZr_p_depth_GSM.png")
+    plt.figure(figsize=(7,7))
+    plt.hist( test["TAWmax"],label="RUM_modéle",ec="black",bins=10,linestyle="--")
+    plt.hist( test["RUM"],label="RUM_obs",alpha=0.7,ec="black",bins=10)
+    plt.legend()
+    #  Plot par groupe de texture 
+    plt.figure(figsize=(7,7))
+    for c in list(set(Classe.TEX)):
+        a=Classe.groupby("TEX")
+        texture=a.get_group(c)
+        slope, intercept, r_value, p_value, std_err = stats.linregress(texture.MMEAU.to_list(),texture["Quant"].to_list())
+        bias=1/texture["MMEAU"].shape[0]*sum(texture["Quant"]-np.mean(texture.MMEAU)) 
+        rms = np.sqrt(mean_squared_error(texture.MMEAU,texture["Quant"]))
+        # plt.legend(a.legend_elements()[0],labels)
+        plt.xlim(-10,350)
+        plt.ylim(-10,350)
+        plt.xlabel("Quantité annuelles observées en mm ")
+        plt.ylabel("Quantité annuelles modélisées en mm ")
+        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+        # plt.errorbar(tab_f2.MMEAU,tab_irr[1],marker=",",yerr=yerr,fmt='o',linewidth=0.7,capsize=4)
+        plt.scatter(texture.MMEAU,texture["Quant"],label=c)
+        plt.legend()
+        if c =='S':
+            rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+            plt.gca().add_patch(rectangle)
+            plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+            plt.text(100,320,"R² = "+str(round(r_value,2)))
+            plt.text(100,310,"Pente = "+str(round(slope,2)))
+            plt.text(100,300,"Biais = "+str(round(bias,2)))
+        elif c == "A":
+            rectangle = plt.Rectangle((245, 215),72,42, ec='orange',fc='orange',alpha=0.1)
+            plt.gca().add_patch(rectangle)
+            plt.text(250,250,"RMSE = "+str(round(rms,2))) 
+            plt.text(250,240,"R² = "+str(round(r_value,2)))
+            plt.text(250,230,"Pente = "+str(round(slope,2)))
+            plt.text(250,220,"Biais = "+str(round(bias,2)))
+        else:
+            rectangle = plt.Rectangle((245, 25),72,42, ec='green',fc='green',alpha=0.1)
+            plt.gca().add_patch(rectangle)
+            plt.text(250,60,"RMSE = "+str(round(rms,2))) 
+            plt.text(250,50,"R² = "+str(round(r_value,2)))
+            plt.text(250,40,"Pente = "+str(round(slope,2)))
+            plt.text(250,30,"Biais = "+str(round(bias,2)))
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irrigation_forcagemaxZr_p_depth_GSM_sep_texture.png")
+    # for i in enumerate(tab_f2.ID):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_f2["MMEAU"].iloc[i[0]],tab_irr[1].iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(0,5), # distance from text to points (x,y)
+    #           ha='center')
+    
+    #  Estimer RUM GSM 
+    # test["RUM_GSM"]=test.eval("(CC_mean-PF_mean)*mean_arrondi")
+    # test["RUM_GSM"].hist()
+    # test["TAWmax"].hist()
+    # test["RUM"].hist()
 # =============================================================================
 #     PFCC GSM pédotransfert
 # =============================================================================

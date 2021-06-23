@@ -36,14 +36,14 @@ if __name__ == "__main__":
     # print(args.name_run)
    
     years="2018"
-    ZONE =["TARN"] # Fusion PARCELLE_CESBIO
+    ZONE =["ADOUR"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
     name_run="RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
-    d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    # d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    # d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     list_col_drop_tarn=['originfid','ogc_fid', 'num']
     list_col_drop_fus=['originfid', 'ogc_fid']
 
-    dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
+    dfnames=pd.read_csv(d["PC_disk"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None) 
     
     for bv in ZONE:
         NDVI=pd.DataFrame()
@@ -245,7 +245,7 @@ if __name__ == "__main__":
                 Fcover.set_index("ID",inplace=True)
                 FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
                 FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
-                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2017.df")
+                # FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2017.df")
 # =============================================================================
 # LAI
 # =============================================================================
@@ -300,21 +300,21 @@ if __name__ == "__main__":
                 for j in np.arange(1,45):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
-                soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
+                # soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
         elif bv == "ASA":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame()
                 for j in np.arange(1,387):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
-                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
+                # soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
         elif bv == "Adour_Tarn":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame()
                 for j in np.arange(1,18):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
-                soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
+                # soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
                 # if i=="FC":
                 # if i=="FC":
                 #     soil[str(i)].loc[0]=0.3635
@@ -374,7 +374,7 @@ if __name__ == "__main__":
                 for j in np.arange(1,18):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
-                soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
+                # soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
                     # soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
 # #                     # soil=pd.DataFrame({"id": [1], "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
@@ -564,6 +564,76 @@ if __name__ == "__main__":
             Fcover.set_index("ID",inplace=True)
             FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
+        elif bv =="ADOUR":
+            for t in ["TYN","TYP"]:
+                dfnames=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2018_"+t+".txt",sep=',', header=None)
+                dates=dfnames[0].apply(lambda x:x[11:19])
+                dates=pd.to_datetime(dates,format="%Y%m%d")
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ADOUR/PARCELLE_ADOUR_2018_"+t+"_FCOVER.csv",decimal=".")
+                tmp=df[["ID"]]
+                tmp1=pd.DataFrame()
+                if t =="TYN":
+                    for i in np.arange(0,26,2): #♣ 2018 : 49 :  2017 : 41
+                        a=df["mean_"+str(i)]
+                        tmp1=tmp1.append(a)
+                else:
+                    for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
+                        a=df["mean_"+str(i)]
+                        tmp1=tmp1.append(a)
+                Fcover=tmp1.T
+                Fcover.columns=list(dates)
+                # Fcover=Fcover.T
+                Fcover.T.sort_index(inplace=True)
+                Fcover.T.sort_index(ascending=True,inplace=True)
+                Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+                Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+                Fcover=Fcover.append(df.ID)
+                Fcover=Fcover.T
+                Fcover.set_index("ID",inplace=True)
+                FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+                if t =='TYN':
+                    FCOVERTYN=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+                else:
+                    FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+            FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
+            ADOUR_FCOVER=FCOVER.drop_duplicates(subset=["id","date"])
+        elif bv =="TARN":
+            for t in ["TDJ","TCJ"]:
+                dfnames=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2018_"+t+".txt",sep=',', header=None)
+                # if t == 'TCJ':
+                #     dates=dfnames[0].apply(lambda x:x[0:8])
+                # else:
+                dates=dfnames[0].apply(lambda x:x[11:19])
+                dates=pd.to_datetime(dates,format="%Y%m%d")
+                df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/PARCELLE_TARN_2018_"+t+"_FCOVER.csv",decimal=".")
+                tmp=df[["id"]]
+                tmp1=pd.DataFrame()
+                if t =="TCJ":
+                    for i in np.arange(0,199,2): #♣ 2018 : 49 :  2017 : 41
+                        a=df["mean_"+str(i)]
+                        tmp1=tmp1.append(a)
+                else:
+                    for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
+                        a=df["mean_"+str(i)]
+                        tmp1=tmp1.append(a)
+                Fcover=tmp1.T
+                Fcover.columns=list(dates)
+                Fcover=Fcover.T
+                Fcover.sort_index(ascending=True,inplace=True)
+                Fcover=Fcover.loc[~Fcover.index.duplicated(), :]
+                Fcover=Fcover.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+                Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+                Fcover=Fcover.append(df.id)
+                Fcover=Fcover.T
+                Fcover.set_index("id",inplace=True)
+                FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+                if t =='TCJ':
+                    FCOVERTCJ=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+                else:
+                    FCOVERTDJ=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+            FCOVER=pd.concat([FCOVERTCJ,FCOVERTDJ])
+            FCOVER_TARN=FCOVER.drop_duplicates(subset=["id","date"])
+            FCOVER=pd.concat([ADOUR_FCOVER,FCOVER_TARN])
             # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
             #  Manque ID 2 et 3
             # dfnamesTCJ=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_"+str(years)+"_TCJ.txt",sep=',', header=None)

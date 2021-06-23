@@ -37,12 +37,12 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_ADOUR_TARN/ADOUR_TARN_p055_maxZr900_irri_auto/"
-    name_run_save_fig="RUNS_SAMIR/RUN_ADOUR_TARN/ADOUR_TARN_p055_maxZr900_irri_auto/"
-    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    name_run="RUNS_SAMIR/RUN_ADOUR_TARN/ADOUR_TARN_p055_Fcover_maxZr1000_irri_auto/"
+    name_run_save_fig="RUNS_SAMIR/RUN_ADOUR_TARN/ADOUR_TARN_p055_Fcover_maxZr1000_irri_auto/"
+    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     years=["2017","2018"]
     lc="maize_irri"
@@ -60,11 +60,17 @@ if __name__ == '__main__':
         df_date_aqui=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_"+str(y)+".txt",header=None)
         df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
         df_date_aqui.columns=["date"]
-        vali_data=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/Valid_Irrigation_"+str(y)+"_ADOUR_TARN.csv",encoding='latin-1',decimal=',',sep=',',na_values="nan")
+        vali_data=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/Valid_Irrigation_"+str(y)+"_ADOUR_TARN.csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
         vali_data.Date=pd.to_datetime(vali_data.Date,format='%d/%m/%Y')
         vali_data["Dose"].astype(float)
         sum_irr_val=vali_data.groupby("id")["Dose"].sum()
         nb_irr=vali_data.groupby("id")["Dose"].count()
+        BV_names=vali_data[["id","BV"]].drop_duplicates()
+        if y =="2017":
+            BV_names.drop(94,inplace=True)
+        else:
+            BV_names.drop(37,inplace=True)
+        sum_irr_val_bv=pd.merge(sum_irr_val,BV_names,on=['id'])
         a=vali_data.groupby("id")
         
         Irri_mod=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/output_test_"+str(y)+".df","rb"))
@@ -72,13 +78,15 @@ if __name__ == '__main__':
         
         NDVI=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/NDVI"+str(y)+".df","rb"))
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
+        Fcov=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/Fcover.df","rb"))
+        Fcov=Fcov.loc[(Fcov.date >= str(y)+'-04-01')&(Fcov.date<=str(y)+"-09-30")]
         Prec=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/meteo.df","rb"))
         Prec=Prec.loc[(Prec.date >= str(y)+'-04-01')&(Prec.date<=str(y)+"-09-30")]
         
         if y =="2018":
-            tot_2018=pd.merge(sum_irr_val,Irri_par,on=["id"])
+            tot_2018=pd.merge(sum_irr_val_bv,Irri_par,on=["id"])
         else:
-            tot_2017=pd.merge(sum_irr_val,Irri_par,on=["id"])
+            tot_2017=pd.merge(sum_irr_val_bv,Irri_par,on=["id"])
 # =============================================================================
 # plot
 # =============================================================================
@@ -88,12 +96,13 @@ if __name__ == '__main__':
         slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tot_"+y].Dose.to_list(), globals()["tot_"+y].Ir_auto.to_list())
         bias=1/len(globals()["tot_"+y].Dose.to_list())*sum(globals()["tot_"+y].Ir_auto-np.mean(globals()["tot_"+y].Dose.to_list())) 
         rms = np.sqrt(mean_squared_error(globals()["tot_"+y].Dose.to_list(), globals()["tot_"+y].Ir_auto))
-        plt.scatter(globals()["tot_"+y].Dose.to_list(),globals()["tot_"+y].Ir_auto,label=y)
+        # plt.scatter(globals()["tot_"+y].Dose.to_list(),globals()["tot_"+y].Ir_auto,label=y,)
+        sns.scatterplot(globals()["tot_"+y].Dose.to_list(),globals()["tot_"+y].Ir_auto,style=globals()["tot_"+y].BV,label=y,s=50)
         plt.xlim(-10,350)
         plt.ylim(-10,350)
         plt.legend()
-        plt.xlabel("Quantité annuelles observés en mm ")
-        plt.ylabel("Quantité annuelles modélisés en mm ")
+        plt.xlabel("Quantité annuelles observées en mm ")
+        plt.ylabel("Quantité annuelles modélisées en mm ")
         plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
         #  add error bar in scatter plot
         # plt.errorbar(globals()["tot_"+y].Vali,globals()["tot_"+y].conso,yerr=yerr,fmt='o',elinewidth=0.7,capsize =4)
@@ -111,13 +120,13 @@ if __name__ == '__main__':
             plt.text(230,70,"R² = "+str(round(r_value,2)))
             plt.text(230,60,"Pente = "+str(round(slope,2)))
             plt.text(230,50,"Biais = "+str(round(bias,2)))
-        # for i in enumerate(set(globals()["tot_"+y].index)):
-        #     label = int(i[1])
-        #     plt.annotate(label, # this is the text
-        #           (globals()["tot_"+y].Dose[i[0]],globals()["tot_"+y].Ir_auto[i[0]]), # this is the point to label
-        #           textcoords="offset points", # how to position the text
-        #           xytext=(0,5), # distance from text to points (x,y)
-        #           ha='center')
+        for i in enumerate(set(globals()["tot_"+y].id)):
+            label = int(i[1])
+            plt.annotate(label, # this is the text
+                  (globals()["tot_"+y].Dose[i[0]],globals()["tot_"+y].Ir_auto[i[0]]), # this is the point to label
+                  textcoords="offset points", # how to position the text
+                  xytext=(0,5), # distance from text to points (x,y)
+                  ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_Irrigation.png")
     
     # tot_2017_v2["TAWmax"]=tot_2017_v2.eval("(CC_mean-PF_mean)*param")
