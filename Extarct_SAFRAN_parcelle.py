@@ -22,10 +22,11 @@ if __name__ == '__main__':
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     years="2017"
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/PKGC_HP/"+str(years)+"/Inputdata/"
     # mode="CSV"
     d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    d["path_run_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    # d["path_run_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
 # =============================================================================
 # Conversion csv en shp (geopandas)
 # =============================================================================
@@ -42,8 +43,8 @@ if __name__ == '__main__':
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-    meteo=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
-    parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNEES_ADOUR_PARCELLES_REF/DONNEES_FUSION_2018/Adour_Tarn_2017.shp")
+    meteo=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
+    parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/PARC_65_IRR.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     meteo.DATE=meteo.DATE.astype(int)
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
@@ -64,8 +65,8 @@ if __name__ == '__main__':
     meteo.reset_index(inplace=True)
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
-    meteo.to_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_FUSION/meteo_'+years+'.csv')
-    meteo2=pd.read_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_FUSION/meteo_'+years+'.csv')
+    meteo.to_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_PKGC/meteo_HP_'+years+'.csv')
+    meteo2=pd.read_csv('/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_PKGC/meteo_HP_'+years+'.csv')
     meteo2.drop(columns=["Unnamed: 0"],inplace=True)
     # meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
     meteo2.date=pd.to_datetime(meteo2.date,format="%Y-%m-%d")

@@ -104,7 +104,7 @@ if __name__ == "__main__":
             elif "PKGC" in name_run:
                 print("ici")
                 # os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(y)+"/* %s"%(d['SAMIR_run']))
-                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ADOUR_TARN/"+str(y)+"/* %s"%(d['SAMIR_run'])) # pour la préparation des données ADOUR_TARN
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC_GERS/"+str(y)+"/* %s"%(d['SAMIR_run'])) # pour la préparation des données ADOUR_TARN
             elif "ASA" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(y)+"/* %s"%(d['SAMIR_run']))
             else:
@@ -205,7 +205,7 @@ if __name__ == "__main__":
                 PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 print("data soil RRP use")
             else:
-                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
                 print('ICI')
             # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
             FC_Bru=PF_CC["CC_mean"] ## ATTENTION modif 

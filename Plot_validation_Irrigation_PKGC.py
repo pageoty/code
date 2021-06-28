@@ -41,7 +41,7 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
@@ -613,16 +613,16 @@ if __name__ == '__main__':
 #     Forcage p et maxZr avec la RUM
 # =============================================================================
     plt.figure(figsize=(7,7))
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
     IRR=[]
     yerrmin=[]
     yerrmax=[]
-    dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-
-    for i in dfUTS.ID:
-        maxUTS=data_prof.loc[data_prof.index==i]["maxZr_RUM"].values[0] # Si forcage 
+    # dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    
+    for i in data_prof.ID:
+        maxUTS=data_prof.loc[data_prof.ID==i]["Zrmax_RUM"].values[0] # Si forcage 
         maxUTS=int(float(maxUTS))
-        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/output_test_"+str(y)+".df","rb"))
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/output_test_"+str(y)+".df","rb"))
         data_id=UTS.groupby("id")
         ID_data=data_id.get_group(i)
         print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.RAW,2))))
@@ -639,13 +639,15 @@ if __name__ == '__main__':
     #     yerrmin.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
     # yerr=[yerrmin,yerrmax]
     tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
-    vali_RUM=pd.merge(tab_irr,data_prof[["RUM","CC_mean",'PF_mean']],on="ID")
-    tab_irr2=pd.merge(tab_irr,dfUTS[["ID","MMEAU"]],on='ID')
+    vali_RUM=pd.merge(tab_irr,data_prof[["RUM","CC_mean",'PF_mean','ID']],on="ID")
+    tab_irr2=pd.merge(tab_irr,data_prof[["ID","MMEAU","Class_Bruand"]],on='ID')
+    tab_irr2.drop_duplicates(inplace=True)
     slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.MMEAU.to_list(),tab_irr2.conso.to_list())
     bias=1/tab_irr2["MMEAU"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.MMEAU)) 
     rms = np.sqrt(mean_squared_error(tab_irr2.MMEAU,tab_irr2.conso))
-    plt.scatter(tab_irr2.MMEAU,tab_irr2.conso,label=y)
-    plt.legend()
+    labels, index = np.unique(tab_irr2["Class_Bruand"], return_inverse=True)
+    a=plt.scatter(tab_irr2.MMEAU,tab_irr2.conso,c=index,cmap='coolwarm')
+    plt.legend(a.legend_elements()[0],labels)
     plt.xlim(-10,350)
     plt.ylim(-10,350)
     plt.xlabel("Quantité annuelles observées en mm ")
@@ -658,20 +660,20 @@ if __name__ == '__main__':
     plt.text(100,270,"R² = "+str(round(r_value,2)))
     plt.text(100,260,"Pente = "+str(round(slope,2)))
     plt.text(100,250,"Biais = "+str(round(bias,2)))
-    for i in enumerate(tab_irr2.ID):
-        label = int(i[1])
-        plt.annotate(label, # this is the text
-              (tab_irr2["MMEAU"].iloc[i[0]],tab_irr2.conso.iloc[i[0]]), # this is the point to label
-              textcoords="offset points", # how to position the text
-              xytext=(-6,2), # distance from text to points (x,y)
-              ha='center')
+    # for i in enumerate(tab_irr2.ID):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_irr2["MMEAU"].iloc[i[0]],tab_irr2.conso.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_forcagemaxZr_RUMvalue_p.png")
     # TAW et RUM
     plt.figure(figsize=(7,7))
-    slope, intercept, r_value, p_value, std_err = stats.linregress(vali_RUM.RUM.to_list(),tab_irr.TAWMax.to_list())
-    bias=1/vali_RUM["RUM"].shape[0]*sum(tab_irr.TAWMax-np.mean(vali_RUM.RUM)) 
-    rms = np.sqrt(mean_squared_error(vali_RUM.RUM,tab_irr.TAWMax))
-    plt.scatter(vali_RUM.RUM,tab_irr["TAWMax"])
+    slope, intercept, r_value, p_value, std_err = stats.linregress(vali_RUM.RUM.to_list(),vali_RUM.TAWMax.to_list())
+    bias=1/vali_RUM["RUM"].shape[0]*sum(vali_RUM.TAWMax-np.mean(vali_RUM.RUM)) 
+    rms = np.sqrt(mean_squared_error(vali_RUM.RUM,vali_RUM.TAWMax))
+    plt.scatter(vali_RUM.RUM,vali_RUM["TAWMax"])
     plt.xlim(0,200)
     plt.ylim(0,200)
     plt.xlabel("RUM observées en mm ")
@@ -686,7 +688,7 @@ if __name__ == '__main__':
     for i in enumerate(tab_irr.ID):
             label = int(i[1])
             plt.annotate(label, # this is the text
-                  (vali_RUM.RUM.iloc[i[0]],tab_irr["TAWMax"].iloc[i[0]]), # this is the point to label
+                  (vali_RUM.RUM.iloc[i[0]],vali_RUM["TAWMax"].iloc[i[0]]), # this is the point to label
                   textcoords="offset points", # how to position the text
                   xytext=(0,5), # distance from text to points (x,y)
                   ha='center')
