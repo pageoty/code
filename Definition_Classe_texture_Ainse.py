@@ -12,6 +12,7 @@ import os
 import pandas as pd
 import geopandas as geo
 import numpy as np
+import math
 
 def Classe_texture (df):
     Argile=df["Argile"]
@@ -47,6 +48,40 @@ def Classe_texture (df):
         return "S"
     else:
         return "SL"
+def PF_bruand (df):
+    # Prof=df["Prof"]
+    Classe=df["Classe_Bruand"]
+    # if Prof >= 30 :
+    if Classe.values[0] == "LS":
+        return [np.nan,np.nan]
+    elif Classe.values[0] == 'ALO':
+        return [0.408,0.297]
+    elif Classe.values[0] == 'AL':
+        return [0.335,0.222]
+    elif Classe.values[0] == 'AS':
+        return [0.296,0.201]
+    elif Classe.values[0] == 'A':
+        return [0.315,0.221]
+    elif Classe.values[0] == 'LA':
+        return [0.312,0.163]
+    elif Classe.values[0] == 'LAS':
+        return [0.304,0.156]
+    elif Classe.values[0] == 'LSA':
+        return [0.262,0.158]
+    elif Classe.values[0] == 'LM':
+        return [0.321,0.114]
+    elif Classe.values[0] == 'LMS':
+        return [0.330,0.129]
+    elif Classe.values[0] == 'LLS':
+        return  [np.nan,np.nan]
+    elif Classe.values[0] == 'LL':
+        return  [np.nan,np.nan]
+    elif Classe.values[0] == 'SA':
+        return [0.239,0.136]
+    elif Classe.values[0] == 'SL':
+        return [0.201,0.085]
+    else:
+        return [0.110,0.037]
 if __name__ == '__main__':
     d={}
     d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
@@ -54,17 +89,53 @@ if __name__ == '__main__':
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
-def Classe_texture (df):
-    Argile=df["Argile"]
-    Limon=df["Limon"]
-    Classe=[]
-    if Argile >=7.5 and Limon <= 85 :
-        Classe.append("LL")
-    
-
-
-    df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv")
+    df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv")
+    df_more20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
+       'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
+       'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
+       'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
+       'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
+       'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
+       'RUM', 'area', 'Argile', 'Sable', 'Limon',
+       'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
+    df_more20["Argile"]=df["Argile"]+(20*df["Argile"]/100)
+    df_more20["Limon"]=df["Limon"]+(20*df["Limon"]/100)
+    df_more20["Sable"]=df["Sable"]+(20*df["Sable"]/100)
     a=[]
+    for i in df_more20.ID:
+        a.append(Classe_texture(df_more20[df_more20.ID==i]))
+    df_more20["Classe_Bruand"]=a
+    pf2=[]
+    pf4=[]
     for i in df.ID:
-        a.append(Classe_texture(df[df.ID==i]))
-    df["Classe_Bruand"]=a
+        pf2.append(PF_bruand(df_more20[df_more20.ID==i])[0])
+        pf4.append(PF_bruand(df_more20[df_more20.ID==i])[1])
+    df_more20["CC_mean"]=pf2
+    df_more20["PF_mean"]=pf4
+    df_more20["maxZr_rum"]=round(df_more20.eval("RUM/(CC_mean-PF_mean)"),0)
+    df_more20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varplus20.csv")
+    
+    df_less20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
+       'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
+       'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
+       'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
+       'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
+       'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
+       'RUM', 'area', 'Argile', 'Sable', 'Limon',
+       'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
+    df_less20["Argile"]=df["Argile"]-(20*df["Argile"]/100)
+    df_less20["Limon"]=df["Limon"]-(20*df["Limon"]/100)
+    df_less20["Sable"]=df["Sable"]-(20*df["Sable"]/100)
+    a=[]
+    for i in df_less20.ID:
+        a.append(Classe_texture(df_less20[df_less20.ID==i]))
+    df_less20["Classe_Bruand"]=a
+    pf2=[]
+    pf4=[]
+    for i in df.ID:
+        pf2.append(PF_bruand(df_less20[df_less20.ID==i])[0])
+        pf4.append(PF_bruand(df_less20[df_less20.ID==i])[1])
+    df_less20["CC_mean"]=pf2
+    df_less20["PF_mean"]=pf4
+    df_less20["maxZr_rum"]=round(df_less20.eval("RUM/(CC_mean-PF_mean)"),0)
+    df_less20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varmo20.csv")

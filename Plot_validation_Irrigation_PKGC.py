@@ -617,6 +617,9 @@ if __name__ == '__main__':
     IRR=[]
     yerrmin=[]
     yerrmax=[]
+    data_prof_less=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varmo20.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.',na_values=pd.NaT)
+    data_prof_more=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varplus20.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.',na_values=pd.NaT)
+
     # dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
     
     for i in data_prof.ID:
@@ -625,19 +628,29 @@ if __name__ == '__main__':
         UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/output_test_"+str(y)+".df","rb"))
         data_id=UTS.groupby("id")
         ID_data=data_id.get_group(i)
-        print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.RAW,2))))
+        # print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.RAW,2))))
         IRR.append([i,ID_data.Ir_auto.sum(),maxUTS,ID_data.TAW.max()])
         # dfmore
-    #     UTSmore=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/maxZr_rum/CACG_init_ru_optim_P055_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/"+str(y)+"/Output/output_test_"+str(y)+".df","rb"))
-    #     data_idmore=UTSmore.groupby("id")
-    #     ID_datamore=data_idmore.get_group(i)
-    #     yerrmax.append(abs(ID_data.Ir_auto.sum()-ID_datamore.Ir_auto.sum()))
-    #     # dfless
-    #     UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/maxZr_rum/CACG_init_ru_optim_P055_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/"+str(y)+"/Output/output_test_"+str(y)+".df","rb"))
-    #     data_idless=UTSless.groupby("id")
-    #     ID_dataless=data_idless.get_group(i)
-    #     yerrmin.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
-    # yerr=[yerrmin,yerrmax]
+        maxUTSmore=data_prof_more.loc[data_prof_more.ID==i]["maxZr_rum"].values[0] # Si forcage 
+        if maxUTSmore != 0:
+            maxUTSmore=int(float(maxUTSmore))
+            UTSmore=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/varplus20/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTSmore))+"_irri_auto_soil_varplus20/"+str(y)+"/output_test_"+str(y)+".df","rb"))
+        else:
+            UTSmore=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/output_test_"+str(y)+".df","rb"))
+        data_idmore=UTSmore.groupby("id")
+        ID_datamore=data_idmore.get_group(i)
+        yerrmax.append(abs(ID_data.Ir_auto.sum()-ID_datamore.Ir_auto.sum()))
+        # dfless
+        maxUTSless=data_prof_less.loc[data_prof_less.ID==i]["maxZr_rum"].values[0] # Si forcage 
+        if maxUTSless !=0:
+            maxUTSless=int(float(maxUTSless))
+            UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/varmo20/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTSless))+"_irri_auto_soil_varmo20/"+str(y)+"/output_test_"+str(y)+".df","rb"))
+        else:
+            UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/maxZr_rum/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil/"+str(y)+"/output_test_"+str(y)+".df","rb"))
+        data_idless=UTSless.groupby("id")
+        ID_dataless=data_idless.get_group(i)
+        yerrmin.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
+    yerr=[yerrmin,yerrmax]
     tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
     vali_RUM=pd.merge(tab_irr,data_prof[["RUM","CC_mean",'PF_mean','ID']],on="ID")
     tab_irr2=pd.merge(tab_irr,data_prof[["ID","MMEAU","Class_Bruand"]],on='ID')
@@ -647,13 +660,14 @@ if __name__ == '__main__':
     rms = np.sqrt(mean_squared_error(tab_irr2.MMEAU,tab_irr2.conso))
     labels, index = np.unique(tab_irr2["Class_Bruand"], return_inverse=True)
     a=plt.scatter(tab_irr2.MMEAU,tab_irr2.conso,c=index,cmap='coolwarm')
+    # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,yerr=yerr,fmt='',elinewidth=0.7,capsize = 4,linestyle="")
     plt.legend(a.legend_elements()[0],labels)
     plt.xlim(-10,350)
     plt.ylim(-10,350)
     plt.xlabel("Quantité annuelles observées en mm ")
     plt.ylabel("Quantité annuelles modélisées en mm ")
     plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-    # plt.errorbar(tab_irr2.Quantite,tab_irr2.conso,yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    
     rectangle = plt.Rectangle((95, 245),70,45, ec='blue',fc='blue',alpha=0.1)
     plt.gca().add_patch(rectangle)
     plt.text(100,280,"RMSE = "+str(round(rms,2))) 
@@ -669,30 +683,30 @@ if __name__ == '__main__':
     #           ha='center')
     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_forcagemaxZr_RUMvalue_p.png")
     # TAW et RUM
-    plt.figure(figsize=(7,7))
-    slope, intercept, r_value, p_value, std_err = stats.linregress(vali_RUM.RUM.to_list(),vali_RUM.TAWMax.to_list())
-    bias=1/vali_RUM["RUM"].shape[0]*sum(vali_RUM.TAWMax-np.mean(vali_RUM.RUM)) 
-    rms = np.sqrt(mean_squared_error(vali_RUM.RUM,vali_RUM.TAWMax))
-    plt.scatter(vali_RUM.RUM,vali_RUM["TAWMax"])
-    plt.xlim(0,200)
-    plt.ylim(0,200)
-    plt.xlabel("RUM observées en mm ")
-    plt.ylabel("RUM modélisées en mm ")
-    rectangle = plt.Rectangle((45, 145),45,30, ec='b',fc='b',alpha=0.1)
-    plt.gca().add_patch(rectangle)
-    plt.text(50,165,"RMSE = "+str(round(rms,2))) 
-    plt.text(50,160,"R² = "+str(round(r_value,2)))
-    plt.text(50,155,"Pente = "+str(round(slope,2)))
-    plt.text(50,150,"Biais = "+str(round(bias,2)))
-    plt.plot([0.0, 200], [0.0,200], 'black', lw=1,linestyle='--')
-    for i in enumerate(tab_irr.ID):
-            label = int(i[1])
-            plt.annotate(label, # this is the text
-                  (vali_RUM.RUM.iloc[i[0]],vali_RUM["TAWMax"].iloc[i[0]]), # this is the point to label
-                  textcoords="offset points", # how to position the text
-                  xytext=(0,5), # distance from text to points (x,y)
-                  ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_forcagemaxZr_RUMvalue_p.png")
+    # plt.figure(figsize=(7,7))
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(vali_RUM.RUM.to_list(),vali_RUM.TAWMax.to_list())
+    # bias=1/vali_RUM["RUM"].shape[0]*sum(vali_RUM.TAWMax-np.mean(vali_RUM.RUM)) 
+    # rms = np.sqrt(mean_squared_error(vali_RUM.RUM,vali_RUM.TAWMax))
+    # plt.scatter(vali_RUM.RUM,vali_RUM["TAWMax"])
+    # plt.xlim(0,200)
+    # plt.ylim(0,200)
+    # plt.xlabel("RUM observées en mm ")
+    # plt.ylabel("RUM modélisées en mm ")
+    # rectangle = plt.Rectangle((45, 145),45,30, ec='b',fc='b',alpha=0.1)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(50,165,"RMSE = "+str(round(rms,2))) 
+    # plt.text(50,160,"R² = "+str(round(r_value,2)))
+    # plt.text(50,155,"Pente = "+str(round(slope,2)))
+    # plt.text(50,150,"Biais = "+str(round(bias,2)))
+    # plt.plot([0.0, 200], [0.0,200], 'black', lw=1,linestyle='--')
+    # for i in enumerate(tab_irr.ID):
+    #         label = int(i[1])
+    #         plt.annotate(label, # this is the text
+    #               (vali_RUM.RUM.iloc[i[0]],vali_RUM["TAWMax"].iloc[i[0]]), # this is the point to label
+    #               textcoords="offset points", # how to position the text
+    #               xytext=(0,5), # distance from text to points (x,y)
+    #               ha='center')
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_forcagemaxZr_RUMvalue_p.png")
 # =============================================================================
 #     Forcer maxZr et p
 # =============================================================================
