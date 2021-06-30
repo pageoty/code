@@ -43,14 +43,14 @@ if __name__ == "__main__":
     Meteo="SAFRAN"
     d={}
     # d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    # d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_disk_labo"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["path_usb_PC"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
     d["PC_disk_home"]="D:/THESE_TMP/"
-    d["path_run_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    # d["path_run_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     
 
     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
@@ -314,7 +314,8 @@ if __name__ == "__main__":
                 for j in np.arange(1,100):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
-                soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
+                    soil=soil[soil.id!=96]
+                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
                 # if i=="FC":
                 # if i=="FC":
                 #     soil[str(i)].loc[0]=0.3635
@@ -374,6 +375,7 @@ if __name__ == "__main__":
                 for j in np.arange(1,100):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
+                soil=soil[soil.id!=96]
                 # soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
                     # soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
@@ -385,7 +387,7 @@ if __name__ == "__main__":
 # # # #                 else:
 # # # #                     soil[str(i)].loc[0]=0.5585
 # # # #                     soil[str(i)].loc[1]=np.mean([0,0])
-                soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df') 
+                soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
 # #     # =============================================================================
 #     #     Soil Grignon 
 #     # =============================================================================

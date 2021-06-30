@@ -36,7 +36,7 @@ def Classe_texture (df):
         return "LMS"
     elif (Argile.values[0]) <=8 and (Limon.values[0]) >= 40 and (Limon.values[0]) <= 78 and  (Sable.values[0]) <= 55 and (Sable.values[0]) >= 15 :
         return "LLS"
-    elif (Argile.values[0]) <=18 and (Argile.values[0]) >= 8 and (Limon.values[0]) >= 26 and (Limon.values[0]) <= 58 and  (Sable.values[0]) <= 55 and (Sable.values[0]) >= 35 :
+    elif (Argile.values[0]) <=18 and (Argile.values[0]) >= 8 and (Limon.values[0]) >= 28 and (Limon.values[0]) <= 58 and  (Sable.values[0]) <= 55 and (Sable.values[0]) >= 35 :
         return "LS"
     elif (Argile.values[0]) <=30 and (Argile.values[0]) >= 18 and (Limon.values[0]) >= 20 and (Limon.values[0]) <= 35 and  (Sable.values[0]) <= 55 and (Sable.values[0]) >= 35 :
         return "LSA"
@@ -53,7 +53,7 @@ def PF_bruand (df):
     Classe=df["Classe_Bruand"]
     # if Prof >= 30 :
     if Classe.values[0] == "LS":
-        return [np.nan,np.nan]
+        return [0,274,0,102]
     elif Classe.values[0] == 'ALO':
         return [0.408,0.297]
     elif Classe.values[0] == 'AL':

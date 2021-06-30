@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
 
     #other méthode pondération 
-    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/DONNEES_ADOUR_PARCELLES_REF/DONNEES_FUSION_2018/Adour_Tarn_2018.shp")
+    parcelle=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/ParcellesIRR_2017_32.shp")
     # PKGC=parcelle[['clay_l0_me', 'clay_l0__1', 'clay_l100_', 'clay_l10_1', 'clay_l15_m',
     #     'clay_l15_1', 'clay_l30_m', 'clay_l30_1', 'clay_l5_me', 'clay_l5__1',
     #     'clay_l60_m', 'clay_l60_1', 'sand_l0_me', 'sand_l0__1', 'sand_l100_',
@@ -64,5 +64,5 @@ if __name__ == '__main__':
     data_parcelle_Texture=pd.DataFrame(data_parcelle_Texture)
     data_parcelle_Texture["ID"]=ids
     data_parcelle_Texture["Variable_modale"]=entete
-    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_Adour_Tarn_2018.csv")
+    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017.csv")
  

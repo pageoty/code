@@ -206,13 +206,13 @@ if __name__ == "__main__":
                 print("data soil RRP use")
             else:
                 if "varmo20" in name_run:
-                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varmo20.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varmo20.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
                     print("incertitude ---")
                 elif "varplus20" in name_run:
-                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varplus20.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varplus20.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
                     print("incertitude +++")
                 else:
-                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+                    PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                     print('ICI')
             # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
             FC_Bru=PF_CC["CC_mean"] ## ATTENTION modif 
