@@ -705,6 +705,42 @@ if __name__ == '__main__':
     plt.xlabel("Valeur des RUM")
     plt.legend()
     
+# =============================================================================
+# Forcage gamme FAO 
+# =============================================================================
+    
+    vali_cacg=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/DATE_DOES_CACG_2017.csv",encoding='latin-1',decimal=',',sep=';',na_values="nan")
+    vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
+    vali_cacg["Quantite"].astype(float)
+    sum_irr_cacg_val=vali_cacg.groupby("ID")["Quantite"].sum()
+    data_mod=pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/LUT_2017.csv")
+    id_CACG=[1,4,5,6,13]
+    data_valid=sum_irr_cacg_val[sum_irr_cacg_val.index.isin(id_CACG)]
+    data_id=data_mod.groupby("ID").sum()
+    data_id.columns=data_mod.iloc[0][1:-1]
+    data_mod_CACG=data_id[data_id.index.isin(id_CACG)]
+    
+    for col in data_mod_CACG.columns[12:27]:
+        plt.figure(figsize=(7,7))
+        slope, intercept, r_value, p_value, std_err = stats.linregress(data_valid.to_list(),data_mod_CACG[col].to_list())
+        bias=1/data_valid.shape[0]*sum(data_mod_CACG[col]-np.mean(data_valid)) 
+        rms = np.sqrt(mean_squared_error(data_valid,data_mod_CACG[col]))
+        plt.scatter(data_valid,data_mod_CACG[col],label=col)
+        plt.legend()
+        plt.xlim(-10,350)
+        plt.ylim(-10,350)
+        plt.xlabel("Quantité annuelles observées en mm ")
+        plt.ylabel("Quantité annuelles modélisées en mm ")
+        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+        # plt.errorbar(tab_irr2.Quantite,tab_irr2.conso,yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+        rectangle = plt.Rectangle((95, 245),70,45, ec='blue',fc='blue',alpha=0.1)
+        plt.gca().add_patch(rectangle)
+        plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+        plt.text(100,270,"R² = "+str(round(r_value,2)))
+        plt.text(100,260,"Pente = "+str(round(slope,2)))
+        plt.text(100,250,"Biais = "+str(round(bias,2)))
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/RUN_FAO_TABLE/plot_scatter_volumes_Irrigation_forcagemaxZr_p_table_22_FAO%s.png"%(col))
+        # PLOT RUM 
     # =============================================================================
 #     Forcage p et maxZr aavec modif CC
 # =============================================================================

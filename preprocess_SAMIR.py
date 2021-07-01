@@ -38,19 +38,19 @@ if __name__ == "__main__":
     years="2017"
     ZONE =["GERS"] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/PKGC_GERS/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/CLASSIF_ALL_MAIS/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
     # d["path_run"]="/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
-    d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    # d["path_run"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     d["path_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     d["path_PC"]="D:/THESE_TMP/RUNS_SAMIR/RUN_STOCK_DATA_2018_partenaire/Inputdata/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_disk_labo"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["path_usb_PC"]="H:/YANN_THESE/BESOIN_EAU//BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/SAFRAN/"+str(years)+"/Inputdata/"
     d["PC_disk_home"]="D:/THESE_TMP/"
-    # d["path_run_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
+    d["path_run_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/"+name_run+"/"
     
 
     list_bd_drop=['originfid', 'ogc_fid','centroidx', 'centroidy', 'shape_leng','shape_area']
@@ -311,11 +311,11 @@ if __name__ == "__main__":
         elif bv == "Adour_Tarn":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame()
-                for j in np.arange(1,100):
+                for j in list(set(FCOVER_Gers.id)):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
-                    soil=soil[soil.id!=96]
-                soil.to_pickle(d["path_run"]+'/maize_irri/'+str(i)+'.df')
+                    # soil=soil[soil.id!=96]
+                soil.to_pickle(d["path_run_disk"]+'/maize_irri/'+str(i)+'.df')
                 # if i=="FC":
                 # if i=="FC":
                 #     soil[str(i)].loc[0]=0.3635
@@ -372,10 +372,10 @@ if __name__ == "__main__":
                 soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df')
         elif bv =="Adour_Tarn" :
                 soil=pd.DataFrame()
-                for j in np.arange(1,100):
+                for j in list(set(FCOVER_Gers.id)):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
-                soil=soil[soil.id!=96]
+                # soil=soil[soil.id!=96]
                 # soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df')
                     # soil=soil.loc[(soil.id<14.0)&(soil.id!=6.0) & (soil.id!=8.0) & (soil.id!=2) & (soil.id!=3)]
 #                     soil=soil.loc[soil.id!=15]
@@ -387,7 +387,7 @@ if __name__ == "__main__":
 # # # #                 else:
 # # # #                     soil[str(i)].loc[0]=0.5585
 # # # #                     soil[str(i)].loc[1]=np.mean([0,0])
-                soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df') 
+                soil.to_pickle(d["path_run_disk"]+'/maize_irri/Soil_texture.df') 
 # #     # =============================================================================
 #     #     Soil Grignon 
 #     # =============================================================================
@@ -691,25 +691,27 @@ if __name__ == "__main__":
 # Pour le PKGC HP
 # =============================================================================
     for t in ["TYP","TYN"]:
-        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
-        dfs=pd.DataFrame(dfnames)
-        dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-        # dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2017_"+t+".txt",sep=',', header=None)
-        # dates=dfnames[0].apply(lambda x:x[11:19])
-        # dates=pd.to_datetime(dates,format="%Y%m%d")
-        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_PKGC/HP/NDVI_2017_PKGC_HP_"+t+".csv",decimal=".")
+        # dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
+        # dfs=pd.DataFrame(dfnames)
+        # dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2017_"+t+".txt",sep=',', header=None)
+        dates=dfnames[0].apply(lambda x:x[11:19])
+        dates=pd.to_datetime(dates,format="%Y%m%d")
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_PKGC/HP/NDVI_2017_PKGC_HP_"+t+".csv",decimal=".")
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/HP/FCOVER_2017_PKGC_HP_"+t+".csv",decimal=".")
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CLASSIF/FCOVER_"+t+"_CLASSIF_ADOUR_2017_MAIS_all.csv",decimal=".")
 
         tmp=df[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
-            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,42,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
-                tmp1=tmp1.append(a/1000)
+                tmp1=tmp1.append(a)
         else:
-            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,46,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
-                tmp1=tmp1.append(a/1000)
+                tmp1=tmp1.append(a)
         Fcover=tmp1.T
         Fcover.columns=list(dates)
         # Fcover=Fcover.T
@@ -722,12 +724,12 @@ if __name__ == "__main__":
         Fcover.set_index("ID",inplace=True)
         FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
         if t =='TYP':
-            FCOVERTYN=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+            FCOVERTYN=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
         else:
-            FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+            FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
     FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
-    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"])
-    FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
+    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"],keep="last")
+    FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
 # =============================================================================
 #   Météo_SAFRAN
 # =============================================================================

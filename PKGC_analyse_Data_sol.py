@@ -334,10 +334,10 @@ if __name__ == '__main__':
 # =============================================================================
 #      Triangle texture
 # =============================================================================
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_Adour_Tarn_2018.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
     tex_UTS=data_prof[["Argile","Sable","Limon"]]
     tex_UTS.columns=["clay","sand",'silt']
-    tex_UTS.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_GSM_ADOUR_TARN_2018.csv")
+    tex_UTS.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS_GERS_PKGC.csv")
     # plt.figure(figsize=(7,7))
     # fstp = SoilTrianglePlot()
     # fstp.soil_categories(country="Ainse")
@@ -358,12 +358,12 @@ if __name__ == '__main__':
     # # tex_RRP=data_prof[["Argile","Sable","Limon"]]
     # # tex_RRP.columns=["clay","sand",'silt']
     # # tex_RRP.to_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv")
-    # plt.figure(figsize=(7,7))
-    # fstp = SoilTrianglePlot('Données RRP')
-    # fstp.soil_categories(country="Ainse")
-    # fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_RRP.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
-    # fstp.colorbar('nombre de parcelles')
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_RRP.png")
+    plt.figure(figsize=(7,7))
+    fstp = SoilTrianglePlot('Données UTS')
+    fstp.soil_categories(country="Ainse")
+    fstp.scatter_from_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/tex_UTS_GERS_PKGC.csv",hue='nb', cmap=cm.copper_r, alpha=1,s=50)
+    fstp.colorbar('nombre de parcelles')
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/SOIL/triangle_tex_PKGC_UTS_GERS.png")
         
     # # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
     # # tex_GSM=data_prof[["Argile","Sable","Limon"]]
