@@ -89,53 +89,68 @@ if __name__ == '__main__':
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
-    df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv")
-    df_more20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
-       'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
-       'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
-       'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
-       'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
-       'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
-       'RUM', 'area', 'Argile', 'Sable', 'Limon',
-       'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
-    df_more20["Argile"]=df["Argile"]+(20*df["Argile"]/100)
-    df_more20["Limon"]=df["Limon"]+(20*df["Limon"]/100)
-    df_more20["Sable"]=df["Sable"]+(20*df["Sable"]/100)
+    df=pd.read_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_ALL_Classif_Adour_2017.csv")
     a=[]
-    for i in df_more20.ID:
-        a.append(Classe_texture(df_more20[df_more20.ID==i]))
-    df_more20["Classe_Bruand"]=a
+    for i in df.ID:
+        a.append(Classe_texture(df[df.ID==i]))
+    df["Classe_Bruand"]=a
     pf2=[]
     pf4=[]
     for i in df.ID:
-        pf2.append(PF_bruand(df_more20[df_more20.ID==i])[0])
-        pf4.append(PF_bruand(df_more20[df_more20.ID==i])[1])
-    df_more20["CC_mean"]=pf2
-    df_more20["PF_mean"]=pf4
-    df_more20["maxZr_rum"]=round(df_more20.eval("RUM/(CC_mean-PF_mean)"),0)
-    df_more20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varplus20.csv")
+        pf2.append(PF_bruand(df[df.ID==i])[0])
+        pf4.append(PF_bruand(df[df.ID==i])[1])
+    df["CC_mean"]=pf2
+    df["PF_mean"]=pf4
+    # df_more20["maxZr_rum"]=round(df_more20.eval("RUM/(CC_mean-PF_mean)"),0)
+    df.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_all_classif_2017_maj.csv")
     
-    df_less20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
-       'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
-       'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
-       'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
-       'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
-       'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
-       'RUM', 'area', 'Argile', 'Sable', 'Limon',
-       'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
-    df_less20["Argile"]=df["Argile"]-(20*df["Argile"]/100)
-    df_less20["Limon"]=df["Limon"]-(20*df["Limon"]/100)
-    df_less20["Sable"]=df["Sable"]-(20*df["Sable"]/100)
-    a=[]
-    for i in df_less20.ID:
-        a.append(Classe_texture(df_less20[df_less20.ID==i]))
-    df_less20["Classe_Bruand"]=a
-    pf2=[]
-    pf4=[]
-    for i in df.ID:
-        pf2.append(PF_bruand(df_less20[df_less20.ID==i])[0])
-        pf4.append(PF_bruand(df_less20[df_less20.ID==i])[1])
-    df_less20["CC_mean"]=pf2
-    df_less20["PF_mean"]=pf4
-    df_less20["maxZr_rum"]=round(df_less20.eval("RUM/(CC_mean-PF_mean)"),0)
-    df_less20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj_varmo20.csv")
+    
+    # df_more20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
+    #    'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
+    #    'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
+    #    'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
+    #    'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
+    #    'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
+    #    'RUM', 'area', 'Argile', 'Sable', 'Limon',
+    #    'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
+    # df_more20["Argile"]=df["Argile"]+(20*df["Argile"]/100)
+    # df_more20["Limon"]=df["Limon"]+(20*df["Limon"]/100)
+    # df_more20["Sable"]=df["Sable"]+(20*df["Sable"]/100)
+    # a=[]
+    # for i in df_more20.ID:
+    #     a.append(Classe_texture(df_more20[df_more20.ID==i]))
+    # df_more20["Classe_Bruand"]=a
+    # pf2=[]
+    # pf4=[]
+    # for i in df.ID:
+    #     pf2.append(PF_bruand(df_more20[df_more20.ID==i])[0])
+    #     pf4.append(PF_bruand(df_more20[df_more20.ID==i])[1])
+    # df_more20["CC_mean"]=pf2
+    # df_more20["PF_mean"]=pf4
+    # # df_more20["maxZr_rum"]=round(df_more20.eval("RUM/(CC_mean-PF_mean)"),0)
+    # df_more20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_all_classif_2017_maj_varplus20.csv")
+    
+    # df_less20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',
+    #     'CLE_PARC', 'OID_', 'NOM_DOSSIE', 'ID_UNITE', 'REGPAR', 'DEPPAR',
+    #     'PARCIRR', 'COUPUR', 'DURCOUPUR', 'NBPASAVS', 'NBPASAPS', 'MMEAU',
+    #     'MCUBE', 'CONNAPPO', 'ACCES', 'PROV', 'TYPMAT', 'DECLIRRHAB',
+    #     'DECLIRROBS', 'DECLIRRTEC', 'DECLIRRPIL', 'DECLIRRIMP', 'DECLIRR',
+    #     'NOM_DOSS_1', 'CLE_PARC_1', 'ID', 'classe', 'ProfRacPot',
+    #     'RUM', 'area', 'Argile', 'Sable', 'Limon',
+    #     'Class_Bruand', 'Zrmax_reserve', 'Zrmax_RUM']]
+    # df_less20["Argile"]=df["Argile"]-(20*df["Argile"]/100)
+    # df_less20["Limon"]=df["Limon"]-(20*df["Limon"]/100)
+    # df_less20["Sable"]=df["Sable"]-(20*df["Sable"]/100)
+    # a=[]
+    # for i in df_less20.ID:
+    #     a.append(Classe_texture(df_less20[df_less20.ID==i]))
+    # df_less20["Classe_Bruand"]=a
+    # pf2=[]
+    # pf4=[]
+    # for i in df.ID:
+    #     pf2.append(PF_bruand(df_less20[df_less20.ID==i])[0])
+    #     pf4.append(PF_bruand(df_less20[df_less20.ID==i])[1])
+    # df_less20["CC_mean"]=pf2
+    # df_less20["PF_mean"]=pf4
+    # # df_less20["maxZr_rum"]=round(df_less20.eval("RUM/(CC_mean-PF_mean)"),0)
+    # df_less20.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_all_classif_2017_maj_varmo20.csv")

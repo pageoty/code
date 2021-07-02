@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2017"]
+    years=["2017","2018"]
     
     #  Add args User PC home/ PC labo
     result=[]

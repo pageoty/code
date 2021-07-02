@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1000_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_optim_Fcover_fewi_De_Kr_days10_p06_1000_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
     # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -122,43 +122,45 @@ if __name__ == '__main__':
         TT=pd.DataFrame(g).T
         if y =="2018":
             tot_2018=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
+            tot_2018=tot_2018/1000
             tot_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018.csv")
         else:
             tot_2017=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
+            tot_2017=tot_2017/1000
             tot_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017.csv")
-    for t in Vol_tot.columns[1:-1]:
+    for t in list(set(tot_2017.param)):
         plt.figure(figsize=(7,7))
         for y in years: 
             slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso.to_list())
             bias=1/len(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())*sum(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso-np.mean(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())) 
             rms = np.sqrt(mean_squared_error(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso))
             plt.scatter(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(),globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso,label=y)
-            plt.xlim(-1000,2000000)
-            plt.ylim(-1000,2000000)
-            plt.xlabel("Volumes annuels observés en m3 ")
-            plt.ylabel("Volumes annuels modélisés en m3 ")
-            plt.plot([-1000, 2000000], [-1000,2000000], 'black', lw=1,linestyle='--')
+            plt.xlim(-10,1500)
+            plt.ylim(-10,1500)
+            plt.xlabel("Volumes annuels observés en millions de m3 ")
+            plt.ylabel("Volumes annuels modélisés en million de m3 ")
+            plt.plot([-10, 1500], [-10,1500], 'black', lw=1,linestyle='--')
             if "2017" in y :
-                rectangle = plt.Rectangle((4900, 700000),250000,140000, ec='blue',fc='blue',alpha=0.1)
+                rectangle = plt.Rectangle((49, 700),250,140, ec='blue',fc='blue',alpha=0.1)
                 plt.gca().add_patch(rectangle)
-                plt.text(5000,800000,"RMSE = "+str(round(rms,2))) 
-                plt.text(5000,770000,"R² = "+str(round(r_value,2)))
-                plt.text(5000,740000,"Pente = "+str(round(slope,2)))
-                plt.text(5000,710000,"Biais = "+str(round(bias,2)))
+                plt.text(50,800,"RMSE = "+str(round(rms,2))) 
+                plt.text(50,770,"R² = "+str(round(r_value,2)))
+                plt.text(50,740,"Pente = "+str(round(slope,2)))
+                plt.text(50,710,"Biais = "+str(round(bias,2)))
             else:
-                rectangle = plt.Rectangle((690000, 500000),250000,140000, ec='orange',fc='orange',alpha=0.3)
+                rectangle = plt.Rectangle((690, 500),250,140, ec='orange',fc='orange',alpha=0.3)
                 plt.gca().add_patch(rectangle)
-                plt.text(700000,600000,"RMSE = "+str(round(rms,2))) 
-                plt.text(700000,570000,"R² = "+str(round(r_value,2)))
-                plt.text(700000,540000,"Pente = "+str(round(slope,2)))
-                plt.text(700000,510000,"Biais = "+str(round(bias,2)))
-            for i in enumerate(set(globals()["tot_"+y].index)):
-                        label = i[1]
-                        plt.annotate(label, # this is the text
-                             (globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali[i[0]],globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso[i[0]]), # this is the point to label
-                             textcoords="offset points", # how to position the text
-                             xytext=(0,5), # distance from text to points (x,y)
-                             ha='center')
+                plt.text(700,600,"RMSE = "+str(round(rms,2))) 
+                plt.text(700,570,"R² = "+str(round(r_value,2)))
+                plt.text(700,540,"Pente = "+str(round(slope,2)))
+                plt.text(700,510,"Biais = "+str(round(bias,2)))
+            # for i in enumerate(set(globals()["tot_"+y].index)):
+            #             label = i[1]
+            #             plt.annotate(label, # this is the text
+            #                  (globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali[i[0]],globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso[i[0]]), # this is the point to label
+            #                  textcoords="offset points", # how to position the text
+            #                  xytext=(0,5), # distance from text to points (x,y)
+            #                  ha='center')
         plt.title(t)
         plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_%s_Irrigation.png"%(t,y))
         

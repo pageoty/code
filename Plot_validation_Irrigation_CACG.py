@@ -720,6 +720,8 @@ if __name__ == '__main__':
     data_id.columns=data_mod.iloc[0][1:-1]
     data_mod_CACG=data_id[data_id.index.isin(id_CACG)]
     
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    data_prof=data_prof[data_prof.index.isin(id_CACG)]
     for col in data_mod_CACG.columns[12:27]:
         plt.figure(figsize=(7,7))
         slope, intercept, r_value, p_value, std_err = stats.linregress(data_valid.to_list(),data_mod_CACG[col].to_list())
@@ -741,6 +743,26 @@ if __name__ == '__main__':
         plt.text(100,250,"Biais = "+str(round(bias,2)))
         plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/RUN_FAO_TABLE/plot_scatter_volumes_Irrigation_forcagemaxZr_p_table_22_FAO%s.png"%(col))
         # PLOT RUM 
+        plt.figure(figsize=(7,7))
+        data_prof['TAWmax']=data_prof.eval("(CC_mean-PF_mean)*%s"%col)
+        slope, intercept, r_value, p_value, std_err = stats.linregress(data_prof.RUM.to_list(),data_prof['TAWmax'].to_list())
+        bias=1/data_prof.shape[0]*sum(data_prof['TAWmax']-np.mean(data_prof.RUM)) 
+        rms = np.sqrt(mean_squared_error(data_prof.RUM,data_prof['TAWmax']))
+        plt.scatter(data_prof.RUM,data_prof['TAWmax'],label=col)
+        plt.legend()
+        plt.xlim(-10,250)
+        plt.ylim(-10,250)
+        plt.xlabel("RUM observées en mm ")
+        plt.ylabel("RUM modélisées en mm ")
+        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+        # plt.errorbar(tab_irr2.Quantite,tab_irr2.conso,yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+        rectangle = plt.Rectangle((45, 145),55,40, ec='b',fc='b',alpha=0.1)
+        plt.gca().add_patch(rectangle)
+        plt.text(50,180,"RMSE = "+str(round(rms,2))) 
+        plt.text(50,170,"R² = "+str(round(r_value,2)))
+        plt.text(50,160,"Pente = "+str(round(slope,2)))
+        plt.text(50,150,"Biais = "+str(round(bias,2)))
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/Plot_result/RUN_FAO_TABLE/plot_scatter_RUM_forcagemaxZr_p_table_22_FAO%s.png"%(col))
     # =============================================================================
 #     Forcage p et maxZr aavec modif CC
 # =============================================================================
