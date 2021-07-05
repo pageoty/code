@@ -43,8 +43,8 @@ if __name__ == '__main__':
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-    meteo=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
-    parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
+    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     meteo.DATE=meteo.DATE.astype(int)
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")
@@ -65,12 +65,12 @@ if __name__ == '__main__':
     meteo.reset_index(inplace=True)
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
-    meteo.to_csv('H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CLASSIF/meteo_all_mais_'+years+'.csv')
-    meteo2=pd.read_csv('/H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CLASSIF/meteo_all_mais_'+years+'.csv')
+    meteo.to_csv('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_all_mais_'+years+'.csv')
+    meteo2=pd.read_csv('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_all_mais_'+years+'.csv')
     meteo2.drop(columns=["Unnamed: 0"],inplace=True)
     # meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
     meteo2.date=pd.to_datetime(meteo2.date,format="%Y-%m-%d")
-    meteo2.to_pickle(d["path_run_disk"]+"/maize_irri/meteo.df")
+    meteo2.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo.df")
 # =============================================================================
 #     Ancienne version avec intersection 
 # =============================================================================

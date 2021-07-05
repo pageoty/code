@@ -41,10 +41,10 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -805,8 +805,11 @@ if __name__ == '__main__':
     
     #  Analyse résidus crops 
     residus_PKGC=pd.read_csv(d["PC_disk"]+"/DONNEES_RAW/data_SSP/PKGC2017/PKGC2017_Gen_20200128.csv",sep=';',encoding='latin-1')
+    resi=residus_PKGC[["RESIDUS","NOM_DOSSIER"]]
     data_prof["NOM_DOSSIER"]= data_prof["NOM_DOSSIE"].astype(float).astype(int64)
     data_redi=pd.merge(residus_PKGC[["RESIDUS","NOM_DOSSIER"]],data_prof,on='NOM_DOSSIER')
+    test=geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/ParcellesIRR_2017_32.shp")
+    data_redi=pd.merge(residus_PKGC[["RESIDUS","NOM_DOSSIER","ID_UNITE"]],test,on='ID_UNITE')
 # =============================================================================
 #     Forcer maxZr et p
 # =============================================================================
