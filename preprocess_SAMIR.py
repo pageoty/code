@@ -690,6 +690,8 @@ if __name__ == "__main__":
 # =============================================================================
 # Pour le PKGC HP
 # =============================================================================
+    Parcellaire= geo.read_file(d["PC_disk_labo"]+"/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")    
+    Parcellaire["id"]=Parcellaire.ID
     for t in ["TYP","TYN"]:
         # dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
         # dfs=pd.DataFrame(dfnames)
@@ -700,16 +702,18 @@ if __name__ == "__main__":
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_PKGC/HP/NDVI_2017_PKGC_HP_"+t+".csv",decimal=".")
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/HP/FCOVER_2017_PKGC_HP_"+t+".csv",decimal=".")
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
+
         df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CLASSIF/FCOVER_"+t+"_CLASSIF_ADOUR_2017_MAIS_all.csv",decimal=".")
 
+        
         tmp=df[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
-            for i in np.arange(0,42,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,42,2): #♣ 2018 : 49 :  2017 : 42
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         else:
-            for i in np.arange(0,46,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,46,2): #♣ 2018 : 49 :  2017 : 46
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         Fcover=tmp1.T
@@ -727,9 +731,48 @@ if __name__ == "__main__":
             FCOVERTYN=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
         else:
             FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+    #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
     FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
-    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"],keep="last")
+    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"],keep='first')
     FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
+    
+    #  POUR LE NDVI Classif
+    for t in ["TYP","TYN"]:
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
+        dfs=pd.DataFrame(dfnames)
+        dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
+
+        tmp=df[["ID"]]
+        tmp1=pd.DataFrame()
+        if t =="TYP":
+            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 42
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a/1000)
+        else:
+            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 46
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a/1000)
+        NDVI=tmp1.T
+        NDVI.columns=list(dates)
+        # Fcover=Fcover.T
+        NDVI.T.sort_index(inplace=True)
+        NDVI.T.sort_index(ascending=True,inplace=True)
+        NDVI=NDVI.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
+        NDVI=NDVI.resample("D").interpolate(method='time',limit_direction='both')
+        NDVI=NDVI.append(df.ID)
+        NDVI=NDVI.T
+        NDVI.set_index("ID",inplace=True)
+        NDVI=pd.DataFrame(NDVI.T.unstack()).reset_index()
+        if t =='TYP':
+            NDVITYN=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+        else:
+            NDVITYP=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+    #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
+    NDVI=pd.concat([NDVITYN,NDVITYP])
+    NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
+    NDVI_Gers=NDVI_Gers[NDVI_Gers.id.isin(FCOVER_Gers.id)]
+    NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
 # =============================================================================
 #   Météo_SAFRAN
 # =============================================================================
