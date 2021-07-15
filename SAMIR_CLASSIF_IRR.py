@@ -66,11 +66,16 @@ if __name__ == '__main__':
     gdf = {}
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
-    gdf.to_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR.shp")
+    # gdf.to_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR.shp")
     gdf.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
     plt.title('Irrigation saisonnière en mm')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR.png")
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR.png")
     gdf.plot(column='IRR',figsize=(10,10), cmap='RdYlGn', legend=True)
     plt.legend()
     plt.title('Irrigué / pluviale')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_irrigue_pluvaile_2017_SAMIR.png")
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_irrigue_pluvaile_2017_SAMIR.png")
+
+
+
+# test df.ix
+# df.ix[:4, 1:3]

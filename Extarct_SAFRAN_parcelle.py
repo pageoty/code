@@ -43,8 +43,8 @@ if __name__ == '__main__':
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
-    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
+    parcelle=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2018_maïs_all.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     meteo.DATE=meteo.DATE.astype(int)
     meteo.DATE=pd.to_datetime(meteo.DATE,format="%Y%m%d")

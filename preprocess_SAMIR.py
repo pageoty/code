@@ -734,7 +734,7 @@ if __name__ == "__main__":
     #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
     FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
     FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"],keep='first')
-    FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
+    # FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
     
     #  POUR LE NDVI Classif
     for t in ["TYP","TYN"]:
@@ -770,7 +770,7 @@ if __name__ == "__main__":
             NDVITYP=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
     #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
     NDVI=pd.concat([NDVITYN,NDVITYP])
-    NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
+    # NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
     NDVI_Gers=NDVI_Gers[NDVI_Gers.id.isin(FCOVER_Gers.id)]
     NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
 # =============================================================================
