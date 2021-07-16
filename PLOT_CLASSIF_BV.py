@@ -222,65 +222,6 @@ if __name__ == "__main__":
 #            g = sns.FacetGrid(dfMetric, col="Classe", col_wrap=6, palette="Set1",height=5,margin_titles=False,legend_out=False)# Gerer la color par run et +3 a modifier en focntion du nb de run 
 #            g.map_dataframe(errplot, "step", "mean_"+var, "std_"+var,)
 #            g.savefig(d["SAVE"]+var+"_plot_classe_run_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
-        
-# =============================================================================
-# GRAPHIQUE_scatter
-# =============================================================================
-    # if bv != "NESTE" :
-    #     plt.figure(figsize=(15,8)) 
-    #     axes = plt.gca()
-    #     ax1=plt.subplot(122)
-    #     axes = plt.gca()
-    #     for i,step in enumerate(dfindice_bv.index):
-    #         x=list(dfMetric[dfMetric.index==0].mean_fscore)[i]
-    #         y=list(dfMetric[dfMetric.index==2].mean_fscore)[i]
-    #         stdx=list(dfMetric[dfMetric.index==0].std_fscore)[i]
-    #         stdy=list(dfMetric[dfMetric.index==2].std_fscore)[i]
-    #         if "2017" in step:
-    #             p=plt.scatter(x,y,color="blue",marker="o")
-    #             a=Ellipse((x,y),width=stdx,height=stdy,alpha=0.2,color="blue",zorder=5)
-    #             axes.add_artist(a)
-    #         else:
-    #             b=plt.scatter(x,y,color="red")
-    #             g=Ellipse((x,y),width=stdx,height=stdy,alpha=0.2,color="red",zorder=5)
-    #             axes.add_artist(g)
-    #         plt.plot([0.1,0.9],[0.1,0.9], 'r-', lw=1)
-    #         plt.xlim(0.2,0.9)
-    #         plt.ylim(0.2,0.9)
-    #         plt.text(x+0.01,y+0.01,step,fontsize=9)
-    #         plt.title("Comparaison of fscore between 2 classe")
-    #         plt.xlabel("F_score Maize Irrigated")
-    #         plt.ylabel("F_score Maize non irrigated")
-    #         plt.xticks(size='large')
-    #         plt.yticks(size='large')
-    #         plt.legend((p,b),("2017","2018"))
-    # #        plt.legend((a,g),('Intervalle of 95%'))
-    #     ax2=plt.subplot(121)
-    #     axes = plt.gca()
-    #     for i,step in enumerate(dfindice_bv.index):
-    #         x=list(dfMetric[dfMetric.index==1].mean_fscore)[i]
-    #         y=list(dfMetric[dfMetric.index==3].mean_fscore)[i]
-    #         stdx=list(dfMetric[dfMetric.index==1].std_fscore)[i]
-    #         stdy=list(dfMetric[dfMetric.index==3].std_fscore)[i]
-    #         if "2017" in step:
-    #             p=plt.scatter(x,y,color="blue")
-    #             a=Ellipse((x,y),width=stdx,height=stdy,alpha=0.2,color="blue",zorder=5)
-    #             axes.add_artist(a)
-    #         else:
-    #             b=plt.scatter(x,y,color="red")
-    #             g=Ellipse((x,y),width=stdx,height=stdy,alpha=0.2,color="red",zorder=4)
-    #             axes.add_artist(g)
-    #         plt.plot([0.1,0.9],[0.1,0.9], 'r-', lw=1)
-    #         plt.xlim(0.2,0.9)
-    #         plt.ylim(0.2,0.9)
-    #         plt.text(x+0.01,y+0.01,step,fontsize=9)
-    #         plt.title("Comparaison of F-score between 2 classe")
-    #         plt.xlabel("F-score Soybean Irrigated")
-    #         plt.ylabel("F-score Soybean non irrigated")
-    #         plt.xticks(size='large')
-    #         plt.yticks(size='large')
-    #         plt.legend((p,b),("2017","2018"))
-    #     plt.savefig(d["SAVE"]+"scatter_Classe_"+"_"+years+"_"+bv+".png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 
 # =============================================================================
 # Barplot recall and Acccuracy
@@ -543,3 +484,29 @@ if __name__ == "__main__":
                 plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
                 plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
             plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+            
+# =============================================================================
+#  SAMIR CLASSIF VALIDATION_DT terrain 
+# =============================================================================
+    f = []
+    Recall=pd.DataFrame()
+    Prec=pd.DataFrame()
+    Fscore=pd.DataFrame()
+    
+    nom=get_nomenclature("/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
+    pathNom="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt"
+    pathRes="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/"#¬ path où sont stocker les fichiers les matrices de confusion
+    conf_mat_dic = parse_csv(pathRes+"/MATRIX_confusion_SAMIR_DT.csv")
+    kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+    nom_dict = get_nomenclature(pathNom)
+    size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+    f.append(f_dic)
+    Fsc_mean = get_interest_coeff(f, nb_lab=len(labels_ref), f_interest="mean")
+    Fsc_mean_df=pd.DataFrame(Fsc_mean.items())
+    Fscore=Fscore.append(Fsc_mean_df).astype(float)
+    df_names=["labels","mean_fscore"]
+    dfmetric=Fscore
+    dfmetric.columns=df_names
+    dfmetric.labels=['Irrigated Maize','Irrigated Soybean', 'others', 'Rainfed Maize', 'Rainfed Soybean', 'Sorghum', 'Sunflower ']
+    plt.bar(dfmetric.labels,dfmetric.mean_fscore)
+
