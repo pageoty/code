@@ -41,10 +41,10 @@ if __name__ == '__main__':
     d={}
     name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
     name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
-    d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    # d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
     # label="Init ru année n-1 + Irrigation auto"
@@ -128,40 +128,155 @@ if __name__ == '__main__':
             tot_2017=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
             tot_2017=tot_2017/1000
             tot_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017.csv")
-    for t in list(set(tot_2017.param)):
+    for t in [1.0,1.1,1.2,1.3,1.7]:
         plt.figure(figsize=(7,7))
         for y in years: 
             slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso.to_list())
             bias=1/len(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())*sum(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso-np.mean(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())) 
             rms = np.sqrt(mean_squared_error(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso))
             plt.scatter(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(),globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso,label=y)
-            plt.xlim(-10,1500)
-            plt.ylim(-10,1500)
+            plt.xlim(-10,1600)
+            plt.ylim(-10,1600)
             plt.xlabel("Volumes annuels observés en millions de m3 ")
             plt.ylabel("Volumes annuels modélisés en million de m3 ")
-            plt.plot([-10, 1500], [-10,1500], 'black', lw=1,linestyle='--')
+            plt.plot([-10, 1600], [-10,1600], 'black', lw=1,linestyle='--')
             if "2017" in y :
-                rectangle = plt.Rectangle((49, 700),250,140, ec='blue',fc='blue',alpha=0.1)
+                rectangle = plt.Rectangle((49, 700),300,170, ec='blue',fc='blue',alpha=0.1)
                 plt.gca().add_patch(rectangle)
-                plt.text(50,800,"RMSE = "+str(round(rms,2))) 
-                plt.text(50,770,"R² = "+str(round(r_value,2)))
-                plt.text(50,740,"Pente = "+str(round(slope,2)))
+                plt.text(50,830,"RMSE = "+str(round(rms,2))) 
+                plt.text(50,790,"R² = "+str(round(r_value,2)))
+                plt.text(50,750,"Pente = "+str(round(slope,2)))
                 plt.text(50,710,"Biais = "+str(round(bias,2)))
             else:
-                rectangle = plt.Rectangle((690, 500),250,140, ec='orange',fc='orange',alpha=0.3)
+                rectangle = plt.Rectangle((990, 500),330,170, ec='orange',fc='orange',alpha=0.3)
                 plt.gca().add_patch(rectangle)
-                plt.text(700,600,"RMSE = "+str(round(rms,2))) 
-                plt.text(700,570,"R² = "+str(round(r_value,2)))
-                plt.text(700,540,"Pente = "+str(round(slope,2)))
-                plt.text(700,510,"Biais = "+str(round(bias,2)))
-            # for i in enumerate(set(globals()["tot_"+y].index)):
-            #             label = i[1]
-            #             plt.annotate(label, # this is the text
-            #                  (globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali[i[0]],globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso[i[0]]), # this is the point to label
-            #                  textcoords="offset points", # how to position the text
-            #                  xytext=(0,5), # distance from text to points (x,y)
-            #                  ha='center')
+                plt.text(1000,630,"RMSE = "+str(round(rms,2))) 
+                plt.text(1000,590,"R² = "+str(round(r_value,2)))
+                plt.text(1000,550,"Pente = "+str(round(slope,2)))
+                plt.text(1000,510,"Biais = "+str(round(bias,2)))
+            for i in enumerate(set(globals()["tot_"+y].index)):
+                if "2017" in y :
+                    label = i[1].lower()
+                    plt.annotate(label, # this is the text
+                          (globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali[i[0]],globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso[i[0]]), # this is the point to label
+                          textcoords="offset points", # how to position the text
+                          xytext=(0,5), # distance from text to points (x,y)
+                          ha='center')
+                else:
+                    label = i[1].lower()
+                    plt.annotate(label, # this is the text
+                          (globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali[i[0]],globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso[i[0]]), # this is the point to label
+                          textcoords="offset points", # how to position the text
+                          xytext=(0,-10), # distance from text to points (x,y)
+                          ha='center')
+        plt.legend()
         plt.title(t)
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_%s_Irrigation.png"%(t,y))
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%(t))
         
-      
+        
+# =============================================================================
+#          Plot avec RUM inversion
+# =============================================================================
+    for y in years: 
+        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+y+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+        Vol_tot=pd.DataFrame()
+        Id=pd.DataFrame()
+        vali_ASA=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/ConsoASA_NESTE_"+str(y)+".csv",encoding='latin-1',decimal='.',sep=';',na_values="nan")
+        d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
+        Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
+        gro=Irri_mod.groupby("ID")
+        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+        param.loc[param.shape[0]]='ID' 
+    #  Isloer pour chaque parcelle maxZr arondi 
+        for p in list(set(Irri_mod.ID))[2:]:
+            par1=gro.get_group(p)
+            par1.reset_index(inplace=True)
+            par1.num_run=pd.to_datetime(par1.num_run,format="%Y-%m-%d")
+            df_aqui=pd.merge(df_date_aqui,NDVI.loc[NDVI.id==p],on="date")
+            Vol_tot=Vol_tot.append(par1)
+        Vol_tot.columns=["date"]+param[1].to_list()
+        tot_ID=Vol_tot.groupby("ID").sum()
+        tot_IRR=pd.merge(tot_ID,vali_ASA,on=["ID"])
+        tot_IRR.dropna(inplace=True)
+        tot_IRR.drop_duplicates(inplace=True)
+        #  Isloer pour chaque parcelle maxZr arondi 
+        conso_par=[]
+        idpar=[]
+        n_asa=[]
+        for i in tot_IRR.ID:
+            maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
+            irri=tot_IRR.loc[tot_IRR.ID==i][maxzr].iloc[0].values
+            conso_par.append(irri[0]*tot_IRR.loc[tot_IRR.ID==i]["area"].iloc[0]*10)
+            idpar.append(i)
+            n_asa.append(tot_IRR.loc[tot_IRR.ID==i]['nomasa'].values[0])
+        tab_par_irri=pd.DataFrame([idpar,conso_par,n_asa]).T
+        tab_par_irri.columns=["ID","conso","ASA"]
+        tab_asa_irr=tab_par_irri.groupby("ASA").sum()
+        
+        
+        asa_n=[]
+        data_v=[]
+        asagroup=tot_IRR.groupby("nomasa")
+        for asa in list(set(tot_IRR.nomasa)):
+            tet=asagroup.get_group(asa)
+            asa_n.append(asa)
+            data_v.append(tet.data_Conso.iloc[0])
+        TT=pd.DataFrame([data_v,asa_n]).T
+        TT.columns=["Vali","ASA"]
+        tab_irri_asa=pd.merge(tab_asa_irr,TT,on="ASA")
+        
+        if y =="2018":
+            tab_irri_asa_2018=tab_irri_asa
+            tab_irri_asa_2018.set_index("ASA",inplace=True)
+            tab_irri_asa_2018=tab_irri_asa_2018/1000
+            tab_irri_asa_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018_maxZr_parcelle.csv")
+        else:
+            tab_irri_asa_2017=tab_irri_asa
+            tab_irri_asa_2017.set_index("ASA",inplace=True)
+            tab_irri_asa_2017=tab_irri_asa_2017/1000
+            tab_irri_asa_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017_maxZr_parcelle.csv")
+            
+        
+    plt.figure(figsize=(7,7))
+    for y in years: 
+        slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tab_irri_asa_"+y].Vali.to_list(), globals()["tab_irri_asa_"+y].conso.to_list())
+        bias=1/len(globals()["tab_irri_asa_"+y].Vali.to_list())*sum(globals()["tab_irri_asa_"+y].conso-np.mean(globals()["tab_irri_asa_"+y].Vali.to_list())) 
+        rms = np.sqrt(mean_squared_error(globals()["tab_irri_asa_"+y].Vali.to_list(), globals()["tab_irri_asa_"+y].conso))
+        plt.scatter(globals()["tab_irri_asa_"+y].Vali.to_list(),globals()["tab_irri_asa_"+y].conso,label=y)
+        plt.xlim(-10,1600)
+        plt.ylim(-10,1600)
+        plt.xlabel("Volumes annuels observés en millions de m3 ")
+        plt.ylabel("Volumes annuels modélisés en million de m3 ")
+        plt.plot([-10, 1600], [-10,1600], 'black', lw=1,linestyle='--')
+        if "2017" in y :
+            rectangle = plt.Rectangle((49, 700),300,170, ec='blue',fc='blue',alpha=0.1)
+            plt.gca().add_patch(rectangle)
+            plt.text(50,830,"RMSE = "+str(round(rms,2))) 
+            plt.text(50,790,"R² = "+str(round(r_value,2)))
+            plt.text(50,750,"Pente = "+str(round(slope,2)))
+            plt.text(50,710,"Biais = "+str(round(bias,2)))
+        else:
+            rectangle = plt.Rectangle((990, 500),330,170, ec='orange',fc='orange',alpha=0.3)
+            plt.gca().add_patch(rectangle)
+            plt.text(1000,630,"RMSE = "+str(round(rms,2))) 
+            plt.text(1000,590,"R² = "+str(round(r_value,2)))
+            plt.text(1000,550,"Pente = "+str(round(slope,2)))
+            plt.text(1000,510,"Biais = "+str(round(bias,2)))
+        for i in enumerate(set(globals()["tab_irri_asa_"+y].index)):
+            if "2017" in y :
+                label = i[1].lower()
+                plt.annotate(label, # this is the text
+                      (globals()["tab_irri_asa_"+y].Vali[i[0]],globals()["tab_irri_asa_"+y].conso[i[0]]), # this is the point to label
+                      textcoords="offset points", # how to position the text
+                      xytext=(0,5), # distance from text to points (x,y)
+                      ha='center')
+            else:
+                label = i[1].lower()
+                plt.annotate(label, # this is the text
+                      (globals()["tab_irri_asa_"+y].Vali[i[0]],globals()["tab_irri_asa_"+y].conso[i[0]]), # this is the point to label
+                      textcoords="offset points", # how to position the text
+                      xytext=(0,-10), # distance from text to points (x,y)
+                      ha='center')
+    plt.legend()
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_maxZr_parcelle_Irrigation.png")
+    
