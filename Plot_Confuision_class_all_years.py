@@ -10,7 +10,6 @@ import os
 import sqlite3
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import seaborn as sns
@@ -71,7 +70,7 @@ def fig_conf_mat_rec(conf_mat_dic, nom_dict, kappa, oacc, p_dic, r_dic, f_dic,
         return vals
 
 if __name__ == "__main__":
-    years='SEASON_TIME_Adour' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="ADOUR"
     d={}
     d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
@@ -83,7 +82,7 @@ if __name__ == "__main__":
         stock_res_std=[]    
         for classif in os.listdir(d["disk_PC"]+'/FILE_TXT_RESULAT/FIxe_seed/SHARK/'+years+'/'): # FIxe_seed/SHARK/'+years+''chemin où sont stocker les matrices de confusion géner avec le script Validation BV
             # if "&" in classif or 'Not' in classif or 'Climate' in classif: 
-            if "OP3" in classif: 
+            if "Optical" in classif: 
                 print ("=============")
                 print (r" RUN : %s " %classif)
                 print ("=============")
@@ -147,12 +146,17 @@ if __name__ == "__main__":
         a=df_multi.xs("Irrigated Maize").iloc[1:-2].T.sort_values(by="Rainfed Maize")
         if bv =="ADOUR":
             # a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'],ax=ax1,legend=True)
-            a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue"],ax=ax1,legend=True)
+            a.T.plot(kind="bar",color=["dimgrey","darkgrey",'lightgrey','lightgrey',"dimgrey","darkgrey"],ax=ax1,legend=True)
+            bars1 = ax1.patches
+            hatches = ("//","//","//","//","//","//","//","//","//","..","..","..","..","..","..","..","..","..")
+            for bar, hatch in zip(bars1, hatches):
+                print(bar)
+                bar.set_hatch(hatch)
         else:
             a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
-        plt.legend(fontsize=12)
+        plt.legend(fontsize=12,ncol=1)
         plt.text(-0.25,60,"a",size="20")
         ax1.xaxis.set_label_text("")
         ax1.yaxis.set_label_text("percentage confusion",fontsize=12)
@@ -164,7 +168,11 @@ if __name__ == "__main__":
         b=df_multi.xs("Irrigated Soybean").iloc[[0,2,3]].T.sort_values(by="Rainfed Soybean")
         if bv == "ADOUR":
             # b.T.plot(kind="bar",color=["salmon","darkorange","royalblue",'red','deepskyblue','blue'],ax=ax2,legend=False) # Problème color other BV
-            b.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'darkorange',"salmon"],ax=ax2,legend=False)
+            b.T.plot(kind="bar",color=['dimgrey','darkgrey',"dimgrey",'lightgrey',"lightgrey","darkgrey"],ax=ax2,legend=False)
+            bars2 = ax2.patches
+            hatches = ("..","..","..","..","..","..","//","//","//","..","..","..","//","//","//","//","//","//")
+            for bar, hatch in zip(bars2, hatches):
+                bar.set_hatch(hatch)
         else:
             b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
         plt.text(-0.25,60,"b",size="20")
@@ -179,7 +187,11 @@ if __name__ == "__main__":
         c=df_multi.xs("Rainfed Maize").iloc[[0,1,3]].T.sort_values(by="Irrigated Maize")
         if bv =="ADOUR":
             # c.T.plot(kind="bar",color=["royalblue",'deepskyblue','blue',"salmon",'red',"darkorange"],ax=ax3,legend=False)
-            c.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'salmon',"darkorange"],ax=ax3,legend=False)
+            c.T.plot(kind="bar",color=['dimgrey','lightgrey',"darkgrey",'dimgrey',"lightgrey",'darkgrey'],ax=ax3,legend=False)
+            bars3 = ax3.patches
+            hatches = ("//","//","//","//","//","//","//","//","//","..","..","..","..","..","..","..","..","..")
+            for bar, hatch in zip(bars3, hatches):
+                bar.set_hatch(hatch)
         else:
             c.T.plot(kind="bar",color=["royalblue",'salmon','darkorange',"red",'blue',"deepskyblue"],ax=ax3,legend=False)
         plt.text(-0.25,60,"c",size="20")
@@ -195,7 +207,13 @@ if __name__ == "__main__":
         d=df_multi.xs("Rainfed Soybean").iloc[[0,1,2]].T.sort_values(by="Irrigated Soybean")
         if bv =="ADOUR":
             # d.T.plot(kind="bar",color=['deepskyblue',"royalblue",'blue',"salmon","darkorange",'red'],ax=ax4,legend=False)
-            d.T.plot(kind="bar",color=['royalblue','deepskyblue',"red",'darkorange',"salmon"],ax=ax4,legend=False)
+            d.T.plot(kind="bar",color=['lightgrey','dimgrey',"darkgrey",'dimgrey',"darkgrey","lightgrey"],ax=ax4,legend=False)
+
+            bars = ax4.patches
+            hatches = ("//","//","//","//","//","//","//","//","//","..","..","..","..","..","..","..","..","..")
+            for bar, hatch in zip(bars, hatches):
+                bar.set_hatch(hatch)
+            # ax.legend(loc='center right', bbox_to_anchor=(1, 1), ncol=4)
         else:
             d.T.plot(kind="bar",color=['salmon',"royalblue",'blue',"darkorange","red",'deepskyblue'],ax=ax4,legend=False)
         plt.text(-0.25,60,"d",size="20")
@@ -228,9 +246,4 @@ if __name__ == "__main__":
 #    plt.xticks(rotation=0)
     
     
-# =============================================================================
-#     test
-# =============================================================================
-    # a=df_multi.xs("Maize irrigated").iloc[1:-2].T.sort_values(by="Maize no irrigated")
-    # a.T.plot(kind="bar",color=["salmon","darkorange",'red','deepskyblue',"royalblue",'blue'])
 
