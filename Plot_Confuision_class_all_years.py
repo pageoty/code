@@ -71,7 +71,7 @@ def fig_conf_mat_rec(conf_mat_dic, nom_dict, kappa, oacc, p_dic, r_dic, f_dic,
 
 if __name__ == "__main__":
     years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
-    bv="ADOUR"
+    bv="TARN"
     d={}
     d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
     d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
@@ -138,7 +138,6 @@ if __name__ == "__main__":
     if bv !="NESTE":
         fig, ax = plt.subplots(figsize=(12, 10))
         ax1=plt.subplot(221)
-        ax1.grid(axis='x')
         # sns.set(style="whitegrid")
         # sns.set_context('paper')
         plt.title("Irrigated Maize",fontsize=14)
@@ -153,11 +152,18 @@ if __name__ == "__main__":
                 print(bar)
                 bar.set_hatch(hatch)
         else:
-            a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
+            # a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
+            a.T.plot(kind="bar",color=["dimgrey","lightgrey",'darkgrey','lightgrey',"darkgrey","dimgrey"],ax=ax1,legend=True)
+            bars1 = ax1.patches
+            hatches = ("//","//","//","..","..","..","//","//","//","//","//","//","..","..","..","..","..","..")
+            for bar, hatch in zip(bars1, hatches):
+                print(bar)
+                bar.set_hatch(hatch)
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
         plt.legend(fontsize=12,ncol=1)
         plt.text(-0.25,60,"a",size="20")
+        plt.grid(b=None)
         ax1.xaxis.set_label_text("")
         ax1.yaxis.set_label_text("percentage confusion",fontsize=12)
         plt.ylim(0,65)
@@ -174,10 +180,16 @@ if __name__ == "__main__":
             for bar, hatch in zip(bars2, hatches):
                 bar.set_hatch(hatch)
         else:
-            b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
+            # b.T.plot(kind="bar",color=["blue","royalblue","deepskyblue",'darkorange','red','salmon'],ax=ax2,legend=False) # Problème color other BV
+            b.T.plot(kind="bar",color=['darkgrey','dimgrey',"lightgrey",'darkgrey',"lightgrey","dimgrey"],ax=ax2,legend=False)
+            bars2 = ax2.patches
+            hatches = ("//","//","//","//","//","//","//","//","//","..","..","..","..","..","..","..","..","..")
+            for bar, hatch in zip(bars2, hatches):
+                bar.set_hatch(hatch)
         plt.text(-0.25,60,"b",size="20")
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
+        plt.grid(b=None)
         ax2.xaxis.set_label_text("")
         plt.ylim(0,65)
         # plt.legend()
@@ -193,10 +205,16 @@ if __name__ == "__main__":
             for bar, hatch in zip(bars3, hatches):
                 bar.set_hatch(hatch)
         else:
-            c.T.plot(kind="bar",color=["royalblue",'salmon','darkorange',"red",'blue',"deepskyblue"],ax=ax3,legend=False)
+            # c.T.plot(kind="bar",color=["royalblue",'salmon','darkorange',"red",'blue',"deepskyblue"],ax=ax3,legend=False)
+            c.T.plot(kind="bar",color=['dimgrey','dimgrey',"darkgrey",'lightgrey',"darkgrey",'lightgrey'],ax=ax3,legend=False)
+            bars3 = ax3.patches
+            hatches = ("//","//","//","..","..","..","..","..","..","..","..","..","//","//","//","//","//","//")
+            for bar, hatch in zip(bars3, hatches):
+                bar.set_hatch(hatch)
         plt.text(-0.25,60,"c",size="20")
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
+        plt.grid(b=None)
         # plt.legend()
         ax3.xaxis.set_label_text("")
         ax3.yaxis.set_label_text("percentage confusion",fontsize=12)
@@ -215,18 +233,24 @@ if __name__ == "__main__":
                 bar.set_hatch(hatch)
             # ax.legend(loc='center right', bbox_to_anchor=(1, 1), ncol=4)
         else:
-            d.T.plot(kind="bar",color=['salmon',"royalblue",'blue',"darkorange","red",'deepskyblue'],ax=ax4,legend=False)
+            # d.T.plot(kind="bar",color=['salmon',"royalblue",'blue',"darkorange","red",'deepskyblue'],ax=ax4,legend=False)
+            d.T.plot(kind="bar",color=['dimgrey','dimgrey',"darkgrey",'darkgrey',"lightgrey","lightgrey"],ax=ax4,legend=False)
+            bars = ax4.patches
+            hatches = ("..","..","..","//","//","//","//","//","//","..","..","..","..","..","..","//","//","//")
+            for bar, hatch in zip(bars, hatches):
+                bar.set_hatch(hatch)
         plt.text(-0.25,60,"d",size="20")
         plt.xticks(rotation=0,fontsize=12)
         plt.yticks(fontsize=12)
+        plt.grid(b=None)
         # plt.legend()
         ax4.xaxis.set_label_text("")
         plt.ylim(0,65)
     else:
         fig, ax = plt.subplots(figsize=(12, 10))
         ax1=plt.subplot(221)
-        sns.set(style="darkgrid")
-        sns.set_context('paper')
+        # sns.set(style="darkgrid")
+        # sns.set_context('paper')
         plt.title("Irrigated Maize",fontsize=14)
         df_multi.xs("Maize irrigated").iloc[1:].plot(kind='bar',ax=ax1)
         plt.xticks(rotation=0)

@@ -71,13 +71,13 @@ def plt_classif_kappa(df,var1,var2):
     plt.legend(fontsize=14)
 
 if __name__ == "__main__":
-    years='SEASON_TIME_2017' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
-    bv="ADOUR"
+    years='2018_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    bv="TARN"
     d={}
     d["PC_labo"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/"+str(bv) # path où seront save les graphiques finaux 
     d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
+    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/PLOT_SYNTH_CLASSIF/"
     for b in [bv]: 
         step = []
         jobs=pd.DataFrame()
@@ -275,22 +275,24 @@ if __name__ == "__main__":
 # =============================================================================
 #Graphique cours de saison
 # =============================================================================
-    maize2017=dfMetric.set_index(['Classe'])
-    M7=maize2017.sort_values(by='step',ascending=True)
-    for i in set(M7.step):
-        plt.figure(figsize=(12,5)) 
-        plt.grid(axis='x')
-        x1=plt.subplot(121)
-        yer1 = M7[M7.step==i]['std_fscore']
-        plt.bar(M7[M7.step==i].index,M7[M7.step==i]["mean_fscore"],color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
-        plt.xticks(fontsize=10)
-        plt.yticks(fontsize=14)
-        plt.xticks(rotation=45)
-        plt.ylabel('Fscore')
-        plt.ylim(0,1)
-        plt.title(str(i))
-        plt.legend()
-        plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i+"_"+bv+".png",format="png",dpi=300,bbox_inches='tight', pad_inches=0.5)
+    if years =="SEASON_TIME_2017":
+        maize2017=dfMetric.set_index(['Classe'])
+        M7=maize2017.sort_values(by='step',ascending=True)
+        M7["run"]=M7.step.apply(lambda s:s [2:])
+        for i in set(M7.index):
+            plt.figure(figsize=(12,5)) 
+            plt.grid(axis='x')
+            x1=plt.subplot(121)
+            yer1 = M7[M7.index==i]['std_fscore']
+            plt.bar(M7[M7.index==i].run,M7[M7.index==i]["mean_fscore"],color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+            plt.xticks(fontsize=10)
+            plt.yticks(fontsize=14)
+            plt.xticks(rotation=45)
+            plt.ylabel('Fscore')
+            plt.ylim(0,1)
+            plt.title(str(i))
+            plt.legend()
+            plt.savefig(d["SAVE_disk"]+"SEASON_TIME/Fscore_Barplot"+"_"+i+"_"+bv+".png",format="png",dpi=300,bbox_inches='tight', pad_inches=0.5)
 # =============================================================================
     # graphi Fscre barplot
 # =============================================================================
@@ -306,7 +308,7 @@ if __name__ == "__main__":
         maize2018.sort_index(ascending=True,inplace=True)
         M7=maize2017.sort_values(by='step',ascending=True)
         M8=maize2018.sort_values(by='step',ascending=True)
-        if "ALL_Years" in years:
+        if "ALL_Years_ASC" in years:
             if bv == "NESTE":
                 for i in set(zip(maize2017.step,maize2018.step)):
                     print(i)
@@ -331,7 +333,7 @@ if __name__ == "__main__":
                     plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
         
-            else: 
+            elif bv == "ADOUR": 
                 for i in set(zip(M7.step,M8.step)):
                     print(i)
                     plt.figure(figsize=(12,5)) 
@@ -353,8 +355,33 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
+                    # plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
+            else:
+                 M7=M7[M7.step=="10-days Optical & SAR 2017"]
+                 M8=M8[M8.step=="10-days Optical & SAR 2018"]
+                 for i in set(zip(M7.step,M8.step)):
+                    print(i)
+                    plt.figure(figsize=(12,5)) 
+                    plt.grid(axis='x')
+                    x1=plt.subplot(121)
+                    barWidth = 0.3
+                    bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
+                    bars2 = maize2018[maize2018.step==i[1]]["mean_fscore"]
+                    yer1 = maize2017[maize2017.step==i[0]]['std_fscore']
+                    yer2 = maize2018[maize2018.step==i[1]]['std_fscore']
+                    r1 = np.arange(len(bars1))
+                    r2 = [x + barWidth for x in r1]
+                    plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+                    plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
+                    plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
+                    # plt.ylabel('value')
+                    plt.ylim(0,1)
+                    plt.title(str(i[0][:-5]))
+                    plt.legend()
+                    plt.xticks(fontsize=14,rotation=45)
+                    plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
-                    
+
     # Comparer les runs cumil et non cumuls 
         if years =="CUMUL_VS_NOT":
             stepvs={"Cu_Optic_2017":"OPTIC_ALL_2017","Cu_SAR_2017":"SAR_ALL_2017","Cu_SAR_&_Optic_2017":"ALL_index_2017","Cu_Optic_2018":"OPTIC_ALL_2018","Cu_SAR_2018":"SAR_ALL_2018","Cu_SAR_&_Optic_2018":"ALL_index_2018"}
@@ -371,12 +398,12 @@ if __name__ == "__main__":
                     r1 = np.arange(len(bars1))
                     r2 = [x + barWidth for x in r1]
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='Cumul')
-                    plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Not_cumul')
+                    plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Non_cumul')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=45) # fixer problème du nom de l'axe"
                     # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(r'{} vs {}'.format(str(i),str(j)))
-                    plt.legend()
+                    plt.legend(fontsize=14)
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
@@ -391,122 +418,126 @@ if __name__ == "__main__":
                     r1 = np.arange(len(bars1))
                     r2 = [x + barWidth for x in r1]
                     plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='Cumul')
-                    plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Not_cumul')
+                    plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='Non_cumul')
                     plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=45) # fixer problème du nom de l'axe"
                     # plt.ylabel('value')
                     plt.ylim(0,1)
                     plt.title(r'{} vs {}'.format(str(i),str(j)))
-                    plt.legend()
+                    plt.legend(fontsize=14)
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
                     plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+
+
+
     # =============================================================================
 #     SEASON_TIME
 # =============================================================================
-#    plt.figure(figsize=(10,7)) 
-#    a=dfMetric[dfMetric.index==0]
-#    b=dfMetric[dfMetric.index==2]
-#    plt.plot(a.step,a["mean_fscore"],color='blue',label='Irr')
-#    plt.fill_between(a.step,a["mean_fscore"]+a["std_fscore"],a["mean_fscore"]-a["std_fscore"],alpha=0.2,color='blue')
-#    plt.plot(b.step,b["mean_fscore"],color='red',label='non Irr')
-#    plt.fill_between(a.step,b["mean_fscore"]+b["std_fscore"],b["mean_fscore"]-b["std_fscore"],alpha=0.2,color='red')
-#    plt.xticks(rotation=45)
-#    plt.ylim(0.1,0.9)
-#    plt.ylabel("F_score")
-#    plt.title(str(bv)+"_"+str(years))
-#    plt.legend()
+    # plt.figure(figsize=(10,7)) 
+    # a=dfMetric[dfMetric.index==0]
+    # b=dfMetric[dfMetric.index==2]
+    # plt.plot(a.step,a["mean_fscore"],color='blue',label='Irr')
+    # plt.fill_between(a.step,a["mean_fscore"]+a["std_fscore"],a["mean_fscore"]-a["std_fscore"],alpha=0.2,color='blue')
+    # plt.plot(b.step,b["mean_fscore"],color='red',label='non Irr')
+    # plt.fill_between(a.step,b["mean_fscore"]+b["std_fscore"],b["mean_fscore"]-b["std_fscore"],alpha=0.2,color='red')
+    # plt.xticks(rotation=45)
+    # plt.ylim(0.1,0.9)
+    # plt.ylabel("F_score")
+    # plt.title(str(bv)+"_"+str(years))
+    # plt.legend()
 #    plt.savefig(d["SAVE"]+"fscore_maize"+"_"+years+"_"+bv+".png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 
 
 # =============================================================================
 #  Test sur Fscore en focntion des classes et non des runs
 # =============================================================================
-    df2017SAFRAN=dfMetric[dfMetric.step.str.endswith('2017')]
-    maize2017=df2017SAFRAN.set_index(['Classe'])
-    maize2017.sort_index(ascending=True,inplace=True)
-    # df2018SAFRAN=dfMetric[dfMetric.step.isin(['All_Data_Not_Cumul_2018','SAR_&_Optic_2018','SAR_Optic_Climate_2018'])]
-    df2018SAFRAN=dfMetric[dfMetric.step.str.endswith('2018')]
-    maize2018=df2018SAFRAN.set_index(['Classe'])
-    maize2018.sort_index(ascending=True,inplace=True)
-    M7=maize2017.sort_values(by='step',ascending=True)
-    M8=maize2018.sort_values(by='step',ascending=True)
-    if "All_Years" in years:
-        # if bv == "NESTE":
-        #     for i in set(zip(maize2017.step,maize2018.step)):
-        #         print(i)
-        #         plt.figure(figsize=(12,5)) 
-        #         x1=plt.subplot(121)
-        #         barWidth = 0.3
-        #         bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
-        #         bars2 = maize2018[maize2018.step==i[1]]["mean_fscore"]
-        #         yer1 = maize2017[maize2017.step==i[0]]['std_fscore']
-        #         yer2 = maize2018[maize2018.step==i[1]]['std_fscore']
-        #         r1 = np.arange(len(bars1))
-        #         r2 = [x + barWidth for x in r1]
-        #         plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
-        #         plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
-        #         plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
-        #         plt.ylabel('value')
-        #         plt.ylim(0,1)
-        #         plt.title(str(i[0][:-5]))
-        #         plt.legend()
-        #         plt.xticks(size='large')
-        #         plt.yticks(size='large')
-        #         plt.savefig(d["SAVE"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
-    
-        for i in set(zip(M7.index,M8.index)):
-            print(i)
-            plt.figure(figsize=(5,5)) 
-            plt.grid(axis='x')
-            x1=plt.subplot(111)
-            barWidth = 0.3
-            bars1 = maize2017[maize2017.index==i[0]][["mean_fscore","step"]]
-            bars2 = maize2018[maize2018.index==i[1]][["mean_fscore","step"]]
-            yer1 = maize2017[maize2017.index==i[0]]['std_fscore']
-            yer2 = maize2018[maize2018.index==i[1]]['std_fscore']
-            name=bars1.step.to_list()
-            list_name=[]
-            for n in name : 
-                list_name.append(n[:-5])
-            r1 = np.arange(len(bars1))
-            r2 = [x + barWidth for x in r1]
-            plt.bar(r1, bars1.mean_fscore, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
-            plt.bar(r2, bars2.mean_fscore, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
-            plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90,size =9) # fixer problème du nom de l'axe"
-            # plt.ylabel('value')
-            plt.ylim(0,1)
-            # plt.title(str(i[0]))
-            if 'Rainfed Maize'in i:
-               plt.legend(fontsize=14)
-            plt.xticks(fontsize=14)
-            plt.yticks(fontsize=14)
-            for j in np.arange(len(set(M7.step))):
-                plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
-                plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
-            plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    if years == "All_Years_ASC":
+        df2017SAFRAN=dfMetric[dfMetric.step.str.endswith('2017')]
+        maize2017=df2017SAFRAN.set_index(['Classe'])
+        maize2017.sort_index(ascending=True,inplace=True)
+        # df2018SAFRAN=dfMetric[dfMetric.step.isin(['All_Data_Not_Cumul_2018','SAR_&_Optic_2018','SAR_Optic_Climate_2018'])]
+        df2018SAFRAN=dfMetric[dfMetric.step.str.endswith('2018')]
+        maize2018=df2018SAFRAN.set_index(['Classe'])
+        maize2018.sort_index(ascending=True,inplace=True)
+        M7=maize2017.sort_values(by='step',ascending=True)
+        M8=maize2018.sort_values(by='step',ascending=True)
+        if "All_Years" in years:
+            # if bv == "NESTE":
+            #     for i in set(zip(maize2017.step,maize2018.step)):
+            #         print(i)
+            #         plt.figure(figsize=(12,5)) 
+            #         x1=plt.subplot(121)
+            #         barWidth = 0.3
+            #         bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
+            #         bars2 = maize2018[maize2018.step==i[1]]["mean_fscore"]
+            #         yer1 = maize2017[maize2017.step==i[0]]['std_fscore']
+            #         yer2 = maize2018[maize2018.step==i[1]]['std_fscore']
+            #         r1 = np.arange(len(bars1))
+            #         r2 = [x + barWidth for x in r1]
+            #         plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+            #         plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
+            #         plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
+            #         plt.ylabel('value')
+            #         plt.ylim(0,1)
+            #         plt.title(str(i[0][:-5]))
+            #         plt.legend()
+            #         plt.xticks(size='large')
+            #         plt.yticks(size='large')
+            #         plt.savefig(d["SAVE"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+        
+            for i in set(zip(M7.index,M8.index)):
+                print(i)
+                plt.figure(figsize=(5,5)) 
+                plt.grid(axis='x')
+                x1=plt.subplot(111)
+                barWidth = 0.3
+                bars1 = maize2017[maize2017.index==i[0]][["mean_fscore","step"]]
+                bars2 = maize2018[maize2018.index==i[1]][["mean_fscore","step"]]
+                yer1 = maize2017[maize2017.index==i[0]]['std_fscore']
+                yer2 = maize2018[maize2018.index==i[1]]['std_fscore']
+                name=bars1.step.to_list()
+                list_name=[]
+                for n in name : 
+                    list_name.append(n[:-5])
+                r1 = np.arange(len(bars1))
+                r2 = [x + barWidth for x in r1]
+                plt.bar(r1, bars1.mean_fscore, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+                plt.bar(r2, bars2.mean_fscore, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
+                plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],list_name,rotation=90,size =9) # fixer problème du nom de l'axe"
+                # plt.ylabel('value')
+                plt.ylim(0,1)
+                # plt.title(str(i[0]))
+                if 'Rainfed Maize'in i:
+                   plt.legend(fontsize=14)
+                plt.xticks(fontsize=14)
+                plt.yticks(fontsize=14)
+                for j in np.arange(len(set(M7.step))):
+                    plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
+                    plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
+                plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
             
 # =============================================================================
 #  SAMIR CLASSIF VALIDATION_DT terrain 
 # =============================================================================
-    f = []
-    Recall=pd.DataFrame()
-    Prec=pd.DataFrame()
-    Fscore=pd.DataFrame()
+    # f = []
+    # Recall=pd.DataFrame()
+    # Prec=pd.DataFrame()
+    # Fscore=pd.DataFrame()
     
-    nom=get_nomenclature("/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
-    pathNom="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt"
-    pathRes="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/"#¬ path où sont stocker les fichiers les matrices de confusion
-    conf_mat_dic = parse_csv(pathRes+"/MATRIX_confusion_SAMIR_DT.csv")
-    kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
-    nom_dict = get_nomenclature(pathNom)
-    size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
-    f.append(f_dic)
-    Fsc_mean = get_interest_coeff(f, nb_lab=len(labels_ref), f_interest="mean")
-    Fsc_mean_df=pd.DataFrame(Fsc_mean.items())
-    Fscore=Fscore.append(Fsc_mean_df).astype(float)
-    df_names=["labels","mean_fscore"]
-    dfmetric=Fscore
-    dfmetric.columns=df_names
-    dfmetric.labels=['Irrigated Maize','Irrigated Soybean', 'others', 'Rainfed Maize', 'Rainfed Soybean', 'Sorghum', 'Sunflower ']
-    plt.bar(dfmetric.labels,dfmetric.mean_fscore)
+    # nom=get_nomenclature("/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt") # Nomenclature utlisé dans Iota²
+    # pathNom="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/nomenclature_paper.txt"
+    # pathRes="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/"#¬ path où sont stocker les fichiers les matrices de confusion
+    # conf_mat_dic = parse_csv(pathRes+"/MATRIX_confusion_SAMIR_DT.csv")
+    # kappa, oacc, p_dic, r_dic, f_dic = get_coeff(conf_mat_dic)
+    # nom_dict = get_nomenclature(pathNom)
+    # size_max, labels_prod, labels_ref = get_max_labels(conf_mat_dic, nom_dict)
+    # f.append(f_dic)
+    # Fsc_mean = get_interest_coeff(f, nb_lab=len(labels_ref), f_interest="mean")
+    # Fsc_mean_df=pd.DataFrame(Fsc_mean.items())
+    # Fscore=Fscore.append(Fsc_mean_df).astype(float)
+    # df_names=["labels","mean_fscore"]
+    # dfmetric=Fscore
+    # dfmetric.columns=df_names
+    # dfmetric.labels=['Irrigated Maize','Irrigated Soybean', 'others', 'Rainfed Maize', 'Rainfed Soybean', 'Sorghum', 'Sunflower ']
+    # plt.bar(dfmetric.labels,dfmetric.mean_fscore)
 

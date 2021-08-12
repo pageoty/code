@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # std_lam=pd.DataFrame(lam_et.std())
     # mean_lam["date"]=ETR.date
 
-    df_date_aqui=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
+    df_date_aqui=pd.read_csv(d["PC_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T30TYP_input_dates_2017.txt",header=None)
     df_date_aqui[0]=pd.to_datetime(df_date_aqui[0],format='%Y%m%d')
     df_date_aqui.columns=["date"]
     Vol_tot=pd.DataFrame()
