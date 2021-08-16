@@ -71,7 +71,7 @@ def plt_classif_kappa(df,var1,var2):
     plt.legend(fontsize=14)
 
 if __name__ == "__main__":
-    years='2018_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="TARN"
     d={}
     d["PC_labo"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
@@ -514,7 +514,7 @@ if __name__ == "__main__":
                 for j in np.arange(len(set(M7.step))):
                     plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
                     plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
-                plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+                plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"_"+bv+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
             
 # =============================================================================
 #  SAMIR CLASSIF VALIDATION_DT terrain 

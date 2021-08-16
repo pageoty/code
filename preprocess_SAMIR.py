@@ -36,9 +36,9 @@ if __name__ == "__main__":
     # print(args.name_run)
    
     years="2017"
-    ZONE =["GERS"] # Fusion PARCELLE_CESBIO
+    ZONE =["..."] # Fusion PARCELLE_CESBIO
     # name_run="RUNS_SAMIR/RUNS_SENSI_DATA_RAINFALL/DATA_STATION/"+str(years)+"/Inputdata/"
-    name_run="RUNS_SAMIR/DATA_SCP_ICOS/CLASSIF_ALL_MAIS/"+str(years)+"/Inputdata/"
+    name_run="RUNS_SAMIR/DATA_SCP_ICOS/NESTE_MAIS/"+str(years)+"/Inputdata/"
     # mode="CSV"
     Meteo="SAFRAN"
     d={}
@@ -773,6 +773,112 @@ if __name__ == "__main__":
     # NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
     NDVI_Gers=NDVI_Gers[NDVI_Gers.id.isin(FCOVER_Gers.id)]
     NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
+    
+   
+    
+   
+    
+# =============================================================================
+#    FCOVER NESTE
+# =============================================================================
+    for t in ["TYP","TCJ",'TYN']:
+        # dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
+        # dfs=pd.DataFrame(dfnames)
+        # dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2017_"+t+".txt",sep=',', header=None)
+        if t =='TCJ':
+            dates=dfnames[0].apply(lambda x:x[0:8])
+        else:
+            dates=dfnames[0].apply(lambda x:x[11:19])
+        dates=pd.to_datetime(dates,format="%Y%m%d")
+        if t == 'TCJ':
+            dates.drop(49,inplace=True)
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_PKGC/GERS/NDVI_2017_PKGC_GERS_"+t+".csv",decimal=".")
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/NESTE_MAIS/"+t+"_NESTE_2017_MAIZE.csv",decimal=".")
+
+        tmp=df[["ID"]]
+        tmp1=pd.DataFrame()
+        if t =="TYP":
+            for i in np.arange(0,41,2): #♣ 2018 : 49 :  2017 : 41
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a)
+        elif t == 'TYN':
+            for i in np.arange(0,46,2): #♣ 2018 : 49 :  2017 : 41
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a)
+        else: 
+            for i in np.arange(0,167,2): #♣ 2018 : 49 :  2017 : 41
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a)
+       
+        if t == "TCJ":
+            tmp1.drop('mean_98',inplace=True)
+        Fcover=tmp1.T
+        Fcover.columns=list(dates)
+        # Fcover=Fcover.T
+        Fcover.T.sort_index(inplace=True)
+        Fcover.T.sort_index(ascending=True,inplace=True)
+        Fcover=Fcover.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
+        Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+        Fcover=Fcover.append(df.ID)
+        Fcover=Fcover.T
+        Fcover.set_index("ID",inplace=True)
+        FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+        if t =='TYN':
+            FCOVERTYN=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+        elif t == "TYP":
+            FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+        else:
+            FCOVERTCJ=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
+    FCOVER=pd.concat([FCOVERTYN,FCOVERTYP,FCOVERTCJ])
+    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"])
+    FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
+# =============================================================================
+#   NDVI NESTE 3 tuiles
+# =============================================================================
+    for t in ["TYP","TYN","TCJ"]:
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
+        dfs=pd.DataFrame(dfnames)
+        dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/MAIZE_NESTE/"+t+"_NESTE_2017_MAIZE.csv",decimal=".")
+
+        tmp=df[["ID"]]
+        tmp1=pd.DataFrame()
+        if t =="TYP":
+            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 42
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a/1000)
+        elif t == 'TYN':
+            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 46
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a/1000)
+        elif t == 'TCJ':
+            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 46
+                a=df["mean_"+str(i)]
+                tmp1=tmp1.append(a/1000)
+        NDVI=tmp1.T
+        NDVI.columns=list(dates)
+        # Fcover=Fcover.T
+        NDVI.T.sort_index(inplace=True)
+        NDVI.T.sort_index(ascending=True,inplace=True)
+        NDVI=NDVI.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
+        NDVI=NDVI.resample("D").interpolate(method='time',limit_direction='both')
+        NDVI=NDVI.append(df.ID)
+        NDVI=NDVI.T
+        NDVI.set_index("ID",inplace=True)
+        NDVI=pd.DataFrame(NDVI.T.unstack()).reset_index()
+        if t =='TYP':
+            NDVITYP=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+        elif t == 'TYN':
+            NDVITYN=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+        elif t == 'TCJ':
+            NDVITCJ=NDVI.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'})
+    #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
+    NDVI=pd.concat([NDVITYN,NDVITYP,NDVITCJ])
+    # NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
+    NDVI_Gers=NDVI[NDVI.id.isin(FCOVER_Gers.id)]
+    NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
+
 # =============================================================================
 #   Météo_SAFRAN
 # =============================================================================

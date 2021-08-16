@@ -201,7 +201,7 @@ def indexdate(df,intervalle_inf,out):
 if __name__ == '__main__':
     d={}
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/"
-    d["SAVE"]="G:/THESE/CLASSIFICATION/RESULT/PLOT/"
+    # d["SAVE"]="G:/THESE/CLASSIFICATION/RESULT/PLOT/"
 #    df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/tmp/TEST_ANALYSE_SIGNAL/ZONE_TEST_MAIZE.csv")
 #    dfpar=df.groupby("originfid").mean()
     Label=[1,2,11,22,33,44]
@@ -214,8 +214,8 @@ if __name__ == '__main__':
     list_bd_drop=["region","labcroirr","ogc_fid","alt_band_0"]
     list_drop=["labcroirr","ogc_fid"]
     list_drop_bv=["labcroirr","ogc_fid","alt_band_0"]
-    years= "2017" #or 2018
-    BV="ADOUR" # ADOUR
+    years="2018" #or 2018
+    BV="TARN" # ADOUR
     
 # =============================================================================
 #     Ceate plot
@@ -948,7 +948,7 @@ if __name__ == '__main__':
 # #                    a="%s%s"%(i,l)
 #             globals()["_%s%s"% (i,l)],globals()["b_sup%s%s"% (i,l)]=stats.t.interval(0.95,globals()["%s%s"%(i,l)].shape[1]-1,loc=globals()["%s%s"%(i,l)].T.mean(),scale=stats.sem(globals()["%s%s"%(i,l)].T)) # Calcule de l'intervalle de confiance 
 #             confianceinf.append(globals()["_%s%s"% (i,l)])
-#             confiancesup.append(globals()["b_sup%s%s"% (i,l)])
+# #             confiancesup.append(globals()["b_sup%s%s"% (i,l)])
             
     for l in Label:
         for i in features:
@@ -970,7 +970,7 @@ if __name__ == '__main__':
     p5=plt.plot(NDVI44.sort_date,NDVI44.T.iloc[:-2].mean()/1000,color='black',linestyle='--')
     # plt.fill_between(NDVI44.sort_date, confiancesup[5]/1000, confianceinf[5]/1000, facecolor='black', alpha=0.1)
     plt.ylabel("NDVI")
-    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
+    # plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.text(325,0.90,"a",size="20")
@@ -993,7 +993,7 @@ if __name__ == '__main__':
     plt.xticks(size='large',rotation=45)
     plt.text(325,0.14,"b",size="20")
     plt.yticks(fontsize= 12)
-    # plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_V3_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_optic_V3_"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
     plt.figure(figsize=(13,5))
     ax3=plt.subplot(121)
     p1=plt.plot(asc_vh1.sort_date,asc_vh1.T.iloc[:-2].mean(),color='blue',linestyle="-")
@@ -1006,7 +1006,7 @@ if __name__ == '__main__':
     plt.fill_between(asc_vh22.sort_date, confiancesup[39], confianceinf[39], facecolor='red', alpha=0.1)
     p5=plt.plot(asc_vh44.sort_date,asc_vh44.T.iloc[:-2].mean(),color='black',linestyle='--')
     plt.fill_between(asc_vh44.sort_date, confiancesup[41], confianceinf[41], facecolor='black', alpha=0.1)
-    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
+    # plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
     plt.gca().yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
     plt.ylabel("sigma0 VV")
@@ -1015,7 +1015,7 @@ if __name__ == '__main__':
     plt.yticks(fontsize= 12)
     ax42=plt.twinx()
     ax42.yaxis.grid(False) 
-    ax42.bar(dfSAFRADOUR.sort_date,dfSAFRADOUR.PRELIQ_Q,linewidth=0.1,color='blue')
+    ax42.bar(dfSAFRTARN_.sort_date,dfSAFRTARN_.PRELIQ_Q,linewidth=0.1,color='blue')
     ax42.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     ax42.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     #plt.ylabel("Rainfall in mm")
@@ -1038,7 +1038,7 @@ if __name__ == '__main__':
     plt.yticks(fontsize= 12)
     ax32=plt.twinx()
     ax32.yaxis.grid(False) 
-    ax32.bar(dfSAFRADOUR.sort_date.iloc[:-4],dfSAFRADOUR.PRELIQ_Q.iloc[:-4],linewidth=0.1,color='blue')
+    ax32.bar(dfSAFRTARN_.sort_date.iloc[:-4],dfSAFRTARN_.PRELIQ_Q.iloc[:-4],linewidth=0.1,color='blue')
     ax32.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     ax32.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
     plt.ylabel("Rainfall in mm")
@@ -1046,7 +1046,7 @@ if __name__ == '__main__':
     plt.yticks(fontsize= 12)
     plt.xticks(visible=False)
 
-    # plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V3"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V3"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 
 
 # =============================================================================

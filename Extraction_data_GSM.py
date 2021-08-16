@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     #other méthode pondération 
 
-    parcelle=geo.read_file("H:/Yann_THESE/RESULTAT_CLASSIFICATION/Vecteur_classif_ADOUR_2017/Classif_Adour_2017_maïs_all.shp")
+    parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NESTE_SOIL_EXTRACT.shp")
     # PKGC=parcelle[['clay_l0_me', 'clay_l0__1', 'clay_l100_', 'clay_l10_1', 'clay_l15_m',
     #     'clay_l15_1', 'clay_l30_m', 'clay_l30_1', 'clay_l5_me', 'clay_l5__1',
     #     'clay_l60_m', 'clay_l60_1', 'sand_l0_me', 'sand_l0__1', 'sand_l100_',
@@ -74,6 +74,6 @@ if __name__ == '__main__':
          text=a.get_group(g)[0].to_list()
          data.append([g,text[0],text[1],text[2]])
     data_parcelle_Texture=pd.DataFrame(data,columns=["ID","Argile","Sable",'Limon'])
-    data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_ALL_Classif_Adour_2017.csv")
+    data_parcelle_Texture.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_NESTE_2017.csv")
 
     
