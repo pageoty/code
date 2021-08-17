@@ -477,8 +477,9 @@ if __name__ == '__main__':
 #
 ##    plt.plot(df_mean_NDWI.index,df_mean_NDWI[1.0])
 #    plt.plot(df_mean_NDWI.index,df_mean_NDWI[11.0])
-    for y in ["2017","2018"]:
+    for y in ["2018"]:
         fig, ax = plt.subplots(figsize=(14, 7))
+        plt.grid()
         # sns.set(style="darkgrid")
         # sns.set_context('paper')
         ax1=plt.subplot(221)

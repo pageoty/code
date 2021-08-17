@@ -123,10 +123,12 @@ if __name__ == '__main__':
         if y =="2018":
             tot_2018=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
             tot_2018=tot_2018/1000
+            tot_2018=tot_2018[tot_2018.index!= "LASSERRE"]
             tot_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018.csv")
         else:
             tot_2017=pd.DataFrame(TT.values,index=asa_n,columns=["conso","Vali",'param'])
             tot_2017=tot_2017/1000
+            tot_2017=tot_2017[tot_2017.index!= "LASSERRE"]
             tot_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017.csv")
     for t in [1.0,1.1,1.2,1.3,1.7]:
         plt.figure(figsize=(7,7))
@@ -141,7 +143,7 @@ if __name__ == '__main__':
             plt.ylabel("Volumes annuels modélisés en million de m3 ")
             plt.plot([-10, 1600], [-10,1600], 'black', lw=1,linestyle='--')
             if "2017" in y :
-                rectangle = plt.Rectangle((49, 700),300,170, ec='blue',fc='blue',alpha=0.1)
+                rectangle = plt.Rectangle((49, 700),330,170, ec='blue',fc='blue',alpha=0.1)
                 plt.gca().add_patch(rectangle)
                 plt.text(50,830,"RMSE = "+str(round(rms,2))) 
                 plt.text(50,790,"R² = "+str(round(r_value,2)))
@@ -229,11 +231,13 @@ if __name__ == '__main__':
             tab_irri_asa_2018=tab_irri_asa
             tab_irri_asa_2018.set_index("ASA",inplace=True)
             tab_irri_asa_2018=tab_irri_asa_2018/1000
+            tab_irri_asa_2018=tab_irri_asa_2018[tab_irri_asa_2018.index!= "LASSERRE"]
             tab_irri_asa_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018_maxZr_parcelle.csv")
         else:
             tab_irri_asa_2017=tab_irri_asa
             tab_irri_asa_2017.set_index("ASA",inplace=True)
             tab_irri_asa_2017=tab_irri_asa_2017/1000
+            tab_irri_asa_2017=tab_irri_asa_2017[tab_irri_asa_2017.index!= "LASSERRE"]
             tab_irri_asa_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017_maxZr_parcelle.csv")
             
         
@@ -249,7 +253,7 @@ if __name__ == '__main__':
         plt.ylabel("Volumes annuels modélisés en million de m3 ")
         plt.plot([-10, 1600], [-10,1600], 'black', lw=1,linestyle='--')
         if "2017" in y :
-            rectangle = plt.Rectangle((49, 700),300,170, ec='blue',fc='blue',alpha=0.1)
+            rectangle = plt.Rectangle((49, 700),330,170, ec='blue',fc='blue',alpha=0.1)
             plt.gca().add_patch(rectangle)
             plt.text(50,830,"RMSE = "+str(round(rms,2))) 
             plt.text(50,790,"R² = "+str(round(r_value,2)))

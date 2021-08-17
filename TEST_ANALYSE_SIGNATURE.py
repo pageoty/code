@@ -14,11 +14,12 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm
-import seaborn as sns
+# import seaborn as sns
 import csv
 from STAT_ZONAL_SPECRTE import *
 from scipy import stats
 import geopandas as geo
+import pickle
 
 
 def pltmutli(x,x2,y1,y1bis,y2,y2bis,y3,y3bis,y4,y4bis,y5,y5bis,x3,y6):
@@ -214,8 +215,8 @@ if __name__ == '__main__':
     list_bd_drop=["region","labcroirr","ogc_fid","alt_band_0"]
     list_drop=["labcroirr","ogc_fid"]
     list_drop_bv=["labcroirr","ogc_fid","alt_band_0"]
-    years="2018" #or 2018
-    BV="TARN" # ADOUR
+    years="2017" #or 2018
+    BV="ADOUR" # ADOUR
     
 # =============================================================================
 #     Ceate plot
@@ -1049,6 +1050,35 @@ if __name__ == '__main__':
     plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_sar_pluvio_V3"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
 
 
+    plt.figure(figsize=(7,7))
+    ax4=plt.subplot(111)
+    p1=plt.plot(asc_userfeature1.sort_date,asc_userfeature1.T.iloc[:-2].mean(),color='blue',linestyle="-")
+    plt.fill_between(asc_userfeature1.sort_date, confiancesup[42], confianceinf[42], facecolor='blue', alpha=0.1)
+    p3=plt.plot(asc_userfeature11.sort_date,asc_userfeature11.T.iloc[:-2].mean(),color='red',linestyle='-')
+    plt.fill_between(asc_userfeature11.sort_date, confiancesup[44], confianceinf[44], facecolor='red', alpha=0.1)
+    p2=plt.plot(asc_userfeature2.sort_date,asc_userfeature2.T.iloc[:-2].mean(),color='blue',linestyle="--")
+    plt.fill_between(asc_userfeature2.sort_date, confiancesup[43], confianceinf[43], facecolor='blue', alpha=0.1)
+    p4=plt.plot(asc_userfeature22.sort_date,asc_userfeature22.T.iloc[:-2].mean(),color='red',linestyle='--')
+    plt.fill_between(asc_userfeature22.sort_date, confiancesup[45], confianceinf[45], facecolor='red', alpha=0.1)
+    p5=plt.plot(asc_userfeature44.sort_date,asc_userfeature44.T.iloc[:-2].mean(),color='black',linestyle='--')
+    plt.fill_between(asc_userfeature44.sort_date, confiancesup[47], confianceinf[47], facecolor='black', alpha=0.1)
+    plt.ylabel("sigma0 VV/VH")
+    plt.xticks(size='large',rotation=45)
+    plt.legend((p1[0],p2[0],p3[0],p4[0],p5[0]),("Irrigated Maize","Irrigated Soybean","Rainfed Maize","Rainfed Soybean","Sunflower"),loc='upper left',fontsize=12)
+
+    # plt.text(325,-5,"b",size="20")
+    plt.yticks(fontsize= 12)
+    ax32=plt.twinx()
+    ax32.yaxis.grid(False) 
+    ax32.bar(dfSAFRADOUR.sort_date.iloc[:-4],dfSAFRADOUR.PRELIQ_Q.iloc[:-4],linewidth=0.1,color='blue')
+    ax32.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+    ax32.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+    plt.ylabel("Rainfall in mm")
+    plt.ylim(0,100)
+    plt.yticks(fontsize= 12)
+    plt.xticks(visible=False)
+    plt.savefig(d["SAVE"]+"PLOT_TEMPOREL/Paper_PLOT_all_crops_VV_VH_pluvio_V3"+BV+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+
 # =============================================================================
 # #  Vérification donné Adour via le SAR:
 # =============================================================================
@@ -1074,4 +1104,18 @@ if __name__ == '__main__':
     VV=VV.T
     VV.set_index("ID",inplace=True)
 
-    plt.plot(VV.columns,VV.loc[4355])
+    dfmeteo=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PARCELLE_CLASSIF/meteo.df","rb"))
+
+    dict_i={143:3957,7328:141,2886:3257,1315:6605,2939:7584,11235:7583,3919:7281,7325:1024}
+    for i,z in zip (dict_i.keys(),dict_i.values()):
+        plt.figure(figsize=(10,10))
+        plt.plot(VV.columns,VV.loc[i],color="blue",label='IRR',linestyle="--")
+        plt.plot(VV.columns,VV.loc[z],color="red",label='NIRR',linestyle="--")
+        plt.legend()
+        ax32=plt.twinx()
+        ax32.yaxis.grid(False) 
+        ax32.bar(dfmeteo[dfmeteo.id==float(i)].date.iloc[120:334],dfmeteo[dfmeteo.id==143.0].Prec.iloc[120:334],linewidth=0.1)
+        ax32.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+        ax32.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(6))
+        plt.ylabel("Rainfall in mm")
+        plt.ylim(0,100)

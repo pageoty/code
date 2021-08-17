@@ -18,7 +18,7 @@ from matplotlib import cm
 import csv
 import numpy as np
 import pandas as pd
-import seaborn as sns 
+# import seaborn as sns 
 import TEST_ANALYSE_SIGNATURE
 import shapely.geometry as geom
 import descartes

@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import seaborn as sns
+# import seaborn as sns
 import csv
 from scipy import stats
 from ResultsUtils import *
@@ -71,7 +71,7 @@ def fig_conf_mat_rec(conf_mat_dic, nom_dict, kappa, oacc, p_dic, r_dic, f_dic,
 
 if __name__ == "__main__":
     years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
-    bv="TARN"
+    bv="ADOUR"
     d={}
     d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
     d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/"
@@ -163,7 +163,7 @@ if __name__ == "__main__":
         plt.yticks(fontsize=12)
         plt.legend(fontsize=12,ncol=1)
         plt.text(-0.25,60,"a",size="20")
-        plt.grid(b=None)
+        # plt.grid(b=None)
         ax1.xaxis.set_label_text("")
         ax1.yaxis.set_label_text("percentage confusion",fontsize=12)
         plt.ylim(0,65)
@@ -268,6 +268,36 @@ if __name__ == "__main__":
 #    ax4=plt.subplot(224)
 #    df_multi.xs("Sunflower ").iloc[0:-1].plot(kind='bar',ax=ax4,legend=True)
 #    plt.xticks(rotation=0)
-    
-    
+# =============================================================================
+#     Pour le sunflower
+# =============================================================================
+    fig, ax = plt.subplots(figsize=(12, 10))
+    ax10=plt.subplot(111)
+    plt.title("Sunflower",fontsize=14)
+    j=df_multi.xs("Sunflower ").iloc[0:-2].T.sort_values(by="Irrigated Maize")
+    if bv =="ADOUR":
+        j.T.plot(kind="bar",color=["lightgrey","lightgrey",'darkgrey','darkgrey',"dimgrey","dimgrey"],ax=ax10,legend=True)
+        bars10 = ax10.patches
+        hatches = ("..","..","..","..","//","//","//","//","..","..","..","..","//","//","//","//","..","..","..","..","//","//","//","//")
+        for bar, hatch in zip(bars10, hatches):
+            print(bar)
+            bar.set_hatch(hatch)
+    else:
+        # a.T.plot(kind="bar",color=["royalblue","red",'blue','deepskyblue',"darkorange",'salmon'],ax=ax1,legend=True)
+        j.T.plot(kind="bar",color=["dimgrey","lightgrey",'darkgrey','lightgrey',"darkgrey","dimgrey"],ax=ax10,legend=True)
+        bars10 = ax10.patches
+        hatches = ("//","//","//","..","..","..","//","//","//","//","//","//","..","..","..","..","..","..")
+        for bar, hatch in zip(bars10, hatches):
+            print(bar)
+            bar.set_hatch(hatch)
+    plt.xticks(rotation=0,fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(fontsize=12,ncol=1)
+    # plt.text(-0.25,60,"a",size="20")
+    # plt.grid(b=None)
+    ax10.xaxis.set_label_text("")
+    ax10.yaxis.set_label_text("percentage confusion",fontsize=12)
+    plt.ylim(0,65)
+    plt.savefig("/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/Confusion_only_sunflower_"+bv+"_"+years+".png")
+
 
