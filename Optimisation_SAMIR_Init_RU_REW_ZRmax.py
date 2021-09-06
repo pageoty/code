@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2017"]
+    years=["2018"]
     
     #  Add args User PC home/ PC labo
     result=[]
@@ -106,7 +106,7 @@ if __name__ == "__main__":
                 # os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC/"+str(y)+"/* %s"%(d['SAMIR_run']))
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/PKGC_GERS/"+str(y)+"/* %s"%(d['SAMIR_run'])) # pour la préparation des données ADOUR_TARN
             elif "ASA" in name_run:
-                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ASA/"+str(y)+"/* %s"%(d['SAMIR_run']))
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ASA_all_crops_summer/"+str(y)+"/* %s"%(d['SAMIR_run']))
             elif "Classif" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/CLASSIF_ALL_MAIS/"+str(y)+"/* %s"%(d['SAMIR_run']))
             elif "NESTE" in name_run:
@@ -242,8 +242,8 @@ if __name__ == "__main__":
         elif "ASA" in name_run : 
             print('ASA parcelle')
         #  Lecture file PF_CC
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-
+            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+str(y)+"_UTS_maj_all_crops.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+            =PF_CC.drop_duplicates(subset=["ID"])
             # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]
@@ -525,13 +525,13 @@ if __name__ == "__main__":
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
                                  Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="400/2500/50/lin")
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="400/1500/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),
                                  Ze=150,REW=REW,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=float(RUSOL_ponde),Irrig_auto=0,Irrig_man=1,Plateau=0,Lame_max=30,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1200/50/lin")
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="800/1500/50/lin")
             elif optimis_val =="p" :
                 timestart=str(y)+"-05-01"
                 vege=NDVI.loc[(NDVI.NDVI>0.25)&(NDVI.date>timestart)]
@@ -737,17 +737,17 @@ if __name__ == "__main__":
                  for run in os.listdir(d["SAMIR_run"]+"Output/"+optimis_val+"/"):
                     print(run)
                     if classe in run and "txt" not in run:
-                        num_run=run[23:-3]
+                        num_run=run[23:-3] #  permet de récupere le numéro du run
                         print(num_run)
                         a=open(d["SAMIR_run"]+"Output/"+optimis_val+"/"+run,"rb")
                         output_sim=pickle.load(a)
                         a.close()
-                        Irrigation_mod=output_sim[["Ir_auto","date","id"]]
+                        Irrigation_mod=output_sim[["Ir_auto","date","id"]] # récupérer les champs dans le df de sortie 
                         num_run=int(num_run)-1
                         parametre=param.iloc[int(num_run)]
-                        parametre1=parametre[1]
+                        parametre1=parametre[1] # récupere la valeur du paramètre 
                         params.append([num_run,parametre1])
-                        para=pd.DataFrame(params)
+                        para=pd.DataFrame(params) # création de l'index de la LUT avec la valeur de paramètres
                         a=pd.MultiIndex.from_frame(para,names=['num_run',"maxZr"])
                         concat_ir.append(Irrigation_mod["Ir_auto"])
                         conca=pd.DataFrame(concat_ir)

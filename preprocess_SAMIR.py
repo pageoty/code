@@ -206,10 +206,10 @@ if __name__ == "__main__":
                 dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None)
                 dfs=pd.DataFrame(dfnames)
                 dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-                df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/NDVI_ASA_2018.csv",sep=",")
+                df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/All_summer_crops/NDVI_ASA_2017.csv",sep=",")
                 tmp=df[["ID"]]
                 tmp1=pd.DataFrame()
-                for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 41
+                for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 41
                       a=df["mean_"+str(i)]/1000
                       tmp1=tmp1.append(a)
                 Fcover=tmp1.T
@@ -223,7 +223,7 @@ if __name__ == "__main__":
                 Fcover.set_index("ID",inplace=True)
                 FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
                 FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'NDVI'}, inplace=True)
-                FCOVER.to_pickle(d["path_run"]+"/maize_irri/NDVI2018.df")
+                FCOVER.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
           elif bv == "FUSION":
                 dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_"+str(years)+".txt",sep=',', header=None)
                 dfs=pd.DataFrame(dfnames)
@@ -311,7 +311,7 @@ if __name__ == "__main__":
         elif bv == "Adour_Tarn":
             for i in ["WP",'FC']:
                 soil=pd.DataFrame()
-                for j in list(set(FCOVER_Gers.id)):
+                for j in list(set(NDVI_Gers.id)):
                     a=pd.DataFrame({"id": j, i: [np.nan],i+"std":[np.nan]})
                     soil=soil.append(a)
                     # soil=soil[soil.id!=96]
@@ -372,7 +372,7 @@ if __name__ == "__main__":
                 soil.to_pickle(d["path_run"]+'/maize_irri/Soil_texture.df')
         elif bv =="Adour_Tarn" :
                 soil=pd.DataFrame()
-                for j in list(set(FCOVER_Gers.id)):
+                for j in list(set(NDVI_Gers.id)):
                     a=pd.DataFrame({"id": j, "Clay": [np.nan],"Clay_std":[np.nan],"Sand":[np.nan], "Sand_std" : [np.nan]})
                     soil=soil.append(a)
                 # soil=soil[soil.id!=96]
@@ -546,19 +546,24 @@ if __name__ == "__main__":
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
             # FCOVER=FCOVER.loc[(FCOVER.id<14.0)&(FCOVER.id!=7.0)]
         elif bv =="ASA" :
-            dfnames=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2018_TYP.txt",sep=',', header=None)
-            dates=dfnames[0].apply(lambda x:x[11:19])
+            dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2018_TCJ.txt",sep=',', header=None)
+            dates=dfnames[0].apply(lambda x:x[0:8])
+            dates.drop(49,inplace=True)
+            # dfnames=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CACG/data_Raw/list_FCOVER_2017_TYP.txt",sep=',', header=None)
+            # dates=dfnames[0].apply(lambda x:x[11:19])
             dates=pd.to_datetime(dates,format="%Y%m%d")
-            df=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/PARCELLE_ASA_2018_TYP.csv",decimal=".")
+            df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/All_summer_crops/FCOVER_ASA_2017.csv",decimal=".")
             tmp=df[["ID"]]
             tmp1=pd.DataFrame()
-            for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,168,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
+            tmp1.drop('mean_98',inplace=True)
             Fcover=tmp1.T
             Fcover.columns=list(dates)
             # Fcover=Fcover.T
             Fcover.T.sort_index(inplace=True)
+            Fcover.T.sort_index(ascending=True,inplace=True)
             Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
             Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
             Fcover=Fcover.append(df.ID)
@@ -566,6 +571,7 @@ if __name__ == "__main__":
             Fcover.set_index("ID",inplace=True)
             FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
             FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'}, inplace=True)
+            FCOVER.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
         elif bv =="ADOUR":
             for t in ["TYN","TYP"]:
                 dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2018_"+t+".txt",sep=',', header=None)
@@ -646,35 +652,37 @@ if __name__ == "__main__":
         # dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
         # dfs=pd.DataFrame(dfnames)
         # dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-        dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2017_"+t+".txt",sep=',', header=None)
-        if t =='TCJ':
-            dates=dfnames[0].apply(lambda x:x[0:8])
-        else:
-            dates=dfnames[0].apply(lambda x:x[11:19])
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_TARN/list_FCOVER_2018_"+t+".txt",sep=',', header=None)
+        # if t =='TCJ':
+            # dates=dfnames[0].apply(lambda x:x[0:8])
+        # else:
+        dates=dfnames[0].apply(lambda x:x[11:19])
         dates=pd.to_datetime(dates,format="%Y%m%d")
         if t == 'TCJ':
-            dates.drop(49,inplace=True)
+            dates.drop(78,inplace=True)
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_ASA/All_summer_crops/FCOVER_"+t+"_ASA_2018.csv",decimal=".")
+
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_PKGC/GERS/NDVI_2017_PKGC_GERS_"+t+".csv",decimal=".")
-        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/GERS/FCOVER_2017_PKGC_GERS_"+t+".csv",decimal=".")
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_PKGC/GERS/FCOVER_2017_PKGC_GERS_"+t+".csv",decimal=".")
 
         tmp=df[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
-            for i in np.arange(0,41,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,49,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         else:
-            for i in np.arange(0,167,2): #♣ 2018 : 49 :  2017 : 41
+            for i in np.arange(0,199,2): #♣ 2018 : 49 :  2017 : 41
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         if t == "TCJ":
-            tmp1.drop('mean_98',inplace=True)
+            tmp1.drop('mean_78',inplace=True)
         Fcover=tmp1.T
         Fcover.columns=list(dates)
         # Fcover=Fcover.T
         Fcover.T.sort_index(inplace=True)
         Fcover.T.sort_index(ascending=True,inplace=True)
-        Fcover=Fcover.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
+        Fcover=Fcover.T.reindex(pd.date_range(start="2018-01-01",end="2018-12-31",freq='1D'))
         Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
         Fcover=Fcover.append(df.ID)
         Fcover=Fcover.T
@@ -737,20 +745,21 @@ if __name__ == "__main__":
     # FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
     
     #  POUR LE NDVI Classif
-    for t in ["TYP","TYN"]:
-        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
+    for t in ["TYP","TCJ"]:
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2018.txt",sep=',', header=None)
         dfs=pd.DataFrame(dfnames)
         dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/All_summer_crops/NDVI_"+t+"_ASA_2018.csv",decimal=".")
 
         tmp=df[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
-            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 42
+            for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 42
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
         else:
-            for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 46
+            for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 46
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
         NDVI=tmp1.T
@@ -758,7 +767,7 @@ if __name__ == "__main__":
         # Fcover=Fcover.T
         NDVI.T.sort_index(inplace=True)
         NDVI.T.sort_index(ascending=True,inplace=True)
-        NDVI=NDVI.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
+        NDVI=NDVI.T.reindex(pd.date_range(start="2018-01-01",end="2018-12-31",freq='1D'))
         NDVI=NDVI.resample("D").interpolate(method='time',limit_direction='both')
         NDVI=NDVI.append(df.ID)
         NDVI=NDVI.T
@@ -771,8 +780,8 @@ if __name__ == "__main__":
     #  Si NDVI supprimer les valuer dans TYN soit keep =fisrt
     NDVI=pd.concat([NDVITYN,NDVITYP])
     # NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
-    NDVI_Gers=NDVI_Gers[NDVI_Gers.id.isin(FCOVER_Gers.id)]
-    NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2017.df")
+    NDVI_Gers=NDVI[NDVI.id.isin(FCOVER_Gers.id)]
+    NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2018.df")
     
    
     
@@ -830,8 +839,10 @@ if __name__ == "__main__":
             FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
         else:
             FCOVERTCJ=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
-    FCOVER=pd.concat([FCOVERTYN,FCOVERTYP,FCOVERTCJ])
-    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"])
+    FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
+    FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"],keep="last")
+    FCOVER_Gers=pd.concat([FCOVER_Gers,FCOVERTCJ])
+    FCOVER_Gers=FCOVER_Gers.drop_duplicates(subset=["id","date"],keep="first")
     FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
 # =============================================================================
 #   NDVI NESTE 3 tuiles

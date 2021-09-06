@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_2500_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_ASA/ASA_init_ru_Fcover_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
         Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
         gro=Irri_mod.groupby("ID")
-        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/2017/Output/maxZr/output_test_2017_maize_irri_param.txt",header=None,skiprows=1,sep=";")
         param.loc[param.shape[0]]='ID' 
         NDVI=pickle.load(open(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Inputdata/maize_irri/NDVI"+str(y)+".df","rb"))
         NDVI=NDVI.loc[(NDVI.date >= str(y)+'-04-01')&(NDVI.date<=str(y)+"-09-30")]
@@ -180,14 +180,14 @@ if __name__ == '__main__':
 #          Plot avec RUM inversion
 # =============================================================================
     for y in years: 
-        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+y+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+y+"_UTS_maj_all_crops.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
         Vol_tot=pd.DataFrame()
         Id=pd.DataFrame()
-        vali_ASA=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/ConsoASA_NESTE_"+str(y)+".csv",encoding='latin-1',decimal='.',sep=';',na_values="nan")
+        vali_ASA=pd.read_csv(d["PC_disk"]+"TRAITEMENT/DATA_VALIDATION/DATA_VOL_IRRIGATION/ConsoASA_NESTE_"+str(y)+"_all_crops.csv",encoding='latin-1',decimal='.',sep=',',na_values="nan")
         d["Output_model_PC_home_disk"]=d["PC_disk"]+"/TRAITEMENT/"+name_run
         Irri_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv",index_col=[0,1],skipinitialspace=True)
         gro=Irri_mod.groupby("ID")
-        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+        param=pd.read_csv(d["Output_model_PC_home_disk"]+"/"+str(y)+"/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
         param.loc[param.shape[0]]='ID' 
     #  Isloer pour chaque parcelle maxZr arondi 
         for p in list(set(Irri_mod.ID))[2:]:
@@ -201,16 +201,27 @@ if __name__ == '__main__':
         tot_IRR=pd.merge(tot_ID,vali_ASA,on=["ID"])
         tot_IRR.dropna(inplace=True)
         tot_IRR.drop_duplicates(inplace=True)
+        tot_IRR_ss_sunfl=tot_IRR[tot_IRR.RPG_CODE_C!='TRN']
         #  Isloer pour chaque parcelle maxZr arondi 
         conso_par=[]
         idpar=[]
         n_asa=[]
-        for i in tot_IRR.ID:
+        # for i in tot_IRR.ID:
+        #     maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
+        #     irri=tot_IRR.loc[tot_IRR.ID==i][maxzr].iloc[0].values
+        #     conso_par.append(irri[0]*tot_IRR.loc[tot_IRR.ID==i]["area"].iloc[0]*10)
+        #     idpar.append(i)
+        #     n_asa.append(tot_IRR.loc[tot_IRR.ID==i]['nomasa'].values[0])
+        # tab_par_irri=pd.DataFrame([idpar,conso_par,n_asa]).T
+        # tab_par_irri.columns=["ID","conso","ASA"]
+        # tab_asa_irr=tab_par_irri.groupby("ASA").sum()
+        #  SS sunflower
+        for i in tot_IRR_ss_sunfl.ID:
             maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
-            irri=tot_IRR.loc[tot_IRR.ID==i][maxzr].iloc[0].values
-            conso_par.append(irri[0]*tot_IRR.loc[tot_IRR.ID==i]["area"].iloc[0]*10)
+            irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values
+            conso_par.append(irri[0]*tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i]["area"].iloc[0]*10)
             idpar.append(i)
-            n_asa.append(tot_IRR.loc[tot_IRR.ID==i]['nomasa'].values[0])
+            n_asa.append(tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i]['nomasa'].values[0])
         tab_par_irri=pd.DataFrame([idpar,conso_par,n_asa]).T
         tab_par_irri.columns=["ID","conso","ASA"]
         tab_asa_irr=tab_par_irri.groupby("ASA").sum()
@@ -222,7 +233,7 @@ if __name__ == '__main__':
         for asa in list(set(tot_IRR.nomasa)):
             tet=asagroup.get_group(asa)
             asa_n.append(asa)
-            data_v.append(tet.data_Conso.iloc[0])
+            data_v.append(tet.data_Conso_fuite.iloc[0])
         TT=pd.DataFrame([data_v,asa_n]).T
         TT.columns=["Vali","ASA"]
         tab_irri_asa=pd.merge(tab_asa_irr,TT,on="ASA")
@@ -230,13 +241,13 @@ if __name__ == '__main__':
         if y =="2018":
             tab_irri_asa_2018=tab_irri_asa
             tab_irri_asa_2018.set_index("ASA",inplace=True)
-            tab_irri_asa_2018=tab_irri_asa_2018/1000
+            tab_irri_asa_2018=tab_irri_asa_2018/100000
             tab_irri_asa_2018=tab_irri_asa_2018[tab_irri_asa_2018.index!= "LASSERRE"]
             tab_irri_asa_2018.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2018_maxZr_parcelle.csv")
         else:
             tab_irri_asa_2017=tab_irri_asa
             tab_irri_asa_2017.set_index("ASA",inplace=True)
-            tab_irri_asa_2017=tab_irri_asa_2017/1000
+            tab_irri_asa_2017=tab_irri_asa_2017/100000
             tab_irri_asa_2017=tab_irri_asa_2017[tab_irri_asa_2017.index!= "LASSERRE"]
             tab_irri_asa_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017_maxZr_parcelle.csv")
             
@@ -247,26 +258,26 @@ if __name__ == '__main__':
         bias=1/len(globals()["tab_irri_asa_"+y].Vali.to_list())*sum(globals()["tab_irri_asa_"+y].conso-np.mean(globals()["tab_irri_asa_"+y].Vali.to_list())) 
         rms = np.sqrt(mean_squared_error(globals()["tab_irri_asa_"+y].Vali.to_list(), globals()["tab_irri_asa_"+y].conso))
         plt.scatter(globals()["tab_irri_asa_"+y].Vali.to_list(),globals()["tab_irri_asa_"+y].conso,label=y)
-        plt.xlim(-10,1600)
-        plt.ylim(-10,1600)
+        plt.xlim(-1,10)
+        plt.ylim(-1,10)
         plt.xlabel("Volumes annuels observés en millions de m3 ")
         plt.ylabel("Volumes annuels modélisés en million de m3 ")
-        plt.plot([-10, 1600], [-10,1600], 'black', lw=1,linestyle='--')
+        plt.plot([-1, 10], [-1,10], 'black', lw=1,linestyle='--')
         if "2017" in y :
-            rectangle = plt.Rectangle((49, 700),330,170, ec='blue',fc='blue',alpha=0.1)
+            rectangle = plt.Rectangle((3.9, 7),2.1,1.3, ec='blue',fc='blue',alpha=0.1)
             plt.gca().add_patch(rectangle)
-            plt.text(50,830,"RMSE = "+str(round(rms,2))) 
-            plt.text(50,790,"R² = "+str(round(r_value,2)))
-            plt.text(50,750,"Pente = "+str(round(slope,2)))
-            plt.text(50,710,"Biais = "+str(round(bias,2)))
+            plt.text(4,7.9,"RMSE = "+str(round(rms,2))) 
+            plt.text(4,7.6,"R² = "+str(round(r_value,2)))
+            plt.text(4,7.3,"Pente = "+str(round(slope,2)))
+            plt.text(4,7,"Biais = "+str(round(bias,2)))
         else:
-            rectangle = plt.Rectangle((990, 500),330,170, ec='orange',fc='orange',alpha=0.3)
+            rectangle = plt.Rectangle((7.90, 5),2.1,1.30, ec='orange',fc='orange',alpha=0.3)
             plt.gca().add_patch(rectangle)
-            plt.text(1000,630,"RMSE = "+str(round(rms,2))) 
-            plt.text(1000,590,"R² = "+str(round(r_value,2)))
-            plt.text(1000,550,"Pente = "+str(round(slope,2)))
-            plt.text(1000,510,"Biais = "+str(round(bias,2)))
-        for i in enumerate(set(globals()["tab_irri_asa_"+y].index)):
+            plt.text(8,5.9,"RMSE = "+str(round(rms,2))) 
+            plt.text(8,5.6,"R² = "+str(round(r_value,2)))
+            plt.text(8,5.3,"Pente = "+str(round(slope,2)))
+            plt.text(8,5,"Biais = "+str(round(bias,2)))
+        for i in enumerate(globals()["tab_irri_asa_"+y].index):
             if "2017" in y :
                 label = i[1].lower()
                 plt.annotate(label, # this is the text
@@ -282,5 +293,5 @@ if __name__ == '__main__':
                       xytext=(0,-10), # distance from text to points (x,y)
                       ha='center')
     plt.legend()
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_maxZr_parcelle_Irrigation.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_maxZr_all_summer_crops_parcelle_Irrigation_ss_sunflower.png")
     
