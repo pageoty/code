@@ -3,7 +3,7 @@
 """
 Created on Mon May  6 17:27:33 2019
 
-@author: dahingerv
+@author: dahingerv & pageot
 """
 
 #from osgeo import gdal

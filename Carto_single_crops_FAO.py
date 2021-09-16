@@ -3,6 +3,7 @@
 Created on Fri Oct 30 09:12:04 2020
 
 @author: yann
+Code pour estimer les besoins n eau selon la FAO-56 single crops 
 """
 import os
 import sqlite3

@@ -3,6 +3,8 @@
 Created on Wed May 12 10:13:50 2021
 
 @author: yann
+
+Extration des données pédologiques issues des rasters de GSM à partir d'un fichier SHP contenant les inforamtions
 """
 
 
@@ -21,25 +23,15 @@ import pickle
 
 if __name__ == '__main__':
     d={}
-    # d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_labo"]="/datalocal/vboxshare/THESE/BESOIN_EAU/"
-    # d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
+    d["PC_labo_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
 
-    #other méthode pondération 
-
-    parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/NESTE_SOIL_EXTRACT.shp")
-    # PKGC=parcelle[['clay_l0_me', 'clay_l0__1', 'clay_l100_', 'clay_l10_1', 'clay_l15_m',
-    #     'clay_l15_1', 'clay_l30_m', 'clay_l30_1', 'clay_l5_me', 'clay_l5__1',
-    #     'clay_l60_m', 'clay_l60_1', 'sand_l0_me', 'sand_l0__1', 'sand_l100_',
-    #     'sand_l10_1', 'sand_l15_m', 'sand_l15_1', 'sand_l30_m', 'sand_l30_1',
-    #     'sand_l5_me', 'sand_l5__1', 'sand_l60_m', 'sand_l60_1', 'silt_l0_me',
-    #     'silt_l0__1', 'silt_l100_', 'silt_l10_1', 'silt_l15_m', 'silt_l15_1',
-    #     'silt_l30_m', 'silt_l30_1', 'silt_l5_me', 'silt_l5__1', 'silt_l60_m',
-    #     'silt_l60_1']]
+#  Inputs 
+    parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_2017_PKGC_GERS.shp")
     PKGC=parcelle[['clay_l0_me', 'clay_l100_',
        'clay_l15_m', 'clay_l30_m', 'clay_l5_me', 'clay_l60_m', 'sand_l0_me',
        'sand_l100_', 'sand_l15_m', 'sand_l30_m', 'sand_l5_me', 'sand_l60_m',
@@ -66,14 +58,14 @@ if __name__ == '__main__':
     data_parcelle_Texture["ID"]=ids
     data_parcelle_Texture["Variable_modale"]=entete
     # data_parcelle_Texture.to_csv("H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_ALL_Classif_Adour_2017.csv")
-    
-    
+    data_parcelle_Texture=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017.csv")
+    data_parcelle_Texture.drop(columns=["Unnamed: 0"],inplace=True)
     data=[]
     a=data_parcelle_Texture.groupby("ID")
-    for g in PKGC.ID:
-         text=a.get_group(g)[0].to_list()
+    for g in ids:
+         text=a.get_group(g)["0"].to_list()
          data.append([g,text[0],text[1],text[2]])
     data_parcelle_Texture=pd.DataFrame(data,columns=["ID","Argile","Sable",'Limon'])
-    data_parcelle_Texture.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_NESTE_2017.csv")
+    data_parcelle_Texture.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM.csv")
 
     

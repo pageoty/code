@@ -4,6 +4,7 @@
 Created on Thu Mar  7 16:12:43 2019
 
 @author: pageot
+Code pour reclasser les RASTERS en focntion de la valeur du pixel
 """
 
 import os

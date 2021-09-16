@@ -3,6 +3,8 @@
 Created on Tue Dec  8 09:45:14 2020
 
 @author: Yann Pageot
+
+Usine à gaz, qui me peremt de lancer le modèle SAMIR en bash en focntion des différents configurations
 """
 
 
@@ -52,16 +54,14 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2018"]
+    years=["2017"]
     
     #  Add args User PC home/ PC labo
     result=[]
     for y in years:# 
         print (y)
-        # name_run="RUN_MULTI_SITE_ICOS/RUN_OPTIMISATION_ICOS/SAMIR_calibr_Init_ru/Merlin_init_ru_optim_Fcover_maxzr_test_2019"
         name_run=str(args.name_run).strip("['']")
         print(name_run)
-        # optimis_val="REW"
         optimis_val=str(args.optim).strip("['']")
         if len(optimis_val) < 6:
             optimis_val=optimis_val
@@ -202,9 +202,10 @@ if __name__ == "__main__":
             print('PKGC parcelle')
         #  Lecture file PF_CC
             if "GSM" in name_run:
-                # PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 print("data soil GSM use")
-                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_Adour_Tarn_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_"+str(y)+"_GSM.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+                # print("data soil GSM use")
+                # PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_Adour_Tarn_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
             elif "RRP" in name_run: 
                 PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_PKCG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
                 print("data soil RRP use")
@@ -243,7 +244,7 @@ if __name__ == "__main__":
             print('ASA parcelle')
         #  Lecture file PF_CC
             PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+str(y)+"_UTS_maj_all_crops.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-            =PF_CC.drop_duplicates(subset=["ID"])
+            PF_CC=PF_CC.drop_duplicates(subset=["ID"])
             # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
             FC_Bru=PF_CC["CC_mean"]
             WP_Bru=PF_CC["PF_mean"]
@@ -318,13 +319,7 @@ if __name__ == "__main__":
                 val=globals()['%s'%tex]
                 data_tex[tex[:-6]]=val.values
             data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
-            # print(Sand_Ainse)
-            # if Sand_Ainse >= 0.80 :
-            #     REW = 20 - 0.15 * Sand_Ainse
-            # elif Clay_Ainse >= 0.50 : 
-            #     REW = 11 - 0.06 * Clay_Ainse 
-            # elif (Sand_Ainse < 0.80) and (Clay_Ainse < 0.50):
-            #     REW = 8 + 0.008 * Clay_Ainse
+
 # =============================================================================
 #         Incertitude sur le Fcover
 # =============================================================================
@@ -412,13 +407,7 @@ if __name__ == "__main__":
             result_init=result_init_cops.get_group("maize_irri")
             result_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]]
             ru_init=result_init[["date","SWC1i","SWC1p","SWC2","SWC3"]].loc[result_init.date==str(y1)+"-12-31"]
-            # RUn1=ru_init.SWC2.values
-            # print(r'===============')
-            # print(RUn1)
-            # print(r'===============')
             RUNsoln1 = ru_init[["SWC1i","SWC1p","SWC2","SWC3"]].values.mean()
-            # moyenne pondére à l'épaisseur 
-            # print(ru_init["SWC1i"].values[0]) # probleme SWC1p ou SWC1i si irrigation ou non
             RUSOL_ponde=np.average([ru_init["SWC1i"].values[0],ru_init["SWC2"].values[0],ru_init["SWC3"].values[0]], weights=[150,df["Zr"].loc[df.date==str(y1)+"-12-31"].values[0] , df["Zd"].loc[df.date==str(y1)+"-12-31"].values[0]])
             print(r'===============')
             print(RUSOL_ponde)
@@ -525,7 +514,7 @@ if __name__ == "__main__":
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1231'),#
                                  Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
-                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="400/1500/50/lin")
+                        params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="600/1800/50/lin")
                     else:
                         print("Irri manuel activé")
                         params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
@@ -679,27 +668,7 @@ if __name__ == "__main__":
                             slope, intercept, r_value, p_value, std_err = stats.linregress(dfETR.LE.to_list(),dfETR.ET.to_list())
                             bias=1/dfETR.shape[0]*sum(np.mean(dfETR.ET)-dfETR.LE) 
                             fitLine = predict(dfETR.LE)
-                            # plt.figure(figsize=(7,7))
-                            # plt.plot([0.0, 10], [0.0,10], 'r-', lw=2)
-                            # plt.plot(dfETR.LE,fitLine,linestyle="-")
-                            # plt.scatter(dfETR.LE,dfETR.ET,s=9)
-                            # plt.xlabel("ETR OBS")
-                            # plt.ylabel("ETR model")
-                            # plt.xlim(0,10)
-                            # plt.ylim(0,10)
                             rms = mean_squared_error(dfETR.LE,dfETR.ET)
-                        #     plt.text(8,min(dfETR.ET)+0.1,"RMSE = "+str(round(rms,2)))
-                        #     plt.text(8,min(dfETR.ET)+0.3,"R² = "+str(round(r_value,2)))
-                        #     plt.text(8,min(dfETR.ET)+0.5,"Pente = "+str(round(slope,2)))
-                        #     plt.text(8,min(dfETR.ET)+0.7,"Biais = "+str(round(bias,2)))
-                        #     plt.savefig(d["SAMIR_run"]+"Output/"+optimis_val+"/Plot/plt_scatter_ETR_%s_%s_%s.png"%(classe,optimis_val,str(int(parametre1))))
-                        #     plt.figure(figsize=(7,7))
-                        #     plt.plot(dfETR.index,dfETR.LE,label='ETR_obs',color="black")
-                        #     plt.plot(dfETR.index,dfETR.ET,label='ETR_mod',color='red')
-                        #     plt.ylabel("ETR")
-                        #     plt.ylim(0,10)
-                        #     plt.legend()
-                        #     plt.savefig(d["SAMIR_run"]+"Output/"+optimis_val+"/Plot/Plot_dyna/plt_dynamique_ETR_%s_%s_%s.png"%(classe,optimis_val,str(int(parametre1))))
                             if len(optimis_val) < 6:
                                 result.append([num_run,parametre1,rms,bias,r_value,y,classe])
                                 concat_ETR.append(ETRmod["ET"])
@@ -728,7 +697,6 @@ if __name__ == "__main__":
                     a=pd.MultiIndex.from_frame(para,names=['num_run',"REW","maxZr"])
                     RESU=pd.DataFrame(conca.values,index=a,columns=ETRmod.date)
                     RESU.sort_index(inplace=True)
-                    # RESU.[-50.0][1000.0] # selection les ET REW -50 et maxZr = 1000
                 RESU.to_csv(d["SAMIR_run"][:-5]+"LUT_ETR%s.csv"%(y))
                 resultat.to_csv(d["SAMIR_run"][:-5]+"param_RMSE%s.csv"%(optimis_val))
             else:

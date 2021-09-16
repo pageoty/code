@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -146,6 +146,8 @@ if __name__ == '__main__':
 # =============================================================================
 # Volumes annuels
 # =============================================================================
+
+
     if len(optim_val) >5:
         Vol_tot.columns=["date"]+param['p'][:-1].to_list()+["ID"]
     else :
@@ -358,13 +360,14 @@ if __name__ == '__main__':
 # =============================================================================
 #     PLot FORCAGE maxZr valeur FAO 
 # =============================================================================
-    data_mod=pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/LUT_2017.csv")
+    # data_mod=pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/LUT_2017.csv")
+    data_mod=pd.read_csv(d["Output_model_PC_home_disk"]+"/LUT_"+str(y)+".csv")
     list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
 
     data_valid=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
     data_valid=data_valid[~data_valid["ID"].isin(list_drop)]["MMEAU"]
     data_id=data_mod.groupby("ID").sum()
-    data_id.columns=data_mod.iloc[0][1:-1]
+    data_id.columns=data_mod.iloc[0][1:-1] # Attention bug verifier avec 1 au lieu de 2 
     data_mod_PKGC=data_id[~data_id.index.isin(list_drop)]
     for col in data_mod_PKGC.columns[12:27]:
         plt.figure(figsize=(7,7))
@@ -385,7 +388,7 @@ if __name__ == '__main__':
         plt.text(100,270,"R² = "+str(round(r_value,2)))
         plt.text(100,260,"Pente = "+str(round(slope,2)))
         plt.text(100,250,"Biais = "+str(round(bias,2)))
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/RUN_FAO_TABLE/plot_scatter_volumes_Irrigation_forcagemaxZr_p_table_22_FAO%s.png"%(col))
+        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/RUN_FAO_TABLE/plot_scatter_volumes_Irrigation_forcagemaxZr_p_table_22_FAO_ss_Fcover%s.png"%(col))
         # PLOT RUM 
     # ===============================================================================
 #  Plot maxZr issu de depth GSM
@@ -556,96 +559,76 @@ if __name__ == '__main__':
 # =============================================================================
 #     PFCC GSM pédotransfert
 # =============================================================================
-    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj2.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-    # param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    # dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
+    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    data_prof =data_prof[-data_prof["ID"].isin(list_drop)]
+    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
     # dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_init_ru_optim_Fcover_fewi_De_Kr_days10_dose30_500_800_irri_auto_soil/Table_RMSE_parcelle_min.csv")
-    # IRR=[]
-    # yerrmore=[]
-    # yerrless=[]
-    # for i in dfUTS.ID:
-    #     maxUTS=data_prof.loc[data_prof.index==i]["ProfRacPot"].values[0]*10 # Si forcage 
-    #     # maxUTS=param.loc[param[1].isin(dfUTS.loc[dfUTS.ID==i]["maxZr"])][1].values[0]
-    #     # maxUTSFAO=param.loc[param[1].isin(dfUTSFAO.loc[dfUTSFAO.ID==i]["maxZr"])][1]
-    #     param2=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_GSM/2017/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    #     dfUTSp=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_GSM/Table_RMSE_parcelle_min.csv")
-    #     c=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][0]+1
-    #     val=param2.loc[param2[1].isin(dfUTSp.loc[dfUTSp.ID==i]["maxZr"])][1]
-    #     UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_GSM/2017/Output/p/output_test_maize_irri_"+str(int(c))+".df","rb"))
-    #     data_id=UTS.groupby("id")
-    #     ID_data=data_id.get_group(i)
-    #     IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],maxUTS,ID_data.TAW.max()])
-    #     # # dfmore
-    #     # param2more=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC//Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    #     # dfUTSpmore=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/Table_RMSE_parcelle_min.csv")
-    #     # cmore=param2more.loc[param2more[1].isin(dfUTSpmore.loc[dfUTSpmore.ID==i]["maxZr"])][0]+1
-    #     # valmore=param2more.loc[param2more[1].isin(dfUTSpmore.loc[dfUTSpmore.ID==i]["maxZr"])][1]
-    #     # UTSmore=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_pl20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varplus20/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(cmore))+".df","rb"))
-    #     # data_idmore=UTSmore.groupby("id")
-    #     # ID_datamore=data_idmore.get_group(i)
-    #     # yerrmore.append(abs(ID_data.Ir_auto.sum()-ID_datamore.Ir_auto.sum()))
-    #     #   # dfless
-    #     # param2less=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/"+str(y)+"/Output/p/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    #     # dfUTSpless=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/Table_RMSE_parcelle_min.csv")
-    #     # cless=param2less.loc[param2less[1].isin(dfUTSpless.loc[dfUTSpless.ID==i]["maxZr"])][0]+1
-    #     # valless=param2less.loc[param2less[1].isin(dfUTSpless.loc[dfUTSpless.ID==i]["maxZr"])][1]
-    #     # UTSless=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Optim_P/GSM_PFCC/PKGC_init_ru_optim_P0407_Fcover_m20_fewi_De_Kr_days10_dose30_"+str(int(maxUTS))+"_irri_auto_soil_varmo20/"+str(y)+"/Output/p/output_test_maize_irri_"+str(int(cless))+".df","rb"))
-    #     # data_idless=UTSless.groupby("id")
-    #     # ID_dataless=data_idless.get_group(i)
-    #     # yerrless.append(abs(ID_dataless.Ir_auto.sum()-ID_data.Ir_auto.sum()))
-    # # yerr=[yerrless,yerrmore]
-    # tab_irr_GSM=pd.DataFrame(IRR)
-    # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr_GSM[1].to_list())
-    # bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr_GSM[1]-np.mean(tab_f2.MMEAU)) 
-    # rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr_GSM[1]))
-    # plt.figure(figsize=(7,7))
-    # plt.legend(a.legend_elements()[0],labels)
-    # plt.xlim(-10,350)
-    # plt.ylim(-10,350)
-    # plt.xlabel("Quantité annuelles observées en mm ")
-    # plt.ylabel("Quantité annuelles modélisées en mm ")
-    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-    # a=plt.scatter(tab_f2.MMEAU,tab_irr_GSM[1],c=index,cmap='coolwarm')
-    # plt.legend(a.legend_elements()[0],labels)
-    # rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
-    # plt.gca().add_patch(rectangle)
-    # plt.text(100,330,"RMSE = "+str(round(rms,2))) 
-    # plt.text(100,320,"R² = "+str(round(r_value,2)))
-    # plt.text(100,310,"Pente = "+str(round(slope,2)))
-    # plt.text(100,300,"Biais = "+str(round(bias,2)))
+    IRR=[]
+    yerrmore=[]
+    yerrless=[]
+    for i in data_prof.ID:
+        # maxUTS=depth_GSM.loc[depth_GSM.ID==i]["mean_arrondi"].values[0] # Si forcage 
+        # maxUTS=param.loc[param[1].isin(depth_GSM.loc[depth_GSM.ID==i]["mean_arrondi"])][1].values[0]
+        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][0]
+        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    tab_irr_GSM=pd.DataFrame(IRR,columns=["ID","Quant","maxZr","TAWmax"])
+    tab_f2=pd.merge(tab_irr_GSM,data_prof[["MMEAU","ID"]],on='ID')
+    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_f2["Quant"].to_list())
+    bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_f2["Quant"]-np.mean(tab_f2.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_f2["Quant"]))
+    plt.figure(figsize=(7,7))
+    plt.xlim(-10,350)
+    plt.ylim(-10,350)
+    plt.xlabel("Quantité annuelles observées en mm ")
+    plt.ylabel("Quantité annuelles modélisées en mm ")
+    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    a=plt.scatter(tab_f2.MMEAU,tab_f2["Quant"])
+    rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+    plt.text(100,320,"R² = "+str(round(r_value,2)))
+    plt.text(100,310,"Pente = "+str(round(slope,2)))
+    plt.text(100,300,"Biais = "+str(round(bias,2)))
     # for i,m in zip(enumerate(tab_f2.ID),tab_f2.maxZr):
     #     label = int(i[1])
     #     plt.annotate(label, # this is the text
-    #           (tab_f2["MMEAU"].iloc[i[0]],tab_irr_GSM[1].iloc[i[0]]), # this is the point to label
+    #           (tab_f2["MMEAU"].iloc[i[0]],tab_f2["Quant"].iloc[i[0]]), # this is the point to label
     #           textcoords="offset points", # how to position the text
     #           xytext=(0,5), # distance from text to points (x,y)
     #           ha='center')
-    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_post_optim_forcagemaxZr_optim_p_UTS_maps_GSM_PFCC.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_forcagemaxZr_soil_depth_GSM_PFCC.png")
    
-    # # Plot TAW/ RUM
-    # tab_irr_GSM.columns=["ID","conso","p","maxZr","TAWmax"]
-    # test=pd.merge(tab_irr_GSM,data_prof,on='ID')
-    # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr_GSM.TAWmax.to_list())
-    # bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr_GSM.TAWmax-np.mean(tab_f2.MMEAU)) 
-    # rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr_GSM.TAWmax))
-    # plt.figure(figsize=(7,7))
-    # a=plt.scatter(test.RUM,test.TAWmax,c=index,cmap="coolwarm")
-    # plt.legend(a.legend_elements()[0],labels)
-    # plt.xlim(-10,200)
-    # plt.ylim(-10,200)
-    # plt.xlabel("RUM observée en cm ")
-    # plt.ylabel("RUM modélisées en cm ")
-    # plt.plot([-10.0, 200], [-10.0,200], 'black', lw=1,linestyle='--')
-    # plt.text(50,165,"RMSE = "+str(round(rms,2))) 
-    # plt.text(50,160,"R² = "+str(round(r_value,2)))
-    # plt.text(50,155,"Pente = "+str(round(slope,2)))
-    # plt.text(50,150,"Biais = "+str(round(bias,2)))
-    # for i in enumerate(test.classe):
-    #     label = int(i[1])
-    #     plt.annotate(label, # this is the text
-    #           (test["RUM"].iloc[i[0]],test.TAWmax.iloc[i[0]]), # this is the point to label
-    #           textcoords="offset points", # how to position the text
-    #           xytext=(-6,2), # distance from text to points (x,y)
-    #           ha='center')
+    # Plot TAW/ RUM
+    tab_irr_GSM.columns=["ID","conso","p","maxZr","TAWmax"]
+    test=pd.merge(tab_irr_GSM,data_prof,on='ID')
+    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_irr_GSM.TAWmax.to_list())
+    bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_irr_GSM.TAWmax-np.mean(tab_f2.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_irr_GSM.TAWmax))
+    plt.figure(figsize=(7,7))
+    a=plt.scatter(test.RUM,test.TAWmax,c=index,cmap="coolwarm")
+    plt.legend(a.legend_elements()[0],labels)
+    plt.xlim(-10,200)
+    plt.ylim(-10,200)
+    plt.xlabel("RUM observée en cm ")
+    plt.ylabel("RUM modélisées en cm ")
+    plt.plot([-10.0, 200], [-10.0,200], 'black', lw=1,linestyle='--')
+    plt.text(50,165,"RMSE = "+str(round(rms,2))) 
+    plt.text(50,160,"R² = "+str(round(r_value,2)))
+    plt.text(50,155,"Pente = "+str(round(slope,2)))
+    plt.text(50,150,"Biais = "+str(round(bias,2)))
+    for i in enumerate(test.classe):
+        label = int(i[1])
+        plt.annotate(label, # this is the text
+              (test["RUM"].iloc[i[0]],test.TAWmax.iloc[i[0]]), # this is the point to label
+              textcoords="offset points", # how to position the text
+              xytext=(-6,2), # distance from text to points (x,y)
+              ha='center')
     # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_RUM_post_optim_forcagemaxZr_optim_p_UTS_maps_GSM_PFCC.png")
 # =============================================================================
 #     Forcage p et maxZr avec la RUM
@@ -1002,56 +985,56 @@ if __name__ == '__main__':
     #     plt.text(100,270,"Biais = "+str(round(bias,2)))
     #     plt.title(z)
         
-    Mater=tab_pratique.groupby("TYPMAT")
-    dist_MAT={"pivot":1.0,"Enrouleur":2.0,'Autres':4.0}
-    for i,z in zip(dist_MAT.values(),dist_MAT.keys()):
-        devenir=Mater.get_group(i)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
-        bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
-        rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
-        valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
-        labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-        plt.figure(figsize=(7,7))
-        plt.xlim(-10,350)
-        plt.ylim(-10,350)
-        plt.xlabel("Quantité annuelles observées en mm ")
-        plt.ylabel("Quantité annuelles modélisées en mm ")
-        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-        # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-        rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
-        a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
-        plt.legend(a.legend_elements()[0],labels)
-        plt.gca().add_patch(rectangle)
-        plt.text(100,300,"RMSE = "+str(round(rms,2))) 
-        plt.text(100,290,"R² = "+str(round(r_value,2)))
-        plt.text(100,280,"Pente = "+str(round(slope,2)))
-        plt.text(100,270,"Biais = "+str(round(bias,2)))
-        plt.title(z)
-    Mater=tab_pratique.groupby("REPOUSPREC")
-    dist_MAT={"oui":1.0,"non":0.0}
-    for i,z in zip(dist_MAT.values(),dist_MAT.keys()):
-        devenir=Mater.get_group(i)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
-        bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
-        rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
-        valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
-        labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-        plt.figure(figsize=(7,7))
-        plt.xlim(-10,350)
-        plt.ylim(-10,350)
-        plt.xlabel("Quantité annuelles observées en mm ")
-        plt.ylabel("Quantité annuelles modélisées en mm ")
-        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-        # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-        rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
-        a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
-        plt.legend(a.legend_elements()[0],labels)
-        plt.gca().add_patch(rectangle)
-        plt.text(100,300,"RMSE = "+str(round(rms,2))) 
-        plt.text(100,290,"R² = "+str(round(r_value,2)))
-        plt.text(100,280,"Pente = "+str(round(slope,2)))
-        plt.text(100,270,"Biais = "+str(round(bias,2)))
-        plt.title(z)
+    # Mater=tab_pratique.groupby("TYPMAT")
+    # dist_MAT={"pivot":1.0,"Enrouleur":2.0,'Autres':4.0}
+    # for i,z in zip(dist_MAT.values(),dist_MAT.keys()):
+    #     devenir=Mater.get_group(i)
+    #     slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
+    #     bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
+    #     rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
+    #     valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
+    #     labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    #     plt.figure(figsize=(7,7))
+    #     plt.xlim(-10,350)
+    #     plt.ylim(-10,350)
+    #     plt.xlabel("Quantité annuelles observées en mm ")
+    #     plt.ylabel("Quantité annuelles modélisées en mm ")
+    #     plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #     # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    #     rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
+    #     a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
+    #     plt.legend(a.legend_elements()[0],labels)
+    #     plt.gca().add_patch(rectangle)
+    #     plt.text(100,300,"RMSE = "+str(round(rms,2))) 
+    #     plt.text(100,290,"R² = "+str(round(r_value,2)))
+    #     plt.text(100,280,"Pente = "+str(round(slope,2)))
+    #     plt.text(100,270,"Biais = "+str(round(bias,2)))
+    #     plt.title(z)
+    # Mater=tab_pratique.groupby("REPOUSPREC")
+    # dist_MAT={"oui":1.0,"non":0.0}
+    # for i,z in zip(dist_MAT.values(),dist_MAT.keys()):
+    #     devenir=Mater.get_group(i)
+    #     slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
+    #     bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
+    #     rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
+    #     valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
+    #     labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    #     plt.figure(figsize=(7,7))
+    #     plt.xlim(-10,350)
+    #     plt.ylim(-10,350)
+    #     plt.xlabel("Quantité annuelles observées en mm ")
+    #     plt.ylabel("Quantité annuelles modélisées en mm ")
+    #     plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #     # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    #     rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
+    #     a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
+    #     plt.legend(a.legend_elements()[0],labels)
+    #     plt.gca().add_patch(rectangle)
+    #     plt.text(100,300,"RMSE = "+str(round(rms,2))) 
+    #     plt.text(100,290,"R² = "+str(round(r_value,2)))
+    #     plt.text(100,280,"Pente = "+str(round(slope,2)))
+    #     plt.text(100,270,"Biais = "+str(round(bias,2)))
+    #     plt.title(z)
     # TAW et RUM
     # plt.figure(figsize=(7,7))
     # slope, intercept, r_value, p_value, std_err = stats.linregress(vali_RUM.RUM.to_list(),vali_RUM.TAWMax.to_list())
@@ -1441,3 +1424,26 @@ if __name__ == '__main__':
     # plt.text(230,30,"Pente = "+str(round(slope3,2)))
     # plt.text(230,20,"Biais = "+str(round(bias3,2)))
     # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_volumes_Irrigation_maxZr_1000_3000.png")
+    
+# =============================================================================
+#     Impact du Fcover sur FAO
+# =============================================================================
+    # data_avec_Fcover=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_Fcover_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_16.df","rb"))
+    # data_ss_Fcover=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/PKGC_FAO_init_ru_fewi_De_Kr_days10_p055_400_1500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_16.df","rb"))
+    # list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    
+    # data_avec_Fcover=data_avec_Fcover[~data_avec_Fcover.index.isin(list_drop)]
+    # data_ss_Fcover=data_ss_Fcover[~data_ss_Fcover.index.isin(list_drop)]
+    
+    # SS_F_12=data_ss_Fcover[data_ss_Fcover.id==12]
+    # AV_F_12=data_avec_Fcover[data_avec_Fcover.id==12]
+    
+    # for i in ["ET","Dr","Dei","Kei"]:
+    #     plt.figure(figsize=(7,7))
+    #     # plt.plot(SS_F_12.date,SS_F_12[i],label="ss Fcover")
+    #     # plt.plot(AV_F_12.date,AV_F_12[i],label="AV Fcover")
+    #     # plt.legend()
+    #     plt.title(i)
+    #     plt.scatter(data_ss_Fcover[i],data_avec_Fcover[i])
+    #     plt.xlabel("SS Fcover")
+    #     plt.ylabel("AV Fcover")

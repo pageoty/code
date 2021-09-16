@@ -3,7 +3,10 @@
 Created on Fri Apr 24 15:03:39 2020
 
 @author: Yann Pageot
+
+Code compare les indices de confiances entre plusieurs classifications
 """
+
 
 import os
 import sqlite3
@@ -34,7 +37,7 @@ from sklearn.linear_model import LinearRegression
 if __name__ == '__main__':
     
     d={}
-    d["path_disk"]="F:/THESE/CLASSIFICATION/TRAITEMENT/ANALYSE_CONFIANCE_MAP/"
+    d["path_disk"]="/run/media/pageot/Transcend/Yann_THESE/CLASSIFICATION/DATA_CLASSIFICATION/ANALYSE_CONFIANCE_MAP/"
     
     all_res_2017=pd.DataFrame()
     jobs_2017=[]

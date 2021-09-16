@@ -4,6 +4,8 @@
 Created on Tue Nov 19 11:31:19 2019
 
 @author: pageot
+
+Code permet de comparer les modes d'aquisition des données SAR, ainsi que l'angle d'incidence local (LIA)
 """
 
 import os

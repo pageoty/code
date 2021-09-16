@@ -4,6 +4,8 @@
 Created on Wed Oct 14 09:59:59 2020
 
 @author: pageot
+
+Code pour estimer les besoins n eau selon la FAO-56 single crops 
 """
 
 import os
@@ -171,8 +173,4 @@ if __name__ == "__main__":
     # plt.legend()
     # plt.savefig("/datalocal/vboxshare/THESE/BESOIN_EAU/RESULT/PLOT/plt_besoin_Irr_adour.png")
     
-#   Test spatialisation 
-    # MIRR["clim"]=MIRR.eval("ETP_Q*1.2-PRELIQ_Q")
-    # for i in ["2018-05-07","2018-06-07","2018-07-07","2018-08-07","2018-09-07"]:
-    #     test=MIRR[MIRR.DATE==i]
-    #     test.plot(column="clim",legend=True,figsize=(10, 15),legend_kwds={'label': i})
+

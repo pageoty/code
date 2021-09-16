@@ -3,7 +3,9 @@
 """
 Created on Mon May  6 17:27:33 2019
 
-@author: dahingerv
+@author: dahingerv & pageot
+
+Calcul des indices cumuls mensuels sur le NDRE, à utiliser en bash 
 """
 
 from osgeo import gdal
@@ -26,7 +28,7 @@ if __name__ == "__main__":
 
     print (args.vege)
 
-	#Mettre en forme le df
+    #Mettre en forme le df
     df=pd.read_csv("{}".format(str(args.inlist).strip("['']")),sep=',', header=None)
     df1=df.T
     df1.columns=["band_name"]
@@ -45,50 +47,50 @@ if __name__ == "__main__":
     path_folder = "{}".format(str(args.path).strip("['']"))
     
     if args.vege == False:
-		expres = []
-		for i, j in zip(band_NIR, band_rededge):
-			num = "(im1b"+str(i)+"-im1b"+str(j)+")"
-			denum = "(im1b"+str(i)+"+im1b"+str(j)+")"
-			x = num+"/"+denum
-			condition = denum+"<=0 ? 1: "
-			compute = condition + x
-			expres.append(compute)
-		expres = ','.join(str(x) for x in expres)
-			
-		tile="{}".format(str(args.tile).strip("['']"))
-		print (tile)
-		print (path_folder)
-		print (df_NIR)
-		print (df_rededge)
-		print(NIR)
-		print(rededge)
+        expres = []
+        for i, j in zip(band_NIR, band_rededge):
+            num = "(im1b"+str(i)+"-im1b"+str(j)+")"
+            denum = "(im1b"+str(i)+"+im1b"+str(j)+")"
+            x = num+"/"+denum
+            condition = denum+"<=0 ? 1: "
+            compute = condition + x
+            expres.append(compute)
+        expres = ','.join(str(x) for x in expres)
+            
+        tile="{}".format(str(args.tile).strip("['']"))
+        print (tile)
+        print (path_folder)
+        print (df_NIR)
+        print (df_rededge)
+        print(NIR)
+        print(rededge)
 
-		BMapp1 = otbApplication.Registry.CreateApplication("BandMath")
-		BMapp1.SetParameterStringList("il",[path_folder +"Sentinel2_%s_Features.tif"%tile])
-		BMapp1.SetParameterString("out",path_folder+"CUMUL_%s_%s_%s.tif"% (tile,NIR,rededge))
-		BMapp1.SetParameterString("exp", expres)
-		BMapp1.ExecuteAndWriteOutput()  
+        BMapp1 = otbApplication.Registry.CreateApplication("BandMath")
+        BMapp1.SetParameterStringList("il",[path_folder +"Sentinel2_%s_Features.tif"%tile])
+        BMapp1.SetParameterString("out",path_folder+"CUMUL_%s_%s_%s.tif"% (tile,NIR,rededge))
+        BMapp1.SetParameterString("exp", expres)
+        BMapp1.ExecuteAndWriteOutput()  
 
     else:
-		expres = []
-		for i, j in zip(band_NIR[8:-3], band_rededge[8:-3]):
-			num = "(im1b"+str(i)+"-im1b"+str(j)+")"
-			denum = "(im1b"+str(i)+"+im1b"+str(j)+")"
-			x = num+"/"+denum
-			condition = denum+"<=0 ? 1: "
-			compute = condition + x
-			expres.append(compute)
+        expres = []
+        for i, j in zip(band_NIR[8:-3], band_rededge[8:-3]):
+            num = "(im1b"+str(i)+"-im1b"+str(j)+")"
+            denum = "(im1b"+str(i)+"+im1b"+str(j)+")"
+            x = num+"/"+denum
+            condition = denum+"<=0 ? 1: "
+            compute = condition + x
+            expres.append(compute)
 
-		expres = ','.join(str(x) for x in expres)
-		print(expres)
-	
-		tile="{}".format(str(args.tile).strip("['']"))
-		print (df_NIR)
-		print (df_rededge)
-		print(NIR)
-		print(rededge)
-		BMapp1 = otbApplication.Registry.CreateApplication("BandMath")
-		BMapp1.SetParameterStringList("il",[path_folder +"Sentinel2_%s_Features.tif"%tile])
-		BMapp1.SetParameterString("out",path_folder+"CUMUL_%s_%s_%s_time_vege.tif"% (tile,NIR,rededge))
-		BMapp1.SetParameterString("exp", expres)
-		BMapp1.ExecuteAndWriteOutput() 
+        expres = ','.join(str(x) for x in expres)
+        print(expres)
+    
+        tile="{}".format(str(args.tile).strip("['']"))
+        print (df_NIR)
+        print (df_rededge)
+        print(NIR)
+        print(rededge)
+        BMapp1 = otbApplication.Registry.CreateApplication("BandMath")
+        BMapp1.SetParameterStringList("il",[path_folder +"Sentinel2_%s_Features.tif"%tile])
+        BMapp1.SetParameterString("out",path_folder+"CUMUL_%s_%s_%s_time_vege.tif"% (tile,NIR,rededge))
+        BMapp1.SetParameterString("exp", expres)
+        BMapp1.ExecuteAndWriteOutput() 
