@@ -69,11 +69,11 @@ if __name__ == '__main__':
     ET = ETsum
     ET["IRR"]=1
     ET.loc[(ET.Ir_auto==0.0),'IRR']=0
-    ET.loc[(ET.Ir_auto==30.0),'IRR']=0.5
+    ET.loc[(ET.Ir_auto>0) & (ET.Ir_auto<=60),'IRR']=0.5
 
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
-    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_NESTE_RPG/NESTE_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_3classe.shp")
+    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_NESTE_RPG/NESTE_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_3classe_seuil_60mm.shp")
    
     # Création de la carte besoin en eau 
     gdf.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 #  cas du BV Adour Amont
 # =============================================================================
 
-    Parcellaire= geo.read_file(d["PC_disk"]+"/DATA_CLASSIFICATION/RPG/RPG_BV/RPG_SUMMER_2017_ADOUR_AMONT.shp")
+    Parcellaire= geo.read_file(d["PC_disk"]+"/CLASSIFICATION/DATA_CLASSIFICATION/RPG/RPG_BV/RPG_SUMMER_2017_ADOUR_AMONT.shp")
     df_mod=pickle.load(open(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/output_test_2017.df","rb"))
     ET= {}
     gdf = {}
@@ -108,11 +108,11 @@ if __name__ == '__main__':
     ET = ETsum
     ET["IRR"]=1
     ET.loc[(ET.Ir_auto==0.0),'IRR']=0
-    # ET.loc[(ET.Ir_auto==30.0),'IRR']=0.5
+    ET.loc[(ET.Ir_auto>0) & (ET.Ir_auto<=30),'IRR']=0.5
 
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
-    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_2classe.shp")
+    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_3classe_seuil_30mm.shp")
    
     # Création de la carte besoin en eau 
     gdf.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)

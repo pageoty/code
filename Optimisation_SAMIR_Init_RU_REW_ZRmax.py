@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2017"]
+    years=["2018"]
     
     #  Add args User PC home/ PC labo
     result=[]
@@ -164,7 +164,8 @@ if __name__ == "__main__":
             print('CACG parcelle')
         #  Lecture file PF_CC
             if "GSM" in name_run:
-                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+                print("USE_GSM data")
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_"+str(y)+"_GSM_tri.csv",sep=',',encoding='latin-1',decimal=',')
             elif "RRP" in name_run: 
                 PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/RRP/Extract_RRP_GERS_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
             else:
@@ -176,8 +177,8 @@ if __name__ == "__main__":
                 else:
                     PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
             # PF_CC.dropna(inplace=True)
-            FC_Bru=PF_CC["CC_mean"]
-            WP_Bru=PF_CC["PF_mean"]
+            FC_Bru=PF_CC["CC_GSM"]
+            WP_Bru=PF_CC["PF_GSM"]
             Sand_Ainse=PF_CC["Sable"]/100
             Clay_Ainse=PF_CC["Argile"]/100
             # modification df soil FC et WP 
@@ -242,12 +243,19 @@ if __name__ == "__main__":
             data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
         elif "ASA" in name_run : 
             print('ASA parcelle')
+            if "GSM" in name_run:
+                print("data soil GSM use")
+                tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/WP.df","rb")
+                data=pickle.load(tmp)
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_ASA_"+str(y)+"_GSM_tri.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
+                PF_CC=PF_CC[PF_CC["ID"].isin(list(data.id))]
+                # print("data soil GSM use")
         #  Lecture file PF_CC
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+str(y)+"_UTS_maj_all_crops.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-            PF_CC=PF_CC.drop_duplicates(subset=["ID"])
+            # PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_ASA_"+str(y)+"_UTS_maj_all_crops.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+            # PF_CC=PF_CC.drop_duplicates(subset=["ID"])
             # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
-            FC_Bru=PF_CC["CC_mean"]
-            WP_Bru=PF_CC["PF_mean"]
+            FC_Bru=PF_CC["CC_GSM"]
+            WP_Bru=PF_CC["PF_GSM"]
             Sand_Ainse=PF_CC["Sable"]/100
             Clay_Ainse=PF_CC["Argile"]/100
             # modification df soil FC et WP 

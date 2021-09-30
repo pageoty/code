@@ -89,7 +89,7 @@ if __name__ == '__main__':
     d["PC_home_Wind"]="D:/THESE_TMP/"
     d["PC_disk"]="H:/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
 
-    df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017.csv")
+    df=pd.read_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_2017.csv",decimal=',')
     a=[]
     for i in df.ID:
         a.append(Classe_texture(df[df.ID==i]))
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     df["CC_mean"]=pf2
     df["PF_mean"]=pf4
     # df_more20["maxZr_rum"]=round(df_more20.eval("RUM/(CC_mean-PF_mean)"),0)
-    df.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC.csv")
+    df.to_csv("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv")
     
     
     # df_more20=df[['PACAGE', 'NUM_ILOT', 'NUM_PARCEL', 'CODE_CULTU', 'SURF_ADM',

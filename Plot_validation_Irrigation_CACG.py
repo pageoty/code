@@ -36,8 +36,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_CACG/CACG_Fcover_GSM_irri_auto/"
+    name_run_save_fig="RUNS_SAMIR/RUN_CACG/CACG_Fcover_GSM_irri_auto/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -440,9 +440,8 @@ if __name__ == '__main__':
     plt.figure(figsize=(7,7))
     data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal='.')
     depth_GSM=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_CACG_2017_soil_depth.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_Fcover_GSM_irri_auto/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
     dfUTS=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/tab_CACG_mod_2017.csv")
-    IRR=[]
     IRR=[]
     yerrmore=[]
     yerrless=[]
@@ -451,13 +450,15 @@ if __name__ == '__main__':
     for i in id_CACG:
         c=param.loc[param[1].isin(depth_GSM.loc[depth_GSM.index==i]["mean_arrondi"])][0]
         val=param.loc[param[1].isin(depth_GSM.loc[depth_GSM.index==i]["mean_arrondi"])][1]
-        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_Fcover_GSM_irri_auto/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
         data_id=UTS.groupby("id")
         ID_data=data_id.get_group(i)
         # print(r'ID == %s ==> RAW == %s'%(i,max(round(ID_data.TAW*val.values[0],2))))
         IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
         # dfmore
-    tab_irr=pd.DataFrame(IRR)
+    tab_irr=pd.DataFrame(IRR,columns=["ID",'Quant',"MaxZr","TAWMax"])
+    tab_irr=tab_irr.merge(sum_irr_cacg_val,on='ID')
+    tab_irr.to_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_Fcover_GSM_irri_auto/tab_resu_depth_GSM_UTS_PF_CC.csv")
     slope, intercept, r_value, p_value, std_err = stats.linregress(dfUTS.Vali.to_list(),tab_irr[1].to_list())
     bias=1/dfUTS["Vali"].shape[0]*sum(tab_irr[1]-np.mean(dfUTS.Vali)) 
     rms = np.sqrt(mean_squared_error(dfUTS.Vali,tab_irr[1]))
@@ -608,7 +609,7 @@ if __name__ == '__main__':
 # =============================================================================
     plt.figure(figsize=(7,7))
     for y in years :
-        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+        data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",sep=';',encoding='latin-1',decimal=',')
         IRR=[]
         yerrmin=[]
         yerrmax=[]
@@ -642,6 +643,7 @@ if __name__ == '__main__':
         tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
         vali_RUM=pd.merge(tab_irr,data_prof[["RUM","CC_mean",'PF_mean']],on="ID")
         tab_irr2=pd.merge(tab_irr,sum_irr_cacg_val,on='ID')
+        tab_irr2.to_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/maxZr_rum/tab_resu_CACG_maxZr_inversion_RUM_2017.csv")
         slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.Quantite.to_list(),tab_irr2.conso.to_list())
         bias=1/tab_irr2["Quantite"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.Quantite)) 
         rms = np.sqrt(mean_squared_error(tab_irr2.Quantite,tab_irr2.conso))
@@ -713,12 +715,13 @@ if __name__ == '__main__':
     vali_cacg.Date_irrigation=pd.to_datetime(vali_cacg.Date_irrigation,format='%d/%m/%Y')
     vali_cacg["Quantite"].astype(float)
     sum_irr_cacg_val=vali_cacg.groupby("ID")["Quantite"].sum()
-    data_mod=pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/LUT_2017.csv")
+    data_mod=pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/LUT_2017.csv")
     id_CACG=[1,4,5,6,13]
     data_valid=sum_irr_cacg_val[sum_irr_cacg_val.index.isin(id_CACG)]
     data_id=data_mod.groupby("ID").sum()
     data_id.columns=data_mod.iloc[0][1:-1]
     data_mod_CACG=data_id[data_id.index.isin(id_CACG)]
+    data_mod_CACG.to_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CACG/CACG_GSM_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_1800_irri_auto_soil/tab_FAO_CACG.csv")
     
     data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
     data_prof=data_prof[data_prof.index.isin(id_CACG)]
