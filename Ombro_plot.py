@@ -20,11 +20,11 @@ import STAT_ZONAL_SPECRTE as plot
 
 if __name__ == "__main__":
     
-#    DF_OMBRO=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/DATA_OMBRO.csv")
-#    DF_OMBRO.set_index("JJ",inplace=True)
-#    DF_OMBRO.index=pd.to_datetime(DF_OMBRO.index,format="%Y%m%d")
+    DF_OMBRO=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/DATA_OMBRO.csv")
+    DF_OMBRO.set_index("JJ",inplace=True)
+    DF_OMBRO.index=pd.to_datetime(DF_OMBRO.index,format="%Y%m%d")
     
-    DF_OMBRO=pd.read_csv("F:/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/SAFRAN_ADOUR.csv")
+    # DF_OMBRO=pd.read_csv("F:/THESE/CLASSIFICATION/TRAITEMENT/DATA_METEO/SAFRAN_ADOUR.csv")
     DF_OMBRO.drop(columns=['X', 'Y', 'field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q',
         'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q', 'ETP_Q',
        'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE', 'RESR_NEI_1',
@@ -114,14 +114,28 @@ if __name__ == "__main__":
         plt.ylim(-5,50)
         plt.ylabel("Temperature in °C")
         plt.xticks(size='large')
-        plt.yticks(size='large')s
+        plt.yticks(size='large')
 #        plt.title(i)
         plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/DIAGRAMME_OMBRO_SO/DIAG_EnglishV_OMBRO%s_2017.png"%(i))
+        
+        plt.figure(figsize=(10,10))
+        plt.bar(x[0:12],Prec[0:12],color="blue")
+        plt.ylim(-10,150)
+        plt.ylabel("Précipitation in mm")
+        plt.xticks(size='large',rotation=45)
+        plt.yticks(size='large')
+        ax2 = plt.twinx()
+        ax2.plot(x[0:12],tem[0:12],linewidth=5,color='r')
+        plt.ylim(-5,75)
+        plt.ylabel("Temperature in °C")
+        plt.xticks(size='large')
+        plt.yticks(size='large')
+        plt.savefig("/datalocal/vboxshare/THESE/REDACTION/Manuscrit/Figure_python/DIAG_BV_OMBRO_2017.png")
 # =============================================================================
 #  Plot OMBRO echelle BV 
 # =============================================================================
-    for i in os.listdir("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_METEO_BV/"):
-        df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/DATA_METEO_BV/"+str(i))
+    for i in os.listdir("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/"):
+        df=pd.read_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/"+str(i))
         df.drop(columns=['X', 'Y', 'field_1', 'LAMBX', 'LAMBY','PRENEI_Q','FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q', 'EVAP_Q',
        'ETP_Q', 'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
        'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',

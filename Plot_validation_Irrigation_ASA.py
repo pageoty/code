@@ -251,7 +251,7 @@ if __name__ == '__main__':
         data=pd.DataFrame(data,columns=['id','conso'])
         gdf = Parcellaire
         gdf = gdf.merge(data, on='id')
-        gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_ASA/ASA_GSM_Fcover_400_2500_irri_auto_soil/carte_surface_irriguée_"+str(y)+"_SAMIR.shp")
+        gdf.to_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_ASA/ASA_GSM_Fcover_400_2500_irri_auto_soil/carte_surface_irriguée_"+str(y)+"_SAMIR.shp")
    
      
         # 

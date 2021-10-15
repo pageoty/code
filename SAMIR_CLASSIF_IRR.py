@@ -101,9 +101,8 @@ if __name__ == '__main__':
     Parcellaire["id"]=Parcellaire.ID
     ETsum = (df_mod.groupby(['id'])['Ir_auto'].sum()).reset_index()
     
-    ETmin = ETsum.Ir_auto.min()
-    ETmax = ETsum.Ir_auto.max()
-    
+    ET_TAW =(df_mod.groupby(['id'])['TAW'].max()).reset_index()
+    ET_TAW[ET_TAW.TAW<0]=0
     
     ET = ETsum
     ET["IRR"]=1
@@ -112,7 +111,8 @@ if __name__ == '__main__':
 
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
-    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_3classe_seuil_30mm.shp")
+    gdf = gdf.merge(ET_TAW, on='id')
+    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_TAW_maps.shp")
    
     # Création de la carte besoin en eau 
     gdf.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
@@ -123,3 +123,17 @@ if __name__ == '__main__':
     plt.legend()
     plt.title('Irrigué / pluviale')
     plt.savefig(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_irrigue_pluvaile_2017_SAMIR.png")
+# =============================================================================
+#  Isoler parcelle même zone SAFRAN mais résultat différent
+# =============================================================================
+    id_NIRR=df_mod[df_mod.id==9362]
+    id_IRR=df_mod[df_mod.id==844]
+    id_IRRplus=df_mod[df_mod.id==5398]
+    
+    for i in ['NDVI', 'Clay', 'Sand', 'FCov', 'TAW','RAW', 'Dr', 'Ks']:
+        plt.figure(figsize=(7,7))
+        plt.plot(id_NIRR.date,id_NIRR[i],label='Nirr')
+        plt.plot(id_IRR.date,id_IRR[i],label='IRR')
+        plt.plot(id_IRRplus.date,id_IRRplus[i],label='IRR +++')
+        plt.legend()
+        plt.title(i)

@@ -239,8 +239,9 @@ if __name__ == '__main__':
        plt.text(100,270,"R² = "+str(round(r_value,2)))
        plt.text(100,260,"Pente = "+str(round(slope,2)))
        plt.text(100,250,"Biais = "+str(round(bias,2)))
-       plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/scatter_maxZR_FAO_%s_PF_CC_GSM_soil_GSM.png"%i)
+       # plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/scatter_maxZR_FAO_%s_PF_CC_GSM_soil_GSM.png"%i)
 
+       
 #  Si PF_CC = GSM et maxZr == UTS maps 
     df_PKGC=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto/tab_resu_GSM_PF_CC_FAO_maxZr.csv")
     data_valid_PKGC=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
