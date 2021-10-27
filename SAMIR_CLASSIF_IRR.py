@@ -93,7 +93,7 @@ if __name__ == '__main__':
 # =============================================================================
 
     Parcellaire= geo.read_file(d["PC_disk"]+"/CLASSIFICATION/DATA_CLASSIFICATION/RPG/RPG_BV/RPG_SUMMER_2017_ADOUR_AMONT.shp")
-    df_mod=pickle.load(open(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/output_test_2017.df","rb"))
+    df_mod=pickle.load(open(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil/2017/output_test_2017_1000.df","rb"))
     ET= {}
     gdf = {}
     
@@ -112,28 +112,41 @@ if __name__ == '__main__':
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
     gdf = gdf.merge(ET_TAW, on='id')
-    gdf.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_TAW_maps.shp")
+    gdf_mais=gdf.loc[(gdf.code_cultu=="MIS") | (gdf.code_cultu =="MID") |(gdf.code_cultu =="MIE") ]
+    gdf_mais.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR_maxZr1000.shp")
    
     # Création de la carte besoin en eau 
-    gdf.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
+    gdf_mais.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn', legend=True)
     plt.title('Irrigation saisonnière en mm')
     plt.savefig(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguée_2017_SAMIR.png")
     #  Création carte surfaces irriguées
-    gdf.plot(column='IRR',figsize=(10,10), cmap='RdYlGn', legend=True)
+    gdf_mais.plot(column='IRR',figsize=(10,10), cmap='RdYlGn', legend=True)
     plt.legend()
     plt.title('Irrigué / pluviale')
     plt.savefig(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_irrigue_pluvaile_2017_SAMIR.png")
+
+    plt.figure(figsize=(7,7))
+    plt.plot(ID1.date,ID1.Dr,c="r")
+    plt.plot(ID1.date,ID1.RAW)
+    # plt.plot(ID1.date,ID1.TAW*(0.55+0.04*(5-ID1.ET0)),linestyle="--",c='black',linewidth=0.5)
+    plt.plot(ID1[ID1.Ir_auto!=0]["date"],ID1[ID1.Ir_auto!=0]["Ir_auto"],linestyle='',marker="o",c='green')
+    ax2=plt.twinx(ax=None)
+    ax2.plot(ID1.date,(ID1.TAW- ID1.Dr)/(ID1.TAW * (1.-(0.55+0.04))))
+    ax2.set_ylim(0,3)
+    
+    
+
 # =============================================================================
 #  Isoler parcelle même zone SAFRAN mais résultat différent
 # =============================================================================
-    id_NIRR=df_mod[df_mod.id==9362]
-    id_IRR=df_mod[df_mod.id==844]
-    id_IRRplus=df_mod[df_mod.id==5398]
+    # id_NIRR=df_mod[df_mod.id==9362]
+    # id_IRR=df_mod[df_mod.id==844]
+    # id_IRRplus=df_mod[df_mod.id==5398]
     
-    for i in ['NDVI', 'Clay', 'Sand', 'FCov', 'TAW','RAW', 'Dr', 'Ks']:
-        plt.figure(figsize=(7,7))
-        plt.plot(id_NIRR.date,id_NIRR[i],label='Nirr')
-        plt.plot(id_IRR.date,id_IRR[i],label='IRR')
-        plt.plot(id_IRRplus.date,id_IRRplus[i],label='IRR +++')
-        plt.legend()
-        plt.title(i)
+    # for i in ['NDVI', 'Clay', 'Sand', 'FCov', 'TAW','RAW', 'Dr', 'Ks']:
+    #     plt.figure(figsize=(7,7))
+    #     plt.plot(id_NIRR.date,id_NIRR[i],label='Nirr')
+    #     plt.plot(id_IRR.date,id_IRR[i],label='IRR')
+    #     plt.plot(id_IRRplus.date,id_IRRplus[i],label='IRR +++')
+    #     plt.legend()
+    #     plt.title(i)

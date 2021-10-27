@@ -151,9 +151,9 @@ if __name__ == '__main__':
     df_TAW_GSM=pd.concat([df_PKGC_GSM.TAWmax,df_CACG_GSM.TAWMax])
  
     plt.figure(figsize=(7,7))
-    plt.hist(df_TAW_GSM,label="RUM modélisées GSM",bins=15,hatch = 'x',fc="dimgrey",alpha=0.4)
-    plt.hist(df_TAW_UTS,label="RUM modélisées UTS",bins=10,hatch = 'o',fc="lightgrey",alpha=0.4)
-    plt.hist(df.TAWMax,label="RUM modélisées GSM/UTS", bins=10,fc="darkgrey",alpha=0.4,linestyle='--',hatch = '//')
+    plt.hist(df_TAW_GSM,label="RFU modélisées GSM",bins=15,color="b",ec="black",alpha=0.7)
+    plt.hist(df_TAW_UTS,label="RFU modélisées UTS",bins=10,color="r",ec="black",alpha=0.7)
+    plt.hist(df.TAWMax,label="RFU modélisées GSM/UTS", bins=10,ec="black",color="g",alpha=0.6,linestyle='--')
     plt.ylabel("Fréquence ")
     plt.legend()
     plt.ylim(0,30)
@@ -243,7 +243,7 @@ if __name__ == '__main__':
 
        
 #  Si PF_CC = GSM et maxZr == UTS maps 
-    df_PKGC=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto/tab_resu_GSM_PF_CC_FAO_maxZr.csv")
+    df_PKGC=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_300_1900/tab_resu_GSM_PF_CC_maxzrUTS.csv")
     data_valid_PKGC=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
     list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
     data_valid_PKGC =data_valid_PKGC[-data_valid_PKGC["ID"].isin(list_drop)]
@@ -255,16 +255,12 @@ if __name__ == '__main__':
     df_PKGC["PF_mean"]=data_sol_GSM.PF_GSM.values
     df_PKGC["CC_mean"]=data_sol_GSM.CC_GSM.values
     
+    
     df_plot=[]
     for i,z in zip(df_PKGC.ID,df_PKGC.maxZr_UTS):
-        if z < 600 :
-            a=df_PKGC[df_PKGC.ID==i][['MMEAU',"600.0",'Class_Bruand',"PF_mean","CC_mean"]]
-            a["TAW"]=a.eval("CC_mean-PF_mean")
-            a["TAWMax"]=a["TAW"]*600
-        else :
-            a=df_PKGC[df_PKGC.ID==i][['MMEAU',str(float(z)),"Class_Bruand","PF_mean","CC_mean"]]
-            a["TAW"]=a.eval("CC_mean-PF_mean")
-            a["TAWMax"]=a["TAW"]*z
+        a=df_PKGC[df_PKGC.ID==i][['MMEAU',str(float(z)),"Class_Bruand","PF_mean","CC_mean"]]
+        a["TAW"]=a.eval("CC_mean-PF_mean")
+        a["TAWMax"]=a["TAW"]*z
         df_plot.append([a.MMEAU.values[0], a.iloc[:,1].values[0],a.Class_Bruand.values[0],a.TAWMax.values[0]])
         
         
@@ -294,6 +290,7 @@ if __name__ == '__main__':
             a["TAWMax"]=a["TAW"]*z
         df_plot.append([a.MMEAU.values[0], a.iloc[:,1].values[0],a.Class_Bruand.values[0],a.TAWMax.values[0]])
     df=pd.DataFrame(df_plot,columns=["MMEAU",'Quant',"Class_Bruand","TAWMax"])
+    
     
     
     df_UTS_max=pd.concat([df_PKGC["maxZr_UTS"],df_CACG["maxZr_UTS"]])
@@ -368,3 +365,169 @@ if __name__ == '__main__':
     plt.text(165,24,"Median GSM = "+str(round(df_GSM_max.median(),2))) 
     plt.text(165,22,"Median UTS = "+str(round(df_UTS_max.median(),2)))
     plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/histo_maxZr_sol_UTS_GSM.png")
+
+
+
+
+# =============================================================================
+#  PF_CC GSM et maxZr UTS
+# =============================================================================
+    NDVI_stat_irri=[]
+    NDVI_stat_irri_auto=[]
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2_irri_date_satr_6_Juin/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    IRR=[]
+    ids=[]
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    data_prof =data_prof[-data_prof["ID"].isin(list_drop)]
+    for i in data_prof.ID:
+        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][0]
+        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2_irri_date_satr_6_Juin/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        #  Plot NDVI vs Start irrigation
+        # plt.figure(figsize=(7,7))
+        # plt.plot(ID_data.date,ID_data.NDVI)
+        # plt.plot(date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"],1,marker="o",linestyle="")
+        print(ID_data[ID_data.date==date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"].values[0]]["NDVI"].values) # check NDVI value date_start_irr
+        NDVI_stat_irri.append(ID_data[ID_data.date==date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"].values[0]]["NDVI"].values[0])
+        if ID_data.Ir_auto.sum() != 0: 
+            NDVI_stat_irri_auto.append(ID_data[ID_data.Ir_auto!=0]["NDVI"].values[0])
+        else:
+            continue
+        # print(ID_data[ID_data.Ir_auto!=0]) " print date irrigation automatique"
+        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
+    tab_irr2=pd.merge(tab_irr,data_prof[["ID","MMEAU","Classe_Bruand"]],on='ID')
+    tab_irr2.drop_duplicates(inplace=True)
+    df_PKGC=tab_irr2
+    #  Isoler les parcelles en fonction du Sol
+    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    data_valid_PKGC =data_valid_PKGC[-data_valid_PKGC["ID"].isin(list_drop)]
+    df_PKGC["MMEAU"]=data_valid_PKGC.MMEAU.values
+
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/CACG_Fcover_GSM_irri_auto_v2/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    IRR=[]
+    ids=[]
+    df_CACG_valid= pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/maxZr_rum/tab_resu_CACG_maxZr_inversion_RUM_2017.csv")
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",sep=';',encoding='latin-1',decimal=',')
+    data_prof =data_prof[data_prof["ID"].isin(list(df_CACG_valid.ID))]
+    for i in data_prof.ID:
+        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["maxZr_UTS"])][0]
+        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["maxZr_UTS"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/CACG_Fcover_GSM_irri_auto_v2/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
+    df_CACG=tab_irr
+    df_CACG_valid.columns=["unnamed","ID","Quant","MaxZr",'TAWmax','MMEAU']
+    df_CACG_valid=df_CACG_valid[["ID","MMEAU","MaxZr"]]
+    df_CACG["MMEAU"]=df_CACG_valid.MMEAU.values
+
+    df_plot=df_PKGC.drop("ID",axis=1)
+    df=df_plot.append(df_CACG.drop('ID',axis=1))
+    
+    # df_UTS_max=pd.concat([df_PKGC["maxZr_UTS"],df_CACG["maxZr_UTS"]])
+    plt.figure(figsize=(7,7))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(df.MMEAU.to_list(),df.conso.to_list())
+    bias=1/df["MMEAU"].shape[0]*sum(df.conso-np.mean(df.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(df.MMEAU,df.conso))
+    plt.scatter(df.MMEAU,df.conso)
+    plt.xlim(-10,350)
+    plt.ylim(-10,350)
+    plt.xlabel("Quantité saisonnière observée en mm ")
+    plt.ylabel("Quantité saisonnière modélisée en mm ")
+    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    rectangle = plt.Rectangle((95, 245),70,45, ec='blue',fc='blue',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+    plt.text(100,270,"R² = "+str(round(r_value,2)))
+    plt.text(100,260,"Pente = "+str(round(slope,2)))
+    plt.text(100,250,"Biais = "+str(round(bias,2)))
+    # for i in enumerate(df_plot.index):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (df_plot["MMEAU"].iloc[i[0]],df_plot.Quant.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
+    plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/scatter_maxZrUTS_PF_CC_GSM_with_FCOVER.png")
+
+
+
+# =============================================================================
+# # SAs le Fcover
+# =============================================================================
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_GSM_irri_auto_v2__plt_30/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    IRR=[]
+    ids=[]
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    data_prof =data_prof[-data_prof["ID"].isin(list_drop)]
+    for i in data_prof.ID:
+        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][0]
+        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_GSM_irri_auto_v2__plt_30/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
+    tab_irr2=pd.merge(tab_irr,data_prof[["ID","MMEAU","Classe_Bruand"]],on='ID')
+    tab_irr2.drop_duplicates(inplace=True)
+    df_PKGC=tab_irr2
+    #  Isoler les parcelles en fonction du Sol
+    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    data_valid_PKGC =data_valid_PKGC[-data_valid_PKGC["ID"].isin(list_drop)]
+    df_PKGC["MMEAU"]=data_valid_PKGC.MMEAU.values
+
+
+   
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/CACG_GSM_irri_auto_v2_plt_30/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    IRR=[]
+    ids=[]
+    df_CACG_valid= pd.read_csv(d["PC_disk"]+"TRAITEMENT/RUNS_SAMIR/RUN_CACG/maxZr_rum/tab_resu_CACG_maxZr_inversion_RUM_2017.csv")
+    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_CACG_"+str(y)+"_UTS_maj.csv",sep=';',encoding='latin-1',decimal=',')
+    data_prof =data_prof[data_prof["ID"].isin(list(df_CACG_valid.ID))]
+    for i in data_prof.ID:
+        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["maxZr_UTS"])][0]
+        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["maxZr_UTS"])][1]
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/CACG_GSM_irri_auto_v2_plt_30/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        data_id=UTS.groupby("id")
+        ID_data=data_id.get_group(i)
+        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    tab_irr=pd.DataFrame(IRR,columns=["ID","conso","maxzr","TAWMax"])
+    df_CACG=tab_irr
+    df_CACG_valid.columns=["unnamed","ID","conso","maxZr",'TAWmax','MMEAU']
+    df_CACG_valid=df_CACG_valid[["ID","MMEAU","maxZr"]]
+    df_CACG["MMEAU"]=df_CACG_valid.MMEAU.values
+
+    df_plot=df_PKGC.drop("ID",axis=1)
+    df=df_plot.append(df_CACG.drop('ID',axis=1))
+    
+    # df_UTS_max=pd.concat([df_PKGC["maxZr_UTS"],df_CACG["maxZr_UTS"]])
+    plt.figure(figsize=(7,7))
+    slope, intercept, r_value, p_value, std_err = stats.linregress(df.MMEAU.to_list(),df.conso.to_list())
+    bias=1/df["MMEAU"].shape[0]*sum(df.conso-np.mean(df.MMEAU)) 
+    rms = np.sqrt(mean_squared_error(df.MMEAU,df.conso))
+    plt.scatter(df.MMEAU,df.conso)
+    plt.xlim(-10,350)
+    plt.ylim(-10,350)
+    plt.xlabel("Quantité saisonnière observée en mm ")
+    plt.ylabel("Quantité saisonnière modélisée en mm ")
+    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    rectangle = plt.Rectangle((95, 245),70,45, ec='blue',fc='blue',alpha=0.1)
+    plt.gca().add_patch(rectangle)
+    plt.text(100,280,"RMSE = "+str(round(rms,2))) 
+    plt.text(100,270,"R² = "+str(round(r_value,2)))
+    plt.text(100,260,"Pente = "+str(round(slope,2)))
+    plt.text(100,250,"Biais = "+str(round(bias,2)))
+    # for i in enumerate(df_plot.index):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (df_plot["MMEAU"].iloc[i[0]],df_plot.Quant.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
+    plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/scatter_maxZrUTS_PF_CC_GSM_sans_FCOVER.png")

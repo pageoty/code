@@ -167,11 +167,11 @@ if __name__ == '__main__':
             sns.set(style="darkgrid")
             sns.set_context('paper')
             colors=["b","cadetblue","peru","orange","salmon"]
-            plt.pie(df["sum"].iloc[[0,1,5,6,7]],labels=df["name"].iloc[[0,1,5,6,7]],autopct='%1.1f%%',colors=colors,textprops={'fontsize': 20})
-            sns.barplot(df.name.iloc[[0,1,3,4,5,6]],df["sum"].iloc[[0,1,3,4,5,6]],ci=None,colors=colors,textprops={'fontsize': 20})
+            plt.pie(df["sum"].iloc[[0,1,5,6,7]],labels=df["name"].iloc[[0,1,5,6,7]],autopct='%1.1f%%',colors=colors,textprops={'fontsize': 25})
+            # sns.barplot(df.name.iloc[[0,1,3,4,5,6]],df["sum"].iloc[[0,1,3,4,5,6]],ci=None,colors=colors,textprops={'fontsize': 20})
             plt.title("Bassin versant %s" %BV)
             print(df)
-            plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/HISTO_REP_DT/REPARITION_hist_RPG_%s.png" %BV) 
+            plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/HISTO_REP_DT/REPARITION_hist_RPG_%s_%s.png" %BV) 
 #    plt.pie(df2["sum"].iloc[[0,1,5,6,7]],labels=df2["name"].iloc[[0,1,5,6,7]],autopct='%1.1f%%')
 #    plt.axis('equal')
     

@@ -42,6 +42,7 @@ def select_color_date(x):
             couleurs.append("b")
     return couleurs
 
+
     """Calculates reference ET0 based on the Penman-Monteith model.
 
      This routine calculates the potential evapotranspiration rate from

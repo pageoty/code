@@ -39,8 +39,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_init_ru_optim_P055_Fcover_fewi_De_Kr_days10_dose30_400_2500_irri_auto_soil/"
+    name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_300_1900/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_300_1900/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -692,201 +692,201 @@ if __name__ == '__main__':
  # =============================================================================
 #     Analyse pratique agricole 
 # =============================================================================
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
-    tab_pratique=pd.merge(tab_irr2,parcellaire,on='ID')
-    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_pratique.MMEAU_x.to_list(),tab_pratique.conso.to_list())
-    bias=1/tab_pratique["MMEAU_x"].shape[0]*sum(tab_pratique.conso-np.mean(tab_pratique.MMEAU_x)) 
-    rms = np.sqrt(mean_squared_error(tab_pratique.MMEAU_x,tab_pratique.conso))
-    valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],tab_pratique,on='ID')
-    labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-    plt.figure(figsize=(7,7))
-    plt.xlim(-10,350)
-    plt.ylim(-10,350)
-    plt.xlabel("Quantité annuelles observées en mm ")
-    plt.ylabel("Quantité annuelles modélisées en mm ")
-    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-    # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-    rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
-    a=plt.scatter(tab_pratique.MMEAU_x,tab_pratique.conso,c=index,cmap='coolwarm')
-    plt.legend(a.legend_elements()[0],labels)
-    plt.gca().add_patch(rectangle)
-    plt.text(100,300,"RMSE = "+str(round(rms,2))) 
-    plt.text(100,290,"R² = "+str(round(r_value,2)))
-    plt.text(100,280,"Pente = "+str(round(slope,2)))
-    plt.text(100,270,"Biais = "+str(round(bias,2)))
-    for i in enumerate(tab_pratique.ID):
-        label = int(i[1])
-        plt.annotate(label, # this is the text
-              (tab_pratique["MMEAU_x"].iloc[i[0]],tab_pratique.conso.iloc[i[0]]), # this is the point to label
-              textcoords="offset points", # how to position the text
-              xytext=(-6,2), # distance from text to points (x,y)
-              ha='center')
+    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/SOIL_RIGOU/Extract_RRP_Rigou_parcelle_PKCG_GERS_2017_UTS_maj.csv",index_col=[0],sep=';',encoding='latin-1',decimal=',')
+    # tab_pratique=pd.merge(tab_irr2,parcellaire,on='ID')
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_pratique.MMEAU_x.to_list(),tab_pratique.conso.to_list())
+    # bias=1/tab_pratique["MMEAU_x"].shape[0]*sum(tab_pratique.conso-np.mean(tab_pratique.MMEAU_x)) 
+    # rms = np.sqrt(mean_squared_error(tab_pratique.MMEAU_x,tab_pratique.conso))
+    # valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],tab_pratique,on='ID')
+    # labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    # plt.figure(figsize=(7,7))
+    # plt.xlim(-10,350)
+    # plt.ylim(-10,350)
+    # plt.xlabel("Quantité annuelles observées en mm ")
+    # plt.ylabel("Quantité annuelles modélisées en mm ")
+    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    # rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
+    # a=plt.scatter(tab_pratique.MMEAU_x,tab_pratique.conso,c=index,cmap='coolwarm')
+    # plt.legend(a.legend_elements()[0],labels)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(100,300,"RMSE = "+str(round(rms,2))) 
+    # plt.text(100,290,"R² = "+str(round(r_value,2)))
+    # plt.text(100,280,"Pente = "+str(round(slope,2)))
+    # plt.text(100,270,"Biais = "+str(round(bias,2)))
+    # for i in enumerate(tab_pratique.ID):
+    #     label = int(i[1])
+    #     plt.annotate(label, # this is the text
+    #           (tab_pratique["MMEAU_x"].iloc[i[0]],tab_pratique.conso.iloc[i[0]]), # this is the point to label
+    #           textcoords="offset points", # how to position the text
+    #           xytext=(-6,2), # distance from text to points (x,y)
+    #           ha='center')
 
-    res=tab_pratique.groupby("RESIDUS")
-    dist_resu={"Pas de résidus":0.0,"broyés":1.0,"non_broyés":2.0,"broyés_enfouis":3.0,"non_broyés_enfouis":4.0,"Exportés":5.0}
-    for i,z in zip(dist_resu.values(),dist_resu.keys()):
-        devenir=res.get_group(i)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
-        bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
-        rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
-        valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
-        labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-        plt.figure(figsize=(7,7))
-        plt.xlim(-10,350)
-        plt.ylim(-10,350)
-        plt.xlabel("Quantité annuelles observées en mm ")
-        plt.ylabel("Quantité annuelles modélisées en mm ")
-        plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-        # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-        rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
-        a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
-        plt.legend(a.legend_elements()[0],labels)
-        plt.gca().add_patch(rectangle)
-        plt.text(100,300,"RMSE = "+str(round(rms,2))) 
-        plt.text(100,290,"R² = "+str(round(r_value,2)))
-        plt.text(100,280,"Pente = "+str(round(slope,2)))
-        plt.text(100,270,"Biais = "+str(round(bias,2)))
-        plt.title(z)
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS.png")
+    # res=tab_pratique.groupby("RESIDUS")
+    # dist_resu={"Pas de résidus":0.0,"broyés":1.0,"non_broyés":2.0,"broyés_enfouis":3.0,"non_broyés_enfouis":4.0,"Exportés":5.0}
+    # for i,z in zip(dist_resu.values(),dist_resu.keys()):
+    #     devenir=res.get_group(i)
+    #     slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
+    #     bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
+    #     rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
+    #     valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
+    #     labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    #     plt.figure(figsize=(7,7))
+    #     plt.xlim(-10,350)
+    #     plt.ylim(-10,350)
+    #     plt.xlabel("Quantité annuelles observées en mm ")
+    #     plt.ylabel("Quantité annuelles modélisées en mm ")
+    #     plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #     # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    #     rectangle = plt.Rectangle((95, 265),70,45, ec='blue',fc='blue',alpha=0.1)
+    #     a=plt.scatter(devenir.MMEAU_x,devenir.conso,c=index,cmap='coolwarm')
+    #     plt.legend(a.legend_elements()[0],labels)
+    #     plt.gca().add_patch(rectangle)
+    #     plt.text(100,300,"RMSE = "+str(round(rms,2))) 
+    #     plt.text(100,290,"R² = "+str(round(r_value,2)))
+    #     plt.text(100,280,"Pente = "+str(round(slope,2)))
+    #     plt.text(100,270,"Biais = "+str(round(bias,2)))
+    #     plt.title(z)
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS.png")
 
 
 
-    dist_resu={"Pas de résidus":0.0,"broyés":1.0,"non_broyés":2.0,"broyés_enfouis":3.0,"non_broyés_enfouis":4.0,"Exportés":5.0}
-    TEX=tab_pratique.groupby("TEX")
-    for tex in ["L",'A','S']:
-        plt.figure(figsize=(7,7))
-        TEX_resu=TEX.get_group(tex)
-        res=TEX_resu.groupby("RESIDUS")
-        for i,z in zip(dist_resu.values(),dist_resu.keys()):
-            if i not in res.RESIDUS.count().index :
-                continue 
-            devenir=res.get_group(i)
-            if i == 0.0:
-                coloris='blue'
-            elif i == 1.0 :
-                coloris='orange'
-            elif i == 2.0 :
-                coloris='green'
-            elif i == 3.0 :
-                coloris='red'
-            elif i == 4.0 :
-                coloris='purple'
-            elif i == 5.0 :
-                coloris='black'
-            slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
-            bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
-            rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
-            # valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
-            # labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-            plt.xlim(-10,350)
-            plt.ylim(-10,350)
-            plt.xlabel("Quantité annuelles observées en mm ")
-            plt.ylabel("Quantité annuelles modélisées en mm ")
-            plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-            # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-            a=plt.scatter(devenir.MMEAU_x,devenir.conso,label=z,color=coloris)
-            plt.legend()
-            plt.title(tex)
-            if i ==0.0:
-                rectangle = plt.Rectangle((10, 295),72,52, ec='blue',fc='blue',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(15,340,"RMSE = "+str(round(rms,2))) 
-                plt.text(15,330,"R² = "+str(round(r_value,2)))
-                plt.text(15,320,"Pente = "+str(round(slope,2)))
-                plt.text(15,310,"Biais = "+str(round(bias,2)))
-                plt.text(15,300,"Nb. = "+str(devenir.shape[0]))
-            elif i == 1.0:
-                rectangle = plt.Rectangle((95, 295),72,52, ec='orange',fc='orange',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(100,340,"RMSE = "+str(round(rms,2))) 
-                plt.text(100,330,"R² = "+str(round(r_value,2)))
-                plt.text(100,320,"Pente = "+str(round(slope,2)))
-                plt.text(100,310,"Biais = "+str(round(bias,2)))
-                plt.text(100,300,"Nb. = "+str(devenir.shape[0]))
-            elif i == 3.0:
-                rectangle = plt.Rectangle((275, 245),72,52, ec='red',fc='red',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(280,290,"RMSE = "+str(round(rms,2))) 
-                plt.text(280,280,"R² = "+str(round(r_value,2)))
-                plt.text(280,270,"Pente = "+str(round(slope,2)))
-                plt.text(280,260,"Biais = "+str(round(bias,2)))
-                plt.text(280,250,"Nb. = "+str(devenir.shape[0]))
-            elif i == 2.0:
-                rectangle = plt.Rectangle((195, 295),72,52, ec='green',fc='green',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(200,340,"RMSE = "+str(round(rms,2))) 
-                plt.text(200,330,"R² = "+str(round(r_value,2)))
-                plt.text(200,320,"Pente = "+str(round(slope,2)))
-                plt.text(200,310,"Biais = "+str(round(bias,2)))
-                plt.text(200,300,"Nb. = "+str(devenir.shape[0]))
-            elif i == 4.0:
-                rectangle = plt.Rectangle((275, 175),72,52, ec='purple',fc='purple',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(280,220,"RMSE = "+str(round(rms,2))) 
-                plt.text(280,210,"R² = "+str(round(r_value,2)))
-                plt.text(280,200,"Pente = "+str(round(slope,2)))
-                plt.text(280,190,"Biais = "+str(round(bias,2)))
-                plt.text(280,180,"Nb. = "+str(devenir.shape[0]))
-            else:
-                rectangle = plt.Rectangle((275,115),72,52, ec='black',fc='black',alpha=0.2)
-                plt.gca().add_patch(rectangle)
-                plt.text(280,160,"RMSE = "+str(round(rms,2))) 
-                plt.text(280,150,"R² = "+str(round(r_value,2)))
-                plt.text(280,140,"Pente = "+str(round(slope,2)))
-                plt.text(280,130,"Biais = "+str(round(bias,2)))
-                plt.text(280,120,"Nb. = "+str(devenir.shape[0]))
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS_texture_sol_%s.png"%tex)
+    # dist_resu={"Pas de résidus":0.0,"broyés":1.0,"non_broyés":2.0,"broyés_enfouis":3.0,"non_broyés_enfouis":4.0,"Exportés":5.0}
+    # TEX=tab_pratique.groupby("TEX")
+    # for tex in ["L",'A','S']:
+    #     plt.figure(figsize=(7,7))
+    #     TEX_resu=TEX.get_group(tex)
+    #     res=TEX_resu.groupby("RESIDUS")
+    #     for i,z in zip(dist_resu.values(),dist_resu.keys()):
+    #         if i not in res.RESIDUS.count().index :
+    #             continue 
+    #         devenir=res.get_group(i)
+    #         if i == 0.0:
+    #             coloris='blue'
+    #         elif i == 1.0 :
+    #             coloris='orange'
+    #         elif i == 2.0 :
+    #             coloris='green'
+    #         elif i == 3.0 :
+    #             coloris='red'
+    #         elif i == 4.0 :
+    #             coloris='purple'
+    #         elif i == 5.0 :
+    #             coloris='black'
+    #         slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
+    #         bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
+    #         rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
+    #         # valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
+    #         # labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    #         plt.xlim(-10,350)
+    #         plt.ylim(-10,350)
+    #         plt.xlabel("Quantité annuelles observées en mm ")
+    #         plt.ylabel("Quantité annuelles modélisées en mm ")
+    #         plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #         # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    #         a=plt.scatter(devenir.MMEAU_x,devenir.conso,label=z,color=coloris)
+    #         plt.legend()
+    #         plt.title(tex)
+    #         if i ==0.0:
+    #             rectangle = plt.Rectangle((10, 295),72,52, ec='blue',fc='blue',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(15,340,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(15,330,"R² = "+str(round(r_value,2)))
+    #             plt.text(15,320,"Pente = "+str(round(slope,2)))
+    #             plt.text(15,310,"Biais = "+str(round(bias,2)))
+    #             plt.text(15,300,"Nb. = "+str(devenir.shape[0]))
+    #         elif i == 1.0:
+    #             rectangle = plt.Rectangle((95, 295),72,52, ec='orange',fc='orange',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(100,340,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(100,330,"R² = "+str(round(r_value,2)))
+    #             plt.text(100,320,"Pente = "+str(round(slope,2)))
+    #             plt.text(100,310,"Biais = "+str(round(bias,2)))
+    #             plt.text(100,300,"Nb. = "+str(devenir.shape[0]))
+    #         elif i == 3.0:
+    #             rectangle = plt.Rectangle((275, 245),72,52, ec='red',fc='red',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(280,290,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(280,280,"R² = "+str(round(r_value,2)))
+    #             plt.text(280,270,"Pente = "+str(round(slope,2)))
+    #             plt.text(280,260,"Biais = "+str(round(bias,2)))
+    #             plt.text(280,250,"Nb. = "+str(devenir.shape[0]))
+    #         elif i == 2.0:
+    #             rectangle = plt.Rectangle((195, 295),72,52, ec='green',fc='green',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(200,340,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(200,330,"R² = "+str(round(r_value,2)))
+    #             plt.text(200,320,"Pente = "+str(round(slope,2)))
+    #             plt.text(200,310,"Biais = "+str(round(bias,2)))
+    #             plt.text(200,300,"Nb. = "+str(devenir.shape[0]))
+    #         elif i == 4.0:
+    #             rectangle = plt.Rectangle((275, 175),72,52, ec='purple',fc='purple',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(280,220,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(280,210,"R² = "+str(round(r_value,2)))
+    #             plt.text(280,200,"Pente = "+str(round(slope,2)))
+    #             plt.text(280,190,"Biais = "+str(round(bias,2)))
+    #             plt.text(280,180,"Nb. = "+str(devenir.shape[0]))
+    #         else:
+    #             rectangle = plt.Rectangle((275,115),72,52, ec='black',fc='black',alpha=0.2)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(280,160,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(280,150,"R² = "+str(round(r_value,2)))
+    #             plt.text(280,140,"Pente = "+str(round(slope,2)))
+    #             plt.text(280,130,"Biais = "+str(round(bias,2)))
+    #             plt.text(280,120,"Nb. = "+str(devenir.shape[0]))
+    #     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS_texture_sol_%s.png"%tex)
 # =============================================================================
 # regouper les champ résidus 
 # =============================================================================
-    tab_pratique["residus"]=1.0
-    tab_pratique.loc[(tab_pratique.RESIDUS == 0.0),'residus']= 0.0
-    tab_pratique.loc[(tab_pratique.RESIDUS == 5.0),'residus']= 0.0
-    dist_resu={"Pas de résidus":0.0,"résidus":1.0}
-    TEX=tab_pratique.groupby("TEX")
-    for tex in ['A','S','L']:
-        plt.figure(figsize=(7,7))
-        TEX_resu=TEX.get_group(tex)
-        res=TEX_resu.groupby("residus")
-        for i,z in zip(dist_resu.values(),dist_resu.keys()):
-            if i not in res.residus.count().index :
-                continue 
-            devenir=res.get_group(i)
-            if i == 0.0:
-                coloris='blue'
-            elif i == 1.0 :
-                coloris='orange'
-            slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
-            bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
-            rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
-            # valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
-            # labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
-            plt.xlim(-10,350)
-            plt.ylim(-10,350)
-            plt.xlabel("Quantité annuelles observées en mm ")
-            plt.ylabel("Quantité annuelles modélisées en mm ")
-            plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-            # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
-            a=plt.scatter(devenir.MMEAU_x,devenir.conso,label=z,color=coloris)
-            plt.legend()
-            plt.title(tex)
-            if i ==0.0:
-                rectangle = plt.Rectangle((10, 295),72,52, ec='blue',fc='blue',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(15,340,"RMSE = "+str(round(rms,2))) 
-                plt.text(15,330,"R² = "+str(round(r_value,2)))
-                plt.text(15,320,"Pente = "+str(round(slope,2)))
-                plt.text(15,310,"Biais = "+str(round(bias,2)))
-                plt.text(15,300,"Nb. = "+str(devenir.shape[0]))
-            elif i == 1.0:
-                rectangle = plt.Rectangle((95, 295),72,52, ec='orange',fc='orange',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(100,340,"RMSE = "+str(round(rms,2))) 
-                plt.text(100,330,"R² = "+str(round(r_value,2)))
-                plt.text(100,320,"Pente = "+str(round(slope,2)))
-                plt.text(100,310,"Biais = "+str(round(bias,2)))
-                plt.text(100,300,"Nb. = "+str(devenir.shape[0]))
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS_texture_sol_simpli_%s.png"%tex)
+    # tab_pratique["residus"]=1.0
+    # tab_pratique.loc[(tab_pratique.RESIDUS == 0.0),'residus']= 0.0
+    # tab_pratique.loc[(tab_pratique.RESIDUS == 5.0),'residus']= 0.0
+    # dist_resu={"Pas de résidus":0.0,"résidus":1.0}
+    # TEX=tab_pratique.groupby("TEX")
+    # for tex in ['A','S','L']:
+    #     plt.figure(figsize=(7,7))
+    #     TEX_resu=TEX.get_group(tex)
+    #     res=TEX_resu.groupby("residus")
+    #     for i,z in zip(dist_resu.values(),dist_resu.keys()):
+    #         if i not in res.residus.count().index :
+    #             continue 
+    #         devenir=res.get_group(i)
+    #         if i == 0.0:
+    #             coloris='blue'
+    #         elif i == 1.0 :
+    #             coloris='orange'
+    #         slope, intercept, r_value, p_value, std_err = stats.linregress(devenir.MMEAU_x.to_list(),devenir.conso.to_list())
+    #         bias=1/devenir["MMEAU_x"].shape[0]*sum(devenir.conso-np.mean(devenir.MMEAU_x)) 
+    #         rms = np.sqrt(mean_squared_error(devenir.MMEAU_x,devenir.conso))
+    #         # valid_sol_classe=pd.merge(data_prof[["Class_Bruand","RUM",'ID']],devenir,on='ID')
+    #         # labels, index = np.unique(valid_sol_classe["Class_Bruand_x"], return_inverse=True)
+    #         plt.xlim(-10,350)
+    #         plt.ylim(-10,350)
+    #         plt.xlabel("Quantité annuelles observées en mm ")
+    #         plt.ylabel("Quantité annuelles modélisées en mm ")
+    #         plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    #         # plt.errorbar(tab_irr2.MMEAU,tab_irr2.conso,marker=',',yerr=yerr,fmt='o',elinewidth=0.7,capsize = 4)
+    #         a=plt.scatter(devenir.MMEAU_x,devenir.conso,label=z,color=coloris)
+    #         plt.legend()
+    #         plt.title(tex)
+    #         if i ==0.0:
+    #             rectangle = plt.Rectangle((10, 295),72,52, ec='blue',fc='blue',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(15,340,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(15,330,"R² = "+str(round(r_value,2)))
+    #             plt.text(15,320,"Pente = "+str(round(slope,2)))
+    #             plt.text(15,310,"Biais = "+str(round(bias,2)))
+    #             plt.text(15,300,"Nb. = "+str(devenir.shape[0]))
+    #         elif i == 1.0:
+    #             rectangle = plt.Rectangle((95, 295),72,52, ec='orange',fc='orange',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(100,340,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(100,330,"R² = "+str(round(r_value,2)))
+    #             plt.text(100,320,"Pente = "+str(round(slope,2)))
+    #             plt.text(100,310,"Biais = "+str(round(bias,2)))
+    #             plt.text(100,300,"Nb. = "+str(devenir.shape[0]))
+    #     plt.savefig(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/Plot_result/plot_scatter_Irri_RUM_inversion_RESIDUS_texture_sol_simpli_%s.png"%tex)
 
     # CIMS=tab_pratique.groupby("DEROBE")
     # dist_CIMS={"Pas de CIMS":0.0,"CIMS":1.0}
