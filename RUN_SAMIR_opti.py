@@ -67,7 +67,7 @@ def params_update(path,output,date_start,date_end,ligne_OS=6,FminNDVI=0.2,FmaxND
                   DiffE=0.00001,DiffR=0.00001,REW=8,minZr=125,maxZr=800,p=0.55,FW=100,Irrig_auto=0,Irrig_man=1,Lame_max=0,minDays=20,Kcbmin_start=0.1,
                   Kcbmax_stop=0.85,m=1,Start_date_Irr=0,Kcmax=1.15):
     
-    param=pd.read_csv(path,header=None,sep=";")
+    param=pd.read_csv(path,header=None,sep=",")
     param.loc[int(ligne_OS),13]=A_kcb 
     param.loc[int(ligne_OS),20]=REW
     param.loc[int(ligne_OS),21]=m

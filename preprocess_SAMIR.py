@@ -694,7 +694,7 @@ if __name__ == "__main__":
             FCOVERTYP=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'FCov'})
     FCOVER=pd.concat([FCOVERTYN,FCOVERTYP])
     FCOVER_Gers=FCOVER.drop_duplicates(subset=["id","date"])
-    FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
+    # FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
 # =============================================================================
 # Pour le PKGC HP
 # =============================================================================
@@ -712,17 +712,17 @@ if __name__ == "__main__":
         # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
 
         df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/FCOVER_parcelle/PARCELLE_CLASSIF/FCOVER_"+t+"_CLASSIF_ADOUR_2017_MAIS_all.csv",decimal=".")
-
+        IRR_maize=df[df.majority==1.0]
         
-        tmp=df[["ID"]]
+        tmp=IRR_maize[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
             for i in np.arange(0,42,2): #♣ 2018 : 49 :  2017 : 42
-                a=df["mean_"+str(i)]
+                a=IRR_maize["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         else:
-            for i in np.arange(0,46,2): #♣ 2018 : 49 :  2017 : 46
-                a=df["mean_"+str(i)]
+            for i in np.arange(0,46,2): #♣ 2018 : 26 :  2017 : 46
+                a=IRR_maize["mean_"+str(i)]
                 tmp1=tmp1.append(a)
         Fcover=tmp1.T
         Fcover.columns=list(dates)
@@ -731,7 +731,7 @@ if __name__ == "__main__":
         Fcover.T.sort_index(ascending=True,inplace=True)
         Fcover=Fcover.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
         Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
-        Fcover=Fcover.append(df.ID)
+        Fcover=Fcover.append(IRR_maize.ID)
         Fcover=Fcover.T
         Fcover.set_index("ID",inplace=True)
         FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
@@ -745,31 +745,32 @@ if __name__ == "__main__":
     # FCOVER_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/Fcover.df")
     
     #  POUR LE NDVI Classif
-    for t in ["TYP","TCJ"]:
-        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2018.txt",sep=',', header=None)
+    for t in ["TYP","TYN"]:
+        dfnames=pd.read_csv(d["PC_disk_labo"]+"TRAITEMENT/INPUT_DATA/NDVI_parcelle/Sentinel2_T31TCJ_interpolation_dates_2017.txt",sep=',', header=None)
         dfs=pd.DataFrame(dfnames)
         dates=pd.to_datetime(dfnames[0],format="%Y%m%d")
-        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2017.csv",decimal=".")
-        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/All_summer_crops/NDVI_"+t+"_ASA_2018.csv",decimal=".")
-
-        tmp=df[["ID"]]
+        df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref//PARCELLE_CLASSIF/NDVI_"+t+"_Classif_all_maize_2018.csv",decimal=".")
+        # df=pd.read_csv(d["PC_disk_labo"]+"/TRAITEMENT/INPUT_DATA/NDVI_parcelle/Parcelle_ref/PARCELLE_ASA/All_summer_crops/NDVI_"+t+"_ASA_2018.csv",decimal=".")
+        IRR_maize=df[df.majority==1.0]
+        
+        tmp=IRR_maize[["ID"]]
         tmp1=pd.DataFrame()
         if t =="TYP":
-            for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 42
-                a=df["mean_"+str(i)]
+            for i in np.arange(0,36,1): #♣ 2018 : 37 :  2017 : 36 
+                a=IRR_maize["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
         else:
-            for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 46
-                a=df["mean_"+str(i)]
+            for i in np.arange(0,36,1): #♣ 2018 : 37 :  2017 : 36
+                a=IRR_maize["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
         NDVI=tmp1.T
         NDVI.columns=list(dates)
         # Fcover=Fcover.T
         NDVI.T.sort_index(inplace=True)
         NDVI.T.sort_index(ascending=True,inplace=True)
-        NDVI=NDVI.T.reindex(pd.date_range(start="2018-01-01",end="2018-12-31",freq='1D'))
+        NDVI=NDVI.T.reindex(pd.date_range(start="2017-01-01",end="2017-12-31",freq='1D'))
         NDVI=NDVI.resample("D").interpolate(method='time',limit_direction='both')
-        NDVI=NDVI.append(df.ID)
+        NDVI=NDVI.append(IRR_maize.ID)
         NDVI=NDVI.T
         NDVI.set_index("ID",inplace=True)
         NDVI=pd.DataFrame(NDVI.T.unstack()).reset_index()
@@ -781,7 +782,7 @@ if __name__ == "__main__":
     NDVI=pd.concat([NDVITYN,NDVITYP])
     # NDVI_Gers=NDVI.drop_duplicates(subset=["id","date"],keep='first')
     NDVI_Gers=NDVI[NDVI.id.isin(FCOVER_Gers.id)]
-    NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2018.df")
+    # NDVI_Gers.to_pickle(d["path_run_disk"]+"/maize_irri/NDVI2018.df")
     
    
     
@@ -859,7 +860,7 @@ if __name__ == "__main__":
             for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 42
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
-        elif t == 'TYN':
+        elif t == 'TYN':SOIL_GSM_CALSSIF_ADOUR_2018
             for i in np.arange(0,36,1): #♣ 2018 : 49 :  2017 : 46
                 a=df["mean_"+str(i)]
                 tmp1=tmp1.append(a/1000)
@@ -896,7 +897,7 @@ if __name__ == "__main__":
     # # Lecture data SAFRAN
     # SAF=geo.read_file("D:/THESE_TMP/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_"+str(years)+"_L93.shp")
     # # Lecture parcellaire
-    # parce=geo.read_file("D:/THESE_TMP/DONNEES_RAW/PARCELLE_LABO/PARCELLE_LABO_LAM_L93.shp")
+    # Parcellaire= geo.read_file(d["PC_disk_labo"]+"/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")
     # SAF.drop(columns=['field_1', 'LAMBX', 'LAMBY', 'PRENEI_Q', 'T_Q', 'FF_Q', 'Q_Q', 'DLI_Q', 'SSI_Q', 'HU_Q',
     #         'PE_Q', 'SWI_Q', 'DRAINC_Q', 'RUNC_Q', 'RESR_NEIGE',
     #         'RESR_NEI_1', 'HTEURNEIGE', 'HTEURNEI_1', 'HTEURNEI_2', 'SNOW_FRAC_',

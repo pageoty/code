@@ -54,9 +54,10 @@ if __name__ == "__main__":
     parser.add_argument('-PC',dest='Pc',nargs='+',help='PC_localisation', choices=('home','labo'))
     args = parser.parse_args()
     # years=["2008","2010","2012","2014","2015","2019"]
-    years=["2017"]
-    
+    years=["2018"]
+    OS=["maize_irri","maize_rain"]
     #  Add args User PC home/ PC labo
+    
     result=[]
     for y in years:# 
         print (y)
@@ -108,7 +109,7 @@ if __name__ == "__main__":
             elif "ASA" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/ASA_all_crops_summer/"+str(y)+"/* %s"%(d['SAMIR_run']))
             elif "Classif" in name_run:
-                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/CLASSIF_ALL_MAIS/"+str(y)+"/* %s"%(d['SAMIR_run']))
+                os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/CLASSIF_2classes/"+str(y)+"/* %s"%(d['SAMIR_run']))
             elif "NESTE" in name_run:
                 os.system("scp -r "+d["data"]+"/TRAITEMENT/RUNS_SAMIR/DATA_SCP_ICOS/NESTE_MAIS/"+str(y)+"/* %s"%(d['SAMIR_run']))
             else:
@@ -276,29 +277,34 @@ if __name__ == "__main__":
             data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
             
         elif "Classif" in name_run:
-            PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_all_classif_2017_maj2.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
-
-            # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
-            FC_Bru=PF_CC["CC_mean"]
-            WP_Bru=PF_CC["PF_mean"]
-            Sand_Ainse=PF_CC["Sable"]/100
-            Clay_Ainse=PF_CC["Argile"]/100
-            # modification df soil FC et WP 
-            for p in ["WP_Bru","FC_Bru"]:
-                tmp=open(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df","rb")
+            for clas in OS:
+                PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_"+clas+"_classif_"+y+"_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
+                tmp=open(d["SAMIR_run"]+"Inputdata/"+clas+"/WP.df","rb")
                 data=pickle.load(tmp)
                 tmp.close()
-                valeur=globals()['%s'%p]
-                data[p[:-4]]=valeur.values
-                data.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/"+str(p)[:-4]+".df")
-            #  Modifcation Soil texture 
-            tmp1=open(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df","rb")
-            data_tex=pickle.load(tmp1)
-            tmp1.close()
-            for tex in ["Sand_Ainse",'Clay_Ainse']:
-                val=globals()['%s'%tex]
-                data_tex[tex[:-6]]=val.values
-            data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/maize_irri/Soil_texture.df")
+                n=list(set(data.id))
+                PF_CC=PF_CC[PF_CC.ID.isin(n)]
+                # PF_CC.dropna(inplace=True)Extract_RRP_Rigou_parcelle_PKCG_2017_UTS_maj
+                FC_Bru=PF_CC["CC_mean"]
+                WP_Bru=PF_CC["PF_mean"]
+                Sand_Ainse=PF_CC["Sable"]/100
+                Clay_Ainse=PF_CC["Argile"]/100
+                # modification df soil FC et WP 
+                for p in ["WP_Bru","FC_Bru"]:
+                    tmp=open(d["SAMIR_run"]+"Inputdata/"+clas+"/"+str(p)[:-4]+".df","rb")
+                    data=pickle.load(tmp)
+                    tmp.close()
+                    valeur=globals()['%s'%p]
+                    data[p[:-4]]=valeur.values
+                    data.to_pickle(d["SAMIR_run"]+"Inputdata/"+clas+"/"+str(p)[:-4]+".df")
+                #  Modifcation Soil texture 
+                tmp1=open(d["SAMIR_run"]+"Inputdata/"+clas+"/Soil_texture.df","rb")
+                data_tex=pickle.load(tmp1)
+                tmp1.close()
+                for tex in ["Sand_Ainse",'Clay_Ainse']:
+                    val=globals()['%s'%tex]
+                    data_tex[tex[:-6]]=val.values
+                data_tex.to_pickle(d["SAMIR_run"]+"Inputdata/"+clas+"/Soil_texture.df")
         elif "NESTE" in name_run:
             PF_CC=pd.read_csv(d["disk"]+"/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_mais_all_NESTE_2017_maj.csv",index_col=[0],sep=',',encoding='latin-1',decimal='.')
             b=open(d["SAMIR_run"]+"/Inputdata/maize_irri/Fcover.df","rb")
@@ -421,7 +427,7 @@ if __name__ == "__main__":
             print(RUSOL_ponde)
             print(r'===============')
 
-        classes=["maize_irri"]
+        classes=["maize_irri","maize_rain"]
         if "LAI" in name_run:
             b=open(d["SAMIR_run"]+"/Inputdata/maize_irri/LAI"+str(y)+".df","rb")
             LAI=pickle.load(b)
@@ -510,11 +516,11 @@ if __name__ == "__main__":
                 lastdate=vege.iloc[0]["date"].strftime('%m-%d').replace("-", "")
                 if len(classes)==2:
                     params_update(d['SAMIR_run']+"/Inputdata/param_SAMIR12_13.csv",
-                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                              Ze=150,REW=float(str(args.REW).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=0.00001,DiffR=0.00001,Init_RU=0,Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                              d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1031'),
+                              Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,FW=100,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=1,Irrig_man=0,Kcmax=1.15,Plateau=0,Lame_max=30,m=1,minDays=10,p=0.55,Start_date_Irr=str(y)+str('0501'),A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_update(d['SAMIR_run']+"/Inputdata/param_modif.csv",
-                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str(lastdate),date_end=str(y)+str('1031'),
-                                  ligne_OS=7,Ze=150,REW=float(str(args.REW2).strip("['']")),minZr=150,maxZr='optim',Zsoil=3000,DiffE=5,DiffR=5,Init_RU=float(RUn1),Irrig_auto=0,Irrig_man=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
+                                  d['SAMIR_run']+"/Inputdata/param_modif.csv",date_start=str(y)+str('0101'),date_end=str(y)+str('1031'),
+                                  ligne_OS=7,Ze=150,REW=8,minZr=150,maxZr='optim',Zsoil=3000,FW=100,DiffE=0.00001,DiffR=0.00001,Init_RU=1,Irrig_auto=0,Irrig_man=0,Kcmax=1.15,Plateau=0,Lame_max=0,m=1,A_kcb=float(str(args.akcb).strip("['']")), Koffset=float(str(args.bkcb).strip("['']")))
                     params_opti(d["SAMIR_run"]+"/Inputdata/param_SAMIR12_13_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin")
                     params_opti(d["SAMIR_run"]+"/Inputdata/test_optim.csv",output_path=d["SAMIR_run"]+"/Inputdata/test_optim.csv",param1="maxZr",value_P1="500/2500/250/lin",ligne_OS=2)
                 else:

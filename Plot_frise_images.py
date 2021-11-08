@@ -171,8 +171,8 @@ if __name__ == '__main__':
 
     plt.figure(figsize=(15,4))
     ax1 = plt.subplot(111)
-    sns.set(style="darkgrid")
-    sns.set_context('paper')
+    # sns.set(style="darkgrid")
+    # sns.set_context('paper')
     plt.setp(ax1.get_yticklabels(), visible=False)
     p1=plt.plot(df_S2.date,df_S2.N,marker='o',linestyle='')
     p3=plt.plot(df_S1_DES.date,df_S1_DES.N,marker='v',linestyle='')

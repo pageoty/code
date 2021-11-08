@@ -374,7 +374,7 @@ if __name__ == '__main__':
 # =============================================================================
     NDVI_stat_irri=[]
     NDVI_stat_irri_auto=[]
-    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2_irri_date_satr_6_Juin/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    param=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
     IRR=[]
     ids=[]
     data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
@@ -383,14 +383,14 @@ if __name__ == '__main__':
     for i in data_prof.ID:
         c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][0]
         val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["Zrmax_UTS"])][1]
-        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2_irri_date_satr_6_Juin/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
         data_id=UTS.groupby("id")
         ID_data=data_id.get_group(i)
         #  Plot NDVI vs Start irrigation
         # plt.figure(figsize=(7,7))
         # plt.plot(ID_data.date,ID_data.NDVI)
         # plt.plot(date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"],1,marker="o",linestyle="")
-        print(ID_data[ID_data.date==date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"].values[0]]["NDVI"].values) # check NDVI value date_start_irr
+        # print(ID_data[ID_data.date==date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"].values[0]]["NDVI"].values) # check NDVI value date_start_irr
         NDVI_stat_irri.append(ID_data[ID_data.date==date_stat_irr[date_stat_irr._ID==i]["IRRDATDEB"].values[0]]["NDVI"].values[0])
         if ID_data.Ir_auto.sum() != 0: 
             NDVI_stat_irri_auto.append(ID_data[ID_data.Ir_auto!=0]["NDVI"].values[0])
@@ -531,3 +531,22 @@ if __name__ == '__main__':
     #           xytext=(-6,2), # distance from text to points (x,y)
     #           ha='center')
     plt.savefig("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/Plot_resu_all_parcelle_partenaires/scatter_maxZrUTS_PF_CC_GSM_sans_FCOVER.png")
+    
+    
+# =============================================================================
+#     REgarde KS et Irrigation 
+# =============================================================================
+    ID99=ID_data
+    plt.figure(figsize=(7,7))
+    plt.plot(ID99.date,ID99.Dr,c="r")
+    # plt.plot(ID99.date,ID99.TAW*0.55)
+    plt.plot(ID99[ID99.Ir_auto!=0]["date"],ID99[ID99.Ir_auto!=0]["Ir_auto"],linestyle='',marker="o",c='green')
+    plt.ylim(0,100)
+    ax2=plt.twinx(ax=None)
+    ax2.plot(ID99.date,np.minimum((ID99.TAW-ID99.Dr)/(ID99.TAW*(0.55+0.04*(5-ID99.ET))),1),linestyle="--",c='black',linewidth=1)
+    ax2.set_ylim(-1,1)
+    plt.figure(figsize=(7,7))
+    plt.plot(ID99.date,ID99.ET,c="r",linewidth=0.5)
+    ax2=plt.twinx(ax=None)
+    ax2.plot(ID99.date,np.minimum((ID99.TAW-ID99.Dr)/(ID99.TAW*(0.55+0.04*(5-ID99.ET))),1),linestyle="--",c='black',linewidth=1)
+    ax2.set_ylim(-1,1)

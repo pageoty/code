@@ -37,7 +37,7 @@ if __name__ == "__main__":
 # =============================================================================
     for i in os.listdir("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/CloudPercent_tile/"):
         print (i)
-        if "T30TYP" in i :
+        if "T31TDJ" in i :
             df=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/CloudPercent_tile/{}".format(i),sep=":",header=None)
             date=pd.DataFrame(df[0].apply(lambda x: x[11:19]))
             tile=pd.DataFrame(df[0].apply(lambda x: x[35:41]))
@@ -58,6 +58,8 @@ if __name__ == "__main__":
                 globals()["data%s" % i[13:-4]]=dfCloudseason2018[["Month",'classe','date']].groupby(["Month"]).count()
                 Classe2018=dfCloudseason2018[["Month",'classe','date']].groupby(["Month","classe"]).count()
                 print (dfCloudseason2018.count())
+                print("2018 + %s"%i)
+                print(dfCloudseason2018.CloudPercent.mean())
     #            img_clair=Classe.loc(axis=0)[:, ['0-24']]
     #            print (r"  years : {} tile : {} : result : {}".format(i[13:17],list(tile.iloc[1]),img_clair))
             else:
@@ -75,6 +77,7 @@ if __name__ == "__main__":
                 Classe=dfCloudseason[["Month",'classe','date']].groupby(["Month","classe"]).count()
                 print( "2017")
                 print (dfCloudseason.count())
+                print(dfCloudseason.CloudPercent.mean())
 
 # =============================================================================
 #  Plot acquisitions claire by tuiles 
@@ -96,7 +99,7 @@ if __name__ == "__main__":
     plt.ylabel("Nombre d'acquisitions")
     plt.title("2018")
     plt.ylim(0,50)
-    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2018.png")
+    # plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2018.png")
 
     plt.figure(figsize=(7,5))
     plt.bar(data2017_T30TYN.index,data2017_T30TYN.date,label='TYN')
@@ -108,4 +111,4 @@ if __name__ == "__main__":
     plt.ylabel("Nombre d'acquisitions")
     plt.title("2017")
     plt.ylim(0,50)
-    plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2017.png")
+    # plt.savefig("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/CloudPercent_S2/acquisition_S2_2017.png")

@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Thu Nov  4 15:28:42 2021
+
+@author: pageot
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Wed Jan 27 13:13:23 2021
 
 @author: pageot
@@ -43,15 +51,15 @@ if __name__ == '__main__':
 # =============================================================================
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
-# Inputs 
-    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
-    parcelle= geo.read_file(d["PC_labo_disk"]+"/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")    
-
+    
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
+    parcelle= geo.read_file(d["PC_labo_disk"]+"/TRAITEMENT/SOIL/GSM/SOIL_GSM_CALSSIF_ADOUR_2018.shp")    
+    
     # parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_all_crops_summer_Gers_er10.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     
-    MAIS_IRR=parcelle[parcelle.majority==1.0]
-    MAIS_NIRR=parcelle[parcelle.majority==11.0]
+    # MAIS_IRR=parcelle[parcelle.classifmaj==1.0]
+    MAIS_NIRR=parcelle[parcelle.classifmaj==11.0]
     
     
     meteo.DATE=meteo.DATE.astype(int)
@@ -60,7 +68,6 @@ if __name__ == '__main__':
     resu=pd.DataFrame()
     idgeom=[]
     # parcelle.reset_index(inplace=True)
-    print("extract data")
     for par in parcelle.index:
           print("ID parcelle en cours de traitement :%s"%par)
           extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[par])==meteo["geometry"].distance(parcelle["geometry"].iloc[par]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
@@ -76,16 +83,6 @@ if __name__ == '__main__':
     meteo.columns=["id",'date',"ET0",'Prec']
     meteo["Irrig"]=0.0
     # meteo_irr=meteo[meteo.id.isin(MAIS_IRR.ID)]
-    # meteo_irr.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_Adour_mais_IRR.df")
+    # meteo_irr.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_Adour_mais_IRR_2018.df")
     meteo_nirr=meteo[meteo.id.isin(MAIS_NIRR.ID)]
-    meteo_nirr.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_Adour_mais_NIRR.df")
-    # meteo.to_csv('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_ASA_all_crops_summer_'+years+'.csv')
-    # meteo2=pd.read_csv('/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_ASA_all_crops_summer_'+years+'.csv')
-    # meteo2.drop(columns=["Unnamed: 0"],inplace=True)
-    
-    # # meteo2=meteo2.loc[(meteo2.id<14.0)&(meteo2.id!=6.0) & (meteo2.id!=8.0) & (meteo2.id!=2) & (meteo2.id!=3)]
-    # meteo2.date=pd.to_datetime(meteo2.date,format="%Y-%m-%d")
-    
-    # meteo2.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo.df")
-    
-    
+    meteo_nirr.to_pickle("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/meteo_Adour_mais_NIRR_2018.df")

@@ -22,6 +22,7 @@ import seaborn as sns
 import TEST_ANALYSE_SIGNATURE
 import shapely.geometry as geom
 import descartes
+import pickle
 
 if __name__ == '__main__':
     Parcellaire=geo.read_file("/datalocal/vboxshare/THESE/CLASSIFICATION/DONNES_SIG/Parcelle_labo/PARCELLE_CESBIO_L93.shp")
@@ -89,3 +90,49 @@ if __name__ == '__main__':
     res=res.dropna()
     
     min_signal_labo.index-res.index[0]
+    
+# =============================================================================
+#     Parcelle PKGC
+# =============================================================================
+    Prec=pickle.load(open("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/RUNS_SAMIR/RUN_PKGC/GERS/PKGC_GSM_irri_auto/2017/Inputdata/maize_irri/meteo.df","rb"))
+    PKGC=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/INPUT_DATA/SAR_parcelle/PKGC/VH_VV_PKGC_32.shp")
+    PKGC.drop_duplicates(inplace=True,subset=["ID"])
+    dfnames=pd.read_csv("/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/list_features_SAR.txt",sep=',', header=None)
+    df1=dfnames.T
+    df1.columns=["band_name"]
+    colnames=list(df1.band_name.apply(lambda s: s[-9:-1]))
+    dates=colnames[146:183]
+    dates=pd.to_datetime(dates,format="%Y%m%d")
+    tmp=PKGC[["ID"]]
+    tmp1=pd.DataFrame()
+    for i in np.arange(0,37,1): #♣ 2018 : 49 :  2017 : 41
+        a=PKGC["mean_"+str(i)]
+        tmp1=tmp1.append(a)
+    Fcover=tmp1.T
+    Fcover.columns=list(dates)
+    # Fcover=Fcover.T
+    Fcover.T.sort_index(inplace=True)
+    Fcover.T.sort_index(ascending=True,inplace=True)
+    # Fcover=Fcover.T
+    Fcover=Fcover.T.reindex(pd.date_range(start=str(years)+"-01-01",end=str(years)+"-12-31",freq='1D'))
+    Fcover=Fcover.resample("D").interpolate(method='time',limit_direction='both')
+    Fcover=Fcover.append(PKGC.ID)
+    Fcover=Fcover.T
+    Fcover.set_index("ID",inplace=True)
+    FCOVER=pd.DataFrame(Fcover.T.unstack()).reset_index()
+    data_SAR=FCOVER.rename(columns={'ID':'id', 'level_1':'date',0: 'VV_VH'})
+    
+    data_SAR=data_SAR.merge(Prec,on=["id","date"])
+    for i in list(set(data_SAR.id)):
+        plt.figure(figsize=(7,7))
+        id1=data_SAR[data_SAR.id==i]
+        datemin_VV_VH=id1[id1.VV_VH==id1.VV_VH.min()]["date"]
+        plt.plot(id1.date,id1.VV_VH)
+        plt.axvline(datemin_VV_VH.iloc[0])
+        
+        
+    
+    
+    
+
+    
