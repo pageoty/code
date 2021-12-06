@@ -131,32 +131,32 @@ if __name__ == '__main__':
             tot_2017=tot_2017[tot_2017.index!= "LASSERRE"]
             tot_2017.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/tab_ASA_mod_2017.csv")
             
-    for t in [0.01,0.011,0.012,0.013,0.017]:
-        plt.figure(figsize=(7,7))
-        for y in years: 
-            slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso.to_list())
-            bias=1/len(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())*sum(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso-np.mean(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())) 
-            rms = np.sqrt(mean_squared_error(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso))
-            plt.scatter(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(),globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso,label=y)
-            plt.xlim(-1,10)
-            plt.ylim(-1,10)
-            plt.xlabel("Volumes annuels observés en millions de m3 ")
-            plt.ylabel("Volumes annuels modélisés en million de m3 ")
-            plt.plot([-1, 10], [-1,10], 'black', lw=1,linestyle='--')
-            if "2017" in y :
-                rectangle = plt.Rectangle((3.9, 7),2.1,1.3, ec='blue',fc='blue',alpha=0.1)
-                plt.gca().add_patch(rectangle)
-                plt.text(4,7.9,"RMSE = "+str(round(rms,2))) 
-                plt.text(4,7.6,"R² = "+str(round(r_value,2)))
-                plt.text(4,7.3,"Pente = "+str(round(slope,2)))
-                plt.text(4,7,"Biais = "+str(round(bias,2)))
-            else:
-                rectangle = plt.Rectangle((7.90, 5),2.1,1.30, ec='orange',fc='orange',alpha=0.3)
-                plt.gca().add_patch(rectangle)
-                plt.text(8,5.9,"RMSE = "+str(round(rms,2))) 
-                plt.text(8,5.6,"R² = "+str(round(r_value,2)))
-                plt.text(8,5.3,"Pente = "+str(round(slope,2)))
-                plt.text(8,5,"Biais = "+str(round(bias,2)))
+    # for t in [0.01,0.011,0.012,0.013,0.017]:
+    #     plt.figure(figsize=(7,7))
+    #     for y in years: 
+    #         slope, intercept, r_value, p_value, std_err = stats.linregress(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso.to_list())
+    #         bias=1/len(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())*sum(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso-np.mean(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list())) 
+    #         rms = np.sqrt(mean_squared_error(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(), globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso))
+    #         plt.scatter(globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].Vali.to_list(),globals()["tot_"+y].loc[globals()["tot_"+y]["param"]==t].conso,label=y)
+    #         plt.xlim(-1,10)
+    #         plt.ylim(-1,10)
+    #         plt.xlabel("Volumes annuels observés en millions de m3 ")
+    #         plt.ylabel("Volumes annuels modélisés en million de m3 ")
+    #         plt.plot([-1, 10], [-1,10], 'black', lw=1,linestyle='--')
+    #         if "2017" in y :
+    #             rectangle = plt.Rectangle((3.9, 7),2.1,1.3, ec='blue',fc='blue',alpha=0.1)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(4,7.9,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(4,7.6,"R² = "+str(round(r_value,2)))
+    #             plt.text(4,7.3,"Pente = "+str(round(slope,2)))
+    #             plt.text(4,7,"Biais = "+str(round(bias,2)))
+    #         else:
+    #             rectangle = plt.Rectangle((7.90, 5),2.1,1.30, ec='orange',fc='orange',alpha=0.3)
+    #             plt.gca().add_patch(rectangle)
+    #             plt.text(8,5.9,"RMSE = "+str(round(rms,2))) 
+    #             plt.text(8,5.6,"R² = "+str(round(r_value,2)))
+    #             plt.text(8,5.3,"Pente = "+str(round(slope,2)))
+    #             plt.text(8,5,"Biais = "+str(round(bias,2)))
         # for i in enumerate(globals()["tot_"+y].index):
         #     if "2017" in y :
         #         label = i[1].lower()
@@ -174,7 +174,7 @@ if __name__ == '__main__':
         #               ha='center')
         plt.legend()
         plt.title(t)
-        plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%(t))
+        # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_%s_Irrigation.png"%(t))
         
         
 # =============================================================================
@@ -202,9 +202,9 @@ if __name__ == '__main__':
         tot_IRR=pd.merge(tot_ID,vali_ASA,on=["ID"])
         tot_IRR.dropna(inplace=True)
         tot_IRR.drop_duplicates(inplace=True)
-        tot_IRR_ss_sunfl=tot_IRR[tot_IRR.RPG_CODE_C!='TRN']
+        # tot_IRR_ss_sunfl=tot_IRR[tot_IRR.RPG_CODE_C=='TRN']
         # tot_IRR_only_mais=tot_IRR_ss_sunfl[tot_IRR_ss_sunfl.RPG_CODE_C!='SOJ']
-        # tot_IRR_ss_sunfl=tot_IRR
+        tot_IRR_ss_sunfl=tot_IRR
         #  Isloer pour chaque parcelle maxZr arondi 
         conso_par=[]
         idpar=[]
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         for i in tot_IRR_ss_sunfl.ID:
             maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
             if tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i]["RPG_CODE_C"].values[0] == "SOJ":
-                irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values+10
+                irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values
                 print(irri)
             else:
                 irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values
@@ -233,25 +233,25 @@ if __name__ == '__main__':
         tab_par_irri.columns=["ID","conso","ASA"]
         tab_asa_irr=tab_par_irri.groupby("ASA").sum()
         
-        if y == "2017":
-            Parcellaire= geo.read_file(d["PC_disk"]+"/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2017_RPG_all_crops_summer_Gers.shp")
-        else:
-            Parcellaire= geo.read_file(d["PC_disk"]+"/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_all_crops_summer_Gers_er10.shp")
-        ET= {}
-        gdf = {}
-        data=[]
-        Parcellaire["id"]=Parcellaire.ID
+        # if y == "2017":
+        #     Parcellaire= geo.read_file(d["PC_disk"]+"/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2017_RPG_all_crops_summer_Gers.shp")
+        # else:
+        #     Parcellaire= geo.read_file(d["PC_disk"]+"/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_all_crops_summer_Gers_er10.shp")
+        # # ET= {}
+        # gdf = {}
+        # data=[]
+        # Parcellaire["id"]=Parcellaire.ID
     
         
-        for i in tot_IRR_ss_sunfl.ID:
-          maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
-          irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values
-          data.append([i,irri[0]])
+        # for i in tot_IRR_ss_sunfl.ID:
+        #   maxzr=data_prof[data_prof.ID==i]["Zrmax_RUM_arrondi"].values
+        #   irri=tot_IRR_ss_sunfl.loc[tot_IRR_ss_sunfl.ID==i][maxzr].iloc[0].values
+        #   data.append([i,irri[0]])
           
-        data=pd.DataFrame(data,columns=['id','conso'])
-        gdf = Parcellaire
-        gdf = gdf.merge(data, on='id')
-        gdf.to_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_ASA/ASA_GSM_Fcover_400_2500_irri_auto_soil/carte_surface_irriguée_"+str(y)+"_SAMIR.shp")
+        # data=pd.DataFrame(data,columns=['id','conso'])
+        # gdf = Parcellaire
+        # gdf = gdf.merge(data, on='id')
+        # gdf.to_file(d["PC_disk"]+"/TRAITEMENT/RUNS_SAMIR/RUN_ASA/ASA_GSM_Fcover_400_2500_irri_auto_soil/carte_surface_irriguée_"+str(y)+"_SAMIR.shp")
    
      
         # 
@@ -295,14 +295,14 @@ if __name__ == '__main__':
             rectangle = plt.Rectangle((3.9, 7),2.1,1.3, ec='blue',fc='blue',alpha=0.1)
             plt.gca().add_patch(rectangle)
             plt.text(4,7.9,"RMSE = "+str(round(rms,2))) 
-            plt.text(4,7.6,"R² = "+str(round(r_value,2)))
+            plt.text(4,7.6,"R = "+str(round(r_value,2)))
             plt.text(4,7.3,"Pente = "+str(round(slope,2)))
             plt.text(4,7,"Biais = "+str(round(bias,2)))
         else:
             rectangle = plt.Rectangle((7.90, 5),2.1,1.30, ec='orange',fc='orange',alpha=0.3)
             plt.gca().add_patch(rectangle)
             plt.text(8,5.9,"RMSE = "+str(round(rms,2))) 
-            plt.text(8,5.6,"R² = "+str(round(r_value,2)))
+            plt.text(8,5.6,"R = "+str(round(r_value,2)))
             plt.text(8,5.3,"Pente = "+str(round(slope,2)))
             plt.text(8,5,"Biais = "+str(round(bias,2)))
         for i in enumerate(globals()["tab_irri_asa_"+y].index):
@@ -321,7 +321,7 @@ if __name__ == '__main__':
                       xytext=(0,-10), # distance from text to points (x,y)
                       ha='center')
     plt.legend()
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_maxZr_all_summer_crops_parcelle_Irrigation_ss_sunflower_soj_20mm.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run_save_fig+"/plot_scatter_volumes_maxZr_all_summer_crops_parcelle_Irrigation_avec_sunflower.png")
     
     
     # Récupération shp

@@ -91,29 +91,37 @@ if __name__ == '__main__':
 # =============================================================================
 #  cas du BV Adour Amont
 # =============================================================================
-
-    Parcellaire= geo.read_file(d["PC_disk"]+"/CLASSIFICATION/DATA_CLASSIFICATION/RPG/RPG_BV/RPG_SUMMER_2017_ADOUR_AMONT.shp")
-    df_mod=pickle.load(open(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/output_test_2017.df","rb"))
+    y="2017"
+    Parcellaire= geo.read_file(d["PC_disk"]+"/CLASSIFICATION/DATA_CLASSIFICATION/RPG/RPG_BV/RPG_SUMMER_"+y+"_ADOUR_AMONT.shp")
+    df_mod=pickle.load(open(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil_1classe/"+y+"/output_test_"+y+".df","rb"))
     ET= {}
     gdf = {}
     
-    
     Parcellaire["id"]=Parcellaire.ID
     ETsum = (df_mod.groupby(['id'])['Ir_auto'].sum()).reset_index()
-    
+    ETsum=ETsum.merge(df_mod[["id","LC"]],on='id')
+    ETsum.drop_duplicates(inplace=True)
     ET_TAW =(df_mod.groupby(['id'])['TAW'].max()).reset_index()
     ET_TAW[ET_TAW.TAW<0]=0
     
     ET = ETsum
     ET["IRR"]=1
     ET.loc[(ET.Ir_auto==0.0),'IRR']=11
-    ET.loc[(ET.Ir_auto>0) & (ET.Ir_auto<=30),'IRR']=11
-
+    # ET.loc[(ET.Ir_auto>0) & (ET.Ir_auto<=30),'IRR']=11
     gdf = Parcellaire
     gdf = gdf.merge(ET, on='id')
     gdf = gdf.merge(ET_TAW, on='id')
+    IRR=gdf[gdf.IRR==1]
+    print(r'Volumes irrigué == %s'%sum(IRR.Ir_auto*10*IRR.area/10000/1000000))
+    print(r'surface irrigué == %s'%sum(IRR[IRR.Ir_auto!=0].area/10000))
+    
+    
+    sum(gdf.Ir_auto*10*gdf.area/10000)/1000000
+    sum(gdf[gdf.Ir_auto!=0].area/10000)
+    print(r'surface maisNirr == %s'%sum(gdf[gdf.Ir_auto==0].area/10000))
     gdf_mais=gdf.loc[(gdf.code_cultu=="MIS") | (gdf.code_cultu =="MID") |(gdf.code_cultu =="MIE") ]
-    gdf_mais.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1200_irri_auto_soil/2017/carte_surface_irriguee_ADOUR_2017_SAMIR_maxZr1200_2classe_seuil_30mm.shp")
+    gdf_mais["LC"]=gdf_mais.LC.astype(str) ## supprimer champ dtypes caterory non accepter par file SHP
+    gdf_mais.to_file(d["PC_disk_water"]+"/TRAITEMENT/RUNS_SAMIR/RUN_CLASSIF_ALL_MAIS/Classif_init_ru_P055_Fcover_fewi_De_Kr_days10_dose30_1000_irri_auto_soil_1classe/"+y+"/carte_surface_irriguee_ADOUR_"+y+"_SAMIR_maxZr1000_2classe_seuil_0.shp")
    
     # Création de la carte besoin en eau 
     # gdf_mais.plot(column='Ir_auto',figsize=(10,10), vmin=ETmin, vmax=ETmax, cmap='RdYlGn')

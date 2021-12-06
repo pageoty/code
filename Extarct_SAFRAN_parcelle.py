@@ -45,12 +45,12 @@ if __name__ == '__main__':
 # =============================================================================
 # Inputs 
     meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
-    parcelle= geo.read_file(d["PC_labo_disk"]+"/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_all.shp")    
+    parcelle= geo.read_file(d["PC_labo_disk"]+"/DONNEES_RAW/DONNEES_MAIS_CLASSIF/Classif_Adour_2017_maïs_Nirr.shp")    
 
     # parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_all_crops_summer_Gers_er10.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     
-    MAIS_IRR=parcelle[parcelle.majority==1.0]
+    # MAIS_IRR=parcelle[parcelle.majority==1.0]
     MAIS_NIRR=parcelle[parcelle.majority==11.0]
     
     

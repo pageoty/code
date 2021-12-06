@@ -71,13 +71,13 @@ def plt_classif_kappa(df,var1,var2):
     plt.legend(fontsize=14)
 
 if __name__ == "__main__":
-    years='All_Years_ASC' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
+    years='SAR_optical_pluie' # nom du ficher comptenant l'ensemble des résultats # SEASON_TIME
     bv="TARN"
     d={}
     d["PC_labo"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/"
     d["SAVE"]="/datalocal/vboxshare/THESE/CLASSIFICATION/RESULT/PLOT/PLOT_SYNTH_CLASSIF/"+str(bv) # path où seront save les graphiques finaux 
-    d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/"
-    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/RESULTAT_CLASSIFICATION/PLOT/PLOT_SYNTH_CLASSIF/"
+    d["disk_PC"]="/run/media/pageot/Transcend/Yann_THESE/CLASSIFICATION/RESULTAT_CLASSIFICATION/"
+    d["SAVE_disk"]="/run/media/pageot/Transcend/Yann_THESE/CLASSIFICATION/RESULTAT_CLASSIFICATION/PLOT/PLOT_SYNTH_CLASSIF/soutenance/"
     for b in [bv]: 
         step = []
         jobs=pd.DataFrame()
@@ -198,7 +198,7 @@ if __name__ == "__main__":
         # plt.xticks(size='large')
         plt.xticks(fontsize=14)
         plt.yticks(size='large')
-        plt.savefig(d["SAVE_disk"]+"KAPPA_RUN_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+        # plt.savefig(d["SAVE_disk"]+"KAPPA_RUN_"+b+"_"+years+".png",dpi=600,bbox_inches='tight', pad_inches=0.5)
                 
         df_names=["step","mean_fscore","std_fscore","mean_Recall","std_Recall","mean_Precision","std_Precision"]
         dfmetric=pd.concat([jobs,Fscore,Recall,Prec],axis=1)
@@ -292,7 +292,7 @@ if __name__ == "__main__":
             plt.ylim(0,1)
             plt.title(str(i))
             plt.legend()
-            plt.savefig(d["SAVE_disk"]+"SEASON_TIME/Fscore_Barplot"+"_"+i+"_"+bv+".png",format="png",dpi=300,bbox_inches='tight', pad_inches=0.5)
+            # plt.savefig(d["SAVE_disk"]+"SEASON_TIME/Fscore_Barplot"+"_"+i+"_"+bv+".png",format="png",dpi=300,bbox_inches='tight', pad_inches=0.5)
 # =============================================================================
     # graphi Fscre barplot
 # =============================================================================
@@ -331,7 +331,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    # plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
         
             elif bv == "ADOUR": 
                 for i in set(zip(M7.step,M8.step)):
@@ -380,7 +380,7 @@ if __name__ == "__main__":
                     plt.legend()
                     plt.xticks(fontsize=14,rotation=45)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    # plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+".png",format="pdf",dpi=900,bbox_inches='tight', pad_inches=0.5)
 
     # Comparer les runs cumil et non cumuls 
         if years =="CUMUL_VS_NOT":
@@ -406,7 +406,7 @@ if __name__ == "__main__":
                     plt.legend(fontsize=14)
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    # plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
                 else:
                 
                     plt.figure(figsize=(10,10)) 
@@ -426,7 +426,7 @@ if __name__ == "__main__":
                     plt.legend(fontsize=14)
                     plt.xticks(fontsize=14)
                     plt.yticks(fontsize=14)
-                    plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
+                    # plt.savefig(d["SAVE_disk"]+"VERSUS_cumul_not_cumul/Fscore_Barplot"+"_"+i[3:]+"_"+bv+".png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
 
 
 
@@ -514,7 +514,7 @@ if __name__ == "__main__":
                 for j in np.arange(len(set(M7.step))):
                     plt.text(x =np.arange(len(set(M7.step)))[j] -0.1 , y= list(yer1+bars1.mean_fscore)[j] +0.01,s = list(bars1.mean_fscore)[j],size=12)
                     plt.text(x =np.arange(len(set(M8.step)))[j] +0.2, y= list(yer2+bars2.mean_fscore)[j]+0.01,s = list(bars2.mean_fscore)[j],size=12)
-                plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"_"+bv+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
+                # plt.savefig(d["SAVE_disk"]+"bartest"+"_"+years+"_"+i[0]+"_"+bv+"paper.png",format="png",dpi=600,bbox_inches='tight', pad_inches=0.5)
             
 # =============================================================================
 #  SAMIR CLASSIF VALIDATION_DT terrain 
@@ -540,4 +540,45 @@ if __name__ == "__main__":
     # dfmetric.columns=df_names
     # dfmetric.labels=['Irrigated Maize','Irrigated Soybean', 'others', 'Rainfed Maize', 'Rainfed Soybean', 'Sorghum', 'Sunflower ']
     # plt.bar(dfmetric.labels,dfmetric.mean_fscore)
+    
+# =============================================================================
+#Plot diapo soutenance Fscore 
+# =============================================================================
+
+
+    # df2017SAFRAN=dfMetric[dfMetric.step.isin(['All_Data_Not_Cumul_2017','SAR_&_Optic_2017','SAR_Optic_Climate_2017'])]
+    df2017SAFRAN=dfMetric[dfMetric.step.str.endswith('2017')]
+    maize2017=df2017SAFRAN.set_index(['Classe'])
+    maize2017.sort_index(ascending=True,inplace=True)
+    # df2018SAFRAN=dfMetric[dfMetric.step.isin(['All_Data_Not_Cumul_2018','SAR_&_Optic_2018','SAR_Optic_Climate_2018'])]
+    df2018SAFRAN=dfMetric[dfMetric.step.str.endswith('2018')]
+    maize2018=df2018SAFRAN.set_index(['Classe'])
+    maize2018.sort_index(ascending=True,inplace=True)
+    M7=maize2017.sort_values(by='step',ascending=True)
+    M8=maize2018.sort_values(by='step',ascending=True)
+    for i in set(zip(M7.step,M8.step)):
+        print(i)
+        plt.figure(figsize=(12,5)) 
+        plt.grid(axis='x')
+        x1=plt.subplot(121)
+        barWidth = 0.3
+        bars1 = maize2017[maize2017.step==i[0]]["mean_fscore"]
+        bars2 = maize2018[maize2018.step==i[1]]["mean_fscore"]
+        yer1 = maize2017[maize2017.step==i[0]]['std_fscore']
+        yer2 = maize2018[maize2018.step==i[1]]['std_fscore']
+        r1 = np.arange(len(bars1))
+        r2 = [x + barWidth for x in r1]
+        plt.bar(r1, bars1, width = barWidth, color = 'orange', edgecolor = 'black', yerr=yer1, capsize=5, label='2017')
+        plt.bar(r2, bars2, width = barWidth, color = 'royalblue', edgecolor = 'black', yerr=yer2, capsize=5, label='2018')
+        plt.xticks([r + barWidth - 0.1 for r in range(len(bars2))],bars1.index,rotation=90) # fixer problème du nom de l'axe"
+        plt.ylabel('Fscore')
+        plt.ylim(0,1)
+        plt.title(str(i[0][:-5]))
+        plt.legend()
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
+        for j in np.arange(len(set(M7.index))):
+                plt.text(x =np.arange(len(set(M7.index)))[j] -0.2 , y= list(yer1+bars1)[j] +0.01,s = round(list(bars1)[j],2),size=12)
+                plt.text(x =np.arange(len(set(M8.index)))[j] +0.2, y= list(yer2+bars2)[j]+0.01,s = round(list(bars2)[j],2),size=12)
+        plt.savefig(d["SAVE_disk"]+"Fscore_Barplot"+"_"+i[0][:-5]+"_"+bv+"soutenance.png",format="png",dpi=900,bbox_inches='tight', pad_inches=0.5)
 

@@ -26,9 +26,10 @@ import pickle
 from datetime import datetime, date, time, timezone
 from scipy import *
 from scipy import stats
+from sklearn.linear_model import LinearRegression
 from pylab import *
 from sklearn.metrics import *
-from sklearn.linear_model import LinearRegression
+
 
 
 def predict(x):
@@ -39,8 +40,8 @@ def predict(x):
 
 if __name__ == '__main__':
     d={}
-    name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_GSM_irri_auto_v2/"
-    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_GSM_irri_auto_v2/"
+    name_run="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2/"
+    name_run_save_fig="RUNS_SAMIR/RUN_PKGC/GERS/PKGC_Fcover_GSM_irri_auto_v2/"
     d["PC_disk"]="/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/"
     d["PC_home"]="/mnt/d/THESE_TMP/"
     d["PC_home_Wind"]="D:/THESE_TMP/"
@@ -53,42 +54,50 @@ if __name__ == '__main__':
     soil=['SOIL_RIGOU',"RRP_Rigou"]#['SOIL_RIGOU',"RRP_Rigou"]["RRP","RRP_GERS"]
     optim_val="maxZr"
 
-    parcellaire = geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/PARCIRR_2017_32_avecRES_with_ID.shp")
-    parcellaire["ID"]=parcellaire["_ID"]
-    data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
-    list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
-    data_prof =data_prof[-data_prof["ID"].isin(list_drop)]
-    param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/"+name_run+"/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
-    IRR=[]
-    for i in data_prof.ID:
-        c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][0]
-        val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][1]
-        UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
-        data_id=UTS.groupby("id")
-        ID_data=data_id.get_group(i)
-        IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
-    tab_irr_GSM=pd.DataFrame(IRR,columns=["ID","Quant","maxZr","TAWmax"])
-    tab_f2=pd.merge(tab_irr_GSM,data_prof[["MMEAU","ID","Classe_Bruand"]],on='ID')
-    tab_f2.to_csv(d["PC_disk"]+"//TRAITEMENT/"+name_run+"/tab_resu_PKGC_depth_PF_CC_GSM.csv")
-    slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_f2["Quant"].to_list())
-    bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_f2["Quant"]-np.mean(tab_f2.MMEAU)) 
-    rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_f2["Quant"]))
-    plt.figure(figsize=(7,7))
-    plt.xlim(-10,350)
-    plt.ylim(-10,350)
-    plt.xlabel("Quantité annuelles observées en mm ")
-    plt.ylabel("Quantité annuelles modélisées en mm ")
-    plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
-    a=plt.scatter(tab_f2.MMEAU,tab_f2["Quant"])
-    rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
-    plt.gca().add_patch(rectangle)
-    plt.text(100,330,"RMSE = "+str(round(rms,2))) 
-    plt.text(100,320,"R² = "+str(round(r_value,2)))
-    plt.text(100,310,"Pente = "+str(round(slope,2)))
-    plt.text(100,300,"Biais = "+str(round(bias,2)))
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/plot_scatter_volumes_Irrigation_forcagemaxZr_soil_depth_GSM_PFCC.png")
-   
-    # regrouper les classes de sol
+    # parcellaire = geo.read_file(d["PC_disk"]+"/DONNEES_RAW/data_SSP/PARCIRR_2017_32_avecRES_with_ID.shp")
+    # parcellaire["ID"]=parcellaire["_ID"]
+    # data_prof=pd.read_csv(d["PC_disk"]+"/TRAITEMENT/SOIL/GSM/Extract_GSM_parcelle_PKGC_GERS_2017_GSM_PF_CC_class_name.csv",index_col=[0],sep=',',encoding='latin-1',decimal=',')
+    # list_drop=[7,9,10,13,25,29,34,50,54,61,83,90,98]
+    # data_prof =data_prof[-data_prof["ID"].isin(list_drop)]
+    # param=pd.read_csv(d["PC_disk"]+"//TRAITEMENT/"+name_run+"/2017/Output/maxZr/output_test_maize_irri_param.txt",header=None,skiprows=1,sep=";")
+    # IRR=[]
+    # for i in data_prof.ID:
+    #     c=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][0]
+    #     val=param.loc[param[1].isin(data_prof.loc[data_prof.ID==i]["mean_arrondi"])][1]
+    #     UTS=pickle.load(open(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/2017/Output/maxZr/output_test_maize_irri_"+str(int(c))+".df","rb"))
+    #     data_id=UTS.groupby("id")
+    #     ID_data=data_id.get_group(i)
+    #     IRR.append([i,ID_data.Ir_auto.sum(),val.values[0],ID_data.TAW.max()])
+    # tab_irr_GSM=pd.DataFrame(IRR,columns=["ID","Quant","maxZr","TAWmax"])
+    # tab_f2=pd.merge(tab_irr_GSM,data_prof[["MMEAU","ID","Classe_Bruand"]],on='ID')
+    # tab_f2.to_csv(d["PC_disk"]+"//TRAITEMENT/"+name_run+"/tab_resu_PKGC_depth_PF_CC_GSM.csv")
+    # slope, intercept, r_value, p_value, std_err = stats.linregress(tab_f2.MMEAU.to_list(),tab_f2["Quant"].to_list())
+    # bias=1/tab_f2["MMEAU"].shape[0]*sum(tab_f2["Quant"]-np.mean(tab_f2.MMEAU)) 
+    # rms = np.sqrt(mean_squared_error(tab_f2.MMEAU,tab_f2["Quant"]))
+    # plt.figure(figsize=(7,7))
+    # plt.xlim(-10,350)
+    # plt.ylim(-10,350)
+    # plt.xlabel("Quantité annuelles observées en mm ")
+    # plt.ylabel("Quantité annuelles modélisées en mm ")
+    # plt.plot([-10.0, 350], [-10.0,350], 'black', lw=1,linestyle='--')
+    # a=plt.scatter(tab_f2.MMEAU,tab_f2["Quant"])
+    # rectangle = plt.Rectangle((95, 300),72,42, ec='blue',fc='blue',alpha=0.1)
+    # plt.gca().add_patch(rectangle)
+    # plt.text(100,330,"RMSE = "+str(round(rms,2))) 
+    # plt.text(100,320,"R² = "+str(round(r_value,2)))
+    # plt.text(100,310,"Pente = "+str(round(slope,2)))
+    # plt.text(100,300,"Biais = "+str(round(bias,2)))
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/plot_scatter_volumes_Irrigation_forcagemaxZr_soil_depth_GSM_PFCC.png")
+    
+# =============================================================================
+#      Plot ETR soutenance exemple
+# =============================================================================
+    # plt.figure(figsize=(7,7))
+    # plt.plot(UTS[UTS.id==11]["date"],UTS[UTS.id==11]["ET"].rolling(5).mean(),label='Evapotranspiration',linewidth="2")
+    # plt.plot(UTS.loc[(UTS.id==11)&(UTS.Ir_auto!=0)]["date"],UTS.loc[(UTS.id==11)&(UTS.Ir_auto!=0)]["Ir_auto"]/5,marker="o",linestyle="",label="Irrigation")
+    # plt.legend()
+    # plt.savefig(d["PC_disk"]+"/TRAITEMENT//plot_soutenance_resu_SAMIR.png")
+    # # regrouper les classes de sol
     # tab_f2["TEX"]="L"
     # tab_f2.loc[(tab_f2.Classe_Bruand == "A"),'TEX']= "A"
     # tab_f2.loc[(tab_f2.Classe_Bruand == "AL"),'TEX']="A"
@@ -402,14 +411,14 @@ if __name__ == '__main__':
     tab_irr2.loc[(tab_irr2.Classe_Bruand == "AL"),'TEX']="A"
     tab_irr2.loc[(tab_irr2.Classe_Bruand == "SL"),'TEX']="S"
     tab_irr2.loc[(tab_irr2.Classe_Bruand == "SA"),'TEX']="S"
-    tab_irr2.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/tab_resu_GSM_PF_CC_maxzrUTS.csv")
+    # tab_irr2.to_csv(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/tab_resu_GSM_PF_CC_maxzrUTS.csv")
     plt.figure(figsize=(7,7))
     slope, intercept, r_value, p_value, std_err = stats.linregress(tab_irr2.MMEAU.to_list(),tab_irr2.conso.to_list())
     bias=1/tab_irr2["MMEAU"].shape[0]*sum(tab_irr2.conso-np.mean(tab_irr2.MMEAU)) 
     rms = np.sqrt(mean_squared_error(tab_irr2.MMEAU,tab_irr2.conso))
-    labels, index = np.unique(tab_irr2["TEX"], return_inverse=True)
-    a=plt.scatter(tab_irr2.MMEAU,tab_irr2.conso,c=index,cmap='coolwarm')
-    plt.legend(a.legend_elements()[0],labels)
+    # labels, index = np.unique(tab_irr2["TEX"], return_inverse=True)
+    plt.scatter(tab_irr2.MMEAU,tab_irr2.conso)
+    # plt.legend(a.legend_elements()[0],labels)
     plt.xlim(-10,350)
     plt.ylim(-10,350)
     plt.xlabel("Quantité annuelles observées en mm ")
@@ -419,7 +428,7 @@ if __name__ == '__main__':
     rectangle = plt.Rectangle((95, 245),70,45, ec='gray',fc='gray',alpha=0.1)
     plt.gca().add_patch(rectangle)
     plt.text(100,280,"RMSE = "+str(round(rms,2))) 
-    plt.text(100,270,"R² = "+str(round(r_value,2)))
+    plt.text(100,270,"R = "+str(round(r_value,2)))
     plt.text(100,260,"Pente = "+str(round(slope,2)))
     plt.text(100,250,"Biais = "+str(round(bias,2)))
     # for i in enumerate(tab_irr2.ID):
@@ -429,7 +438,7 @@ if __name__ == '__main__':
     #           textcoords="offset points", # how to position the text
     #           xytext=(-6,2), # distance from text to points (x,y)
     #           ha='center')
-    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/plot_scatter_Irrigation_forcagemaxZr_RUMvalue_GSM_PF_CC.png")
+    plt.savefig(d["PC_disk"]+"/TRAITEMENT/"+name_run+"/plot_scatter_Irrigation_forcagemaxZr_RUMvalue_GSM_PF_CC_mai.png")
     
 # =============================================================================
 #  Analyse des partique avec RUM issue de UTS maps

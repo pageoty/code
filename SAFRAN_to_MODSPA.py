@@ -52,14 +52,14 @@ if __name__ == '__main__':
 #     Extaction de la donnée METEO par rapport centoide parcelle (methode NN)
 # =============================================================================
     
-    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2018_L93.shp")
-    parcelle= geo.read_file(d["PC_labo_disk"]+"/TRAITEMENT/SOIL/GSM/SOIL_GSM_CALSSIF_ADOUR_2018.shp")    
-    
+    meteo=geo.read_file("/datalocal/vboxshare/THESE/BESOIN_EAU/DONNEES_RAW/DONNES_METEO/SAFRAN_ZONE_2017_L93.shp")
+    parcelle= geo.read_file(d["PC_labo_disk"]+"/DONNEES_RAW/data_SSP/PARCIRR_2017_32_avecRES_with_ID.shp")    
+    parcelle["ID"]=parcelle._ID
     # parcelle=geo.read_file("/run/media/pageot/Transcend/Yann_THESE/BESOIN_EAU/BESOIN_EAU/TRAITEMENT/DONNEES_ASA/PACRELLE_ASA_2018_RPG_all_crops_summer_Gers_er10.shp")
     # parcelle=geo.read_file("H:/Yann_THESE/BESOIN_EAU//BESOIN_EAU/DONNEES_RAW/data_SSP/ParcellesPKGC_MAIS_2017_32_valid_TYP_only.shp")
     
     # MAIS_IRR=parcelle[parcelle.classifmaj==1.0]
-    MAIS_NIRR=parcelle[parcelle.classifmaj==11.0]
+    # MAIS_NIRR=parcelle[parcelle.classifmaj==11.0]
     
     
     meteo.DATE=meteo.DATE.astype(int)
@@ -71,12 +71,13 @@ if __name__ == '__main__':
     for par in parcelle.index:
           print("ID parcelle en cours de traitement :%s"%par)
           extart_meteo=meteo.loc[meteo["geometry"].distance(parcelle["geometry"].iloc[par])==meteo["geometry"].distance(parcelle["geometry"].iloc[par]).min()][['DATE',"PRELIQ_Q","T_Q","ETP_Q"]]
-          idgeom.append(np.repeat(parcelle["ID"].iloc[par],extart_meteo.shape[0]))
+          idgeom.append(np.repeat(parcelle["_ID"].iloc[par],extart_meteo.shape[0]))
           resu=resu.append(extart_meteo)
     idpar=pd.DataFrame(idgeom).stack().to_list()
     resu["ID"]=idpar
     test=pd.merge(parcelle,resu[["DATE","ETP_Q","PRELIQ_Q","T_Q",'ID']],on="ID")
     test.set_index("ID",inplace=True)
+    test.to_csv("/datalocal/vboxshare/THESE/BESOIN_EAU/TRAITEMENT/INPUT_DATA/DATA_METEO_BV/PKGC_temp.csv")
 # mettre cela en df SAMIR    
     meteo=test.filter(['ID',"DATE","ETP_Q", 'PRELIQ_Q'])
     meteo.reset_index(inplace=True)
